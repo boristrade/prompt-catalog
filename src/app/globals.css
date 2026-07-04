@@ -1,0 +1,70 @@
+@import "tailwindcss";
+
+/*
+  Дизайн-система «Slash» — midnight vault.
+  Почти чёрный фон, белая типографика, единственный тёплый акцент — медь (copper).
+  Serif (Playfair Display) только для заголовков от 28px, Inter — для всего UI.
+*/
+@theme {
+  /* Поверхности и серые */
+  --color-obsidian: #08080a; /* фон страницы */
+  --color-onyx: #040406;     /* карточки */
+  --color-carbon: #121317;   /* панели, инпуты */
+  --color-graphite: #1c1d22; /* hairline-бордеры */
+  --color-slate: #2e3038;    /* вторичные бордеры */
+  --color-smoke: #464853;
+  --color-ash: #5e616e;
+  --color-steel: #777a88;    /* бордеры кнопок, ghost-элементы */
+  --color-fog: #9194a1;      /* навигация, вторичный текст */
+  --color-mist: #acafb9;
+  --color-silver: #c7c9d1;
+  --color-bone: #e2e3e9;     /* основной текст */
+  --color-copper: #cc9166;   /* единственный акцент: категории, editorial-ссылки */
+
+  /* Типографика */
+  --font-serif: "Playfair Display", Georgia, serif;
+  --font-sans: "Inter", ui-sans-serif, system-ui, sans-serif;
+
+  /* Радиусы */
+  --radius-nav: 2px;
+  --radius-cards: 10px;
+
+  /* Тень-кольцо для иконок */
+  --shadow-subtle: rgba(255, 255, 255, 0.2) 0px 0px 0px 1px;
+}
+
+:root {
+  color-scheme: dark;
+}
+
+body {
+  background: var(--color-obsidian);
+  color: var(--color-bone);
+  font-family: var(--font-sans);
+  font-size: 16px;
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* Serif-заголовки с фирменным положительным трекингом 0.01em */
+.font-display {
+  font-family: var(--font-serif);
+  font-weight: 400;
+  letter-spacing: 0.01em;
+}
+
+/* Золотой градиент — только для data-акцентов */
+.gilded {
+  background: linear-gradient(
+    103deg,
+    rgb(174, 147, 87),
+    rgb(255, 240, 204) 40%,
+    rgb(174, 147, 87) 70%,
+    rgba(189, 157, 79, 0)
+  );
+}
+
+::selection {
+  background: #cc9166;
+  color: #08080a;
+}
