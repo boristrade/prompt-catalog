@@ -1,6 +1,17 @@
+import { ArrowUpRight } from "lucide-react";
+import { toolsByCategory, TOOLS } from "@/lib/tools";
+
 export const metadata = { title: "Полезные инструменты" };
 
+const PRICING_LABEL: Record<string, string> = {
+  free: "Бесплатно",
+  freemium: "Есть free-план",
+  paid: "Платно",
+};
+
 export default function ToolsPage() {
+  const grouped = toolsByCategory();
+
   return (
     <section className="pt-20 pb-24 md:pt-28">
       <p className="text-[13px] font-semibold tracking-tight text-copper">
@@ -10,12 +21,45 @@ export default function ToolsPage() {
         Полезные инструменты
       </h1>
       <p className="mt-4 max-w-xl text-lg font-light text-fog">
-        Сервисы и нейросети, которые мы используем сами.
+        {TOOLS.length} сервисов и нейросетей, которые мы используем сами — по
+        задачам: тексты, изображения, дизайн, видео и маркетплейсы.
       </p>
 
-      {/* Список инструментов из таблицы tools появится в Фазе 7 */}
-      <div className="mt-14 rounded-[10px] border border-graphite bg-onyx p-10 text-center text-sm text-fog">
-        Раздел подключается к базе данных в Фазе 7.
+      <div className="mt-14 space-y-14">
+        {Object.entries(grouped).map(([cat, tools]) => (
+          <div key={cat}>
+            <h2 className="text-[13px] font-semibold uppercase tracking-wider text-fog">
+              {cat}
+            </h2>
+            <div className="mt-5 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+              {tools.map((tool) => (
+                <a
+                  key={tool.name}
+                  href={tool.url}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="group flex flex-col rounded-[10px] border border-graphite bg-onyx p-5 transition-colors hover:border-slate"
+                >
+                  <div className="flex items-center justify-between">
+                    <h3 className="text-[15px] font-medium text-white">
+                      {tool.name}
+                    </h3>
+                    <ArrowUpRight
+                      size={16}
+                      className="text-steel transition-transform group-hover:-translate-y-0.5 group-hover:translate-x-0.5 group-hover:text-copper"
+                    />
+                  </div>
+                  <p className="mt-2 flex-1 text-[13px] leading-relaxed text-fog">
+                    {tool.description}
+                  </p>
+                  <span className="mt-4 w-fit rounded-[2px] bg-carbon px-2 py-1 text-[11px] text-mist">
+                    {PRICING_LABEL[tool.pricing]}
+                  </span>
+                </a>
+              ))}
+            </div>
+          </div>
+        ))}
       </div>
     </section>
   );
