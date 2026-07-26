@@ -21,7 +21,7 @@ export default function Header() {
       <div className="mx-auto flex h-16 max-w-[1216px] items-center justify-between px-5 md:px-8">
         {/* Логотип */}
         <Link href="/" className="font-display text-[22px] text-white">
-          Prompt<span className="text-copper">Vault</span>
+          Promp<span className="text-copper">Tom</span>
         </Link>
 
         {/* Десктоп-навигация */}

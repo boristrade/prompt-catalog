@@ -5,8 +5,8 @@ import "./globals.css";
 
 export const metadata: Metadata = {
   title: {
-    default: "PromptVault — каталог AI-промтов",
-    template: "%s — PromptVault",
+    default: "PrompTom — каталог AI-промтов",
+    template: "%s — PrompTom",
   },
   description:
     "Отобранные AI-промты для дизайнеров, маркетологов, UGC-креаторов и продавцов маркетплейсов.",

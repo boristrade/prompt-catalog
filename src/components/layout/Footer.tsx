@@ -8,7 +8,7 @@ export default function Footer() {
         <div className="grid grid-cols-2 gap-10 md:grid-cols-4">
           <div className="col-span-2 md:col-span-1">
             <div className="font-display text-[22px] text-white">
-              Prompt<span className="text-copper">Vault</span>
+              Promp<span className="text-copper">Tom</span>
             </div>
             <p className="mt-3 text-sm leading-relaxed text-fog">
               Каталог отобранных AI-промтов для работы и творчества.
@@ -69,7 +69,7 @@ export default function Footer() {
         </div>
 
         <div className="mt-12 border-t border-graphite pt-6 text-[13px] text-ash">
-          © {new Date().getFullYear()} PromptVault. Все права защищены.
+          © {new Date().getFullYear()} PrompTom. Все права защищены.
         </div>
       </div>
     </footer>
