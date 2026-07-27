@@ -1,70 +1,291 @@
 @import "tailwindcss";
 
 /*
-  Дизайн-система «Slash» — midnight vault.
-  Почти чёрный фон, белая типографика, единственный тёплый акцент — медь (copper).
-  Serif (Playfair Display) только для заголовков от 28px, Inter — для всего UI.
+  Дизайн-система «Violet».
+  Тёмная фиолетово-чёрная база, единственный акцент — фиолетовый градиент.
+  Градиент работает на главных действиях и смысловых акцентах: кнопка,
+  часть заголовка, иконки категорий. Обычные поверхности остаются тихими.
+
+  Две темы: по умолчанию системная, пользователь переключает вручную —
+  выбор пишется в data-theme на <html> и в localStorage.
 */
-@theme {
-  /* Поверхности и серые */
-  --color-obsidian: #08080a; /* фон страницы */
-  --color-onyx: #040406;     /* карточки */
-  --color-carbon: #121317;   /* панели, инпуты */
-  --color-graphite: #1c1d22; /* hairline-бордеры */
-  --color-slate: #2e3038;    /* вторичные бордеры */
-  --color-smoke: #464853;
-  --color-ash: #5e616e;
-  --color-steel: #777a88;    /* бордеры кнопок, ghost-элементы */
-  --color-fog: #9194a1;      /* навигация, вторичный текст */
-  --color-mist: #acafb9;
-  --color-silver: #c7c9d1;
-  --color-bone: #e2e3e9;     /* основной текст */
-  --color-copper: #cc9166;   /* единственный акцент: категории, editorial-ссылки */
 
-  /* Типографика */
-  --font-serif: "Playfair Display", Georgia, serif;
-  --font-sans: "Inter", ui-sans-serif, system-ui, sans-serif;
+@theme inline {
+  --color-canvas: var(--c-canvas);
+  --color-surface: var(--c-surface);
+  --color-sunken: var(--c-sunken);
+  --color-line: var(--c-line);
+  --color-line-strong: var(--c-line-strong);
+  --color-ink: var(--c-ink);
+  --color-muted: var(--c-muted);
+  --color-faint: var(--c-faint);
+  --color-accent: var(--c-accent);
+  --color-accent-soft: var(--c-accent-soft);
+  --color-violet: var(--c-violet);
+  --color-invert: var(--c-invert);
+  --color-on-invert: var(--c-on-invert);
 
-  /* Радиусы */
-  --radius-nav: 2px;
-  --radius-cards: 10px;
+  --font-sans: "Inter", ui-sans-serif, system-ui, -apple-system, sans-serif;
+  --font-mono: ui-monospace, "SF Mono", SFMono-Regular, Menlo, Consolas, monospace;
 
-  /* Тень-кольцо для иконок */
-  --shadow-subtle: rgba(255, 255, 255, 0.2) 0px 0px 0px 1px;
+  --radius-card: 12px;
+  --radius-chip: 8px;
 }
 
+/* ── Тёмная тема (база) ───────────────────────────────────────────── */
 :root {
   color-scheme: dark;
+  --c-canvas: #09090f;
+  --c-surface: #101019;
+  --c-sunken: #0c0c14;
+  --c-line: #1c1c2b;
+  --c-line-strong: #2b2b40;
+  --c-ink: #f5f5fa;
+  --c-muted: #9d9db4;
+  --c-faint: #7c7c95;
+  --c-accent: #a78bfa;
+  --c-accent-soft: rgba(139, 92, 246, 0.14);
+  --c-violet: #8b5cf6;
+  --c-invert: #f5f5fa;
+  --c-on-invert: #09090f;
+  --grad: linear-gradient(115deg, #7c3aed 0%, #a855f7 100%);
+  --glow: rgba(124, 58, 237, 0.28);
+}
+
+/* ── Светлая тема ─────────────────────────────────────────────────── */
+@media (prefers-color-scheme: light) {
+  :root:not([data-theme="dark"]) {
+    color-scheme: light;
+    --c-canvas: #ffffff;
+    --c-surface: #fbfaff;
+    --c-sunken: #f6f5fc;
+    --c-line: #eae8f5;
+    --c-line-strong: #dcd9ec;
+    --c-ink: #121220;
+    --c-muted: #5c5c78;
+    --c-faint: #7b7b96;
+    --c-accent: #6d28d9;
+    --c-accent-soft: rgba(124, 58, 237, 0.09);
+    --c-violet: #7c3aed;
+    --c-invert: #121220;
+    --c-on-invert: #ffffff;
+    --grad: linear-gradient(115deg, #7c3aed 0%, #a855f7 100%);
+    --glow: rgba(124, 58, 237, 0.14);
+  }
+}
+
+:root[data-theme="light"] {
+  color-scheme: light;
+  --c-canvas: #ffffff;
+  --c-surface: #fbfaff;
+  --c-sunken: #f6f5fc;
+  --c-line: #eae8f5;
+  --c-line-strong: #dcd9ec;
+  --c-ink: #121220;
+  --c-muted: #5c5c78;
+  --c-faint: #7b7b96;
+  --c-accent: #6d28d9;
+  --c-accent-soft: rgba(124, 58, 237, 0.09);
+  --c-violet: #7c3aed;
+  --c-invert: #121220;
+  --c-on-invert: #ffffff;
+  --grad: linear-gradient(115deg, #7c3aed 0%, #a855f7 100%);
+  --glow: rgba(124, 58, 237, 0.14);
+}
+
+:root[data-theme="dark"] {
+  color-scheme: dark;
+  --c-canvas: #09090f;
+  --c-surface: #101019;
+  --c-sunken: #0c0c14;
+  --c-line: #1c1c2b;
+  --c-line-strong: #2b2b40;
+  --c-ink: #f5f5fa;
+  --c-muted: #9d9db4;
+  --c-faint: #7c7c95;
+  --c-accent: #a78bfa;
+  --c-accent-soft: rgba(139, 92, 246, 0.14);
+  --c-violet: #8b5cf6;
+  --c-invert: #f5f5fa;
+  --c-on-invert: #09090f;
+  --grad: linear-gradient(115deg, #7c3aed 0%, #a855f7 100%);
+  --glow: rgba(124, 58, 237, 0.28);
 }
 
 body {
-  background: var(--color-obsidian);
-  color: var(--color-bone);
+  background: var(--c-canvas);
+  color: var(--c-ink);
   font-family: var(--font-sans);
   font-size: 16px;
-  line-height: 1.5;
+  line-height: 1.55;
   -webkit-font-smoothing: antialiased;
 }
 
-/* Serif-заголовки с фирменным положительным трекингом 0.01em */
+/* Заголовки: плотный Inter с отрицательным трекингом */
 .font-display {
-  font-family: var(--font-serif);
-  font-weight: 400;
-  letter-spacing: 0.01em;
+  font-family: var(--font-sans);
+  font-weight: 700;
+  letter-spacing: -0.03em;
 }
 
-/* Золотой градиент — только для data-акцентов */
-.gilded {
-  background: linear-gradient(
-    103deg,
-    rgb(174, 147, 87),
-    rgb(255, 240, 204) 40%,
-    rgb(174, 147, 87) 70%,
-    rgba(189, 157, 79, 0)
-  );
+/* ═══ Градиент — единственный акцент ═════════════════════════════════ */
+
+/* Заливка: главные кнопки и активные состояния */
+.grad-fill {
+  background-image: var(--grad);
+  color: #fff;
+}
+
+/* Градиентный текст — только для части заголовка */
+.grad-text {
+  background-image: var(--grad);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+/* Мягкое свечение под первым экраном.
+   По горизонтали не выходим за контейнер — иначе на узком экране
+   появляется горизонтальная прокрутка. */
+.glow::before {
+  content: "";
+  position: absolute;
+  inset: -15% 0 auto 0;
+  height: 380px;
+  background: radial-gradient(closest-side, var(--glow), transparent 72%);
+  pointer-events: none;
+  z-index: 0;
+}
+
+/* Служебная рубрика */
+.eyebrow {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  letter-spacing: 0.13em;
+  text-transform: uppercase;
+  color: var(--c-accent);
+}
+
+/* Свой раскрывающийся блок: убираем маркер-треугольник браузера */
+summary {
+  list-style: none;
+}
+summary::-webkit-details-marker {
+  display: none;
+}
+
+/* ═══ Движение ═══════════════════════════════════════════════════════
+   Коротко (0.2–0.55 с), только прозрачность и небольшой сдвиг.
+   ═══════════════════════════════════════════════════════════════════ */
+
+html {
+  scroll-behavior: smooth;
+}
+
+@keyframes rise {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@keyframes slide-down {
+  from {
+    opacity: 0;
+    transform: translateY(-6px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@keyframes pop {
+  0% {
+    transform: scale(0.7);
+  }
+  55% {
+    transform: scale(1.12);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+
+.rise {
+  animation: rise 0.55s cubic-bezier(0.22, 0.61, 0.36, 1) both;
+}
+.rise-1 { animation-delay: 0.05s; }
+.rise-2 { animation-delay: 0.11s; }
+.rise-3 { animation-delay: 0.17s; }
+.rise-4 { animation-delay: 0.23s; }
+
+.slide-down {
+  animation: slide-down 0.22s cubic-bezier(0.22, 0.61, 0.36, 1) both;
+}
+
+.pop {
+  animation: pop 0.32s cubic-bezier(0.22, 0.61, 0.36, 1);
+}
+
+details[open] .example-body {
+  animation: rise 0.28s cubic-bezier(0.22, 0.61, 0.36, 1) both;
+}
+
+/* Появление при прокрутке. Скрытое состояние — только при наличии JS. */
+html[data-js] .reveal {
+  opacity: 0;
+  transform: translateY(10px);
+  transition:
+    opacity 0.5s ease,
+    transform 0.5s cubic-bezier(0.22, 0.61, 0.36, 1);
+}
+html[data-js] .reveal.shown {
+  opacity: 1;
+  transform: none;
+}
+
+/* Переключение темы: краткий кроссфейд цветов. */
+html.theme-switching,
+html.theme-switching *,
+html.theme-switching *::before,
+html.theme-switching *::after {
+  transition:
+    background-color 0.28s ease,
+    border-color 0.28s ease,
+    color 0.28s ease !important;
+}
+
+/* Видимый фокус для клавиатуры */
+:focus-visible {
+  outline: 2px solid var(--c-violet);
+  outline-offset: 2px;
+  border-radius: 4px;
 }
 
 ::selection {
-  background: #cc9166;
-  color: #08080a;
+  background: var(--c-violet);
+  color: #fff;
+}
+
+/* Кому движение мешает — отдаём статику. */
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+  }
+  html[data-js] .reveal {
+    opacity: 1 !important;
+    transform: none !important;
+  }
 }
