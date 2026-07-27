@@ -4,55 +4,53 @@ import { toolsByCategory, TOOLS } from "@/lib/tools";
 export const metadata = { title: "Полезные инструменты" };
 
 const PRICING_LABEL: Record<string, string> = {
-  free: "Бесплатно",
-  freemium: "Есть free-план",
-  paid: "Платно",
+  free: "бесплатно",
+  freemium: "есть free-план",
+  paid: "платно",
 };
 
 export default function ToolsPage() {
   const grouped = toolsByCategory();
 
   return (
-    <section className="pt-20 pb-24 md:pt-28">
-      <p className="text-[13px] font-semibold tracking-tight text-copper">
-        Подборка
-      </p>
-      <h1 className="font-display mt-4 text-[36px] text-white md:text-[52px]">
+    <section className="pt-16 pb-20 md:pt-20">
+      <p className="eyebrow">Подборка</p>
+      <h1 className="font-display mt-4 text-[30px] text-ink md:text-[44px]">
         Полезные инструменты
       </h1>
-      <p className="mt-4 max-w-xl text-lg font-light text-fog">
+      <p className="mt-4 max-w-xl text-[16px] leading-relaxed text-muted">
         {TOOLS.length} сервисов и нейросетей, которые мы используем сами — по
         задачам: тексты, изображения, дизайн, видео и маркетплейсы.
       </p>
 
-      <div className="mt-14 space-y-14">
+      <div className="mt-12 space-y-10">
         {Object.entries(grouped).map(([cat, tools]) => (
           <div key={cat}>
-            <h2 className="text-[13px] font-semibold uppercase tracking-wider text-fog">
+            <h2 className="font-mono text-[11px] uppercase tracking-[0.13em] text-faint">
               {cat}
             </h2>
-            <div className="mt-5 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+            <div className="mt-4 grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
               {tools.map((tool) => (
                 <a
                   key={tool.name}
                   href={tool.url}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="group flex flex-col rounded-[10px] border border-graphite bg-onyx p-5 transition-colors hover:border-slate"
+                  className="group flex flex-col rounded-card border border-line bg-surface p-4 transition-colors hover:border-line-strong"
                 >
-                  <div className="flex items-center justify-between">
-                    <h3 className="text-[15px] font-medium text-white">
+                  <div className="flex items-center justify-between gap-3">
+                    <h3 className="text-[14.5px] font-semibold tracking-[-0.015em] text-ink">
                       {tool.name}
                     </h3>
                     <ArrowUpRight
-                      size={16}
-                      className="text-steel transition-transform group-hover:-translate-y-0.5 group-hover:translate-x-0.5 group-hover:text-copper"
+                      size={14}
+                      className="shrink-0 text-faint transition-transform group-hover:-translate-y-0.5 group-hover:translate-x-0.5 group-hover:text-accent"
                     />
                   </div>
-                  <p className="mt-2 flex-1 text-[13px] leading-relaxed text-fog">
+                  <p className="mt-1.5 flex-1 text-[13px] leading-relaxed text-muted">
                     {tool.description}
                   </p>
-                  <span className="mt-4 w-fit rounded-[2px] bg-carbon px-2 py-1 text-[11px] text-mist">
+                  <span className="mt-3 w-fit rounded-chip bg-sunken px-2 py-1 font-mono text-[10.5px] text-faint">
                     {PRICING_LABEL[tool.pricing]}
                   </span>
                 </a>

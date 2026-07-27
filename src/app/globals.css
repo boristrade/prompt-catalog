@@ -1,70 +1,146 @@
 @import "tailwindcss";
 
 /*
-  Дизайн-система «Slash» — midnight vault.
-  Почти чёрный фон, белая типографика, единственный тёплый акцент — медь (copper).
-  Serif (Playfair Display) только для заголовков от 28px, Inter — для всего UI.
+  Дизайн-система «Graphite».
+  Волосяные границы, графитовые поверхности, плотная типографика Inter.
+  Единственный акцент — индиго, и только в мелочах: рубриках, метках,
+  переменных промта. Крупные плоскости он никогда не заливает.
+
+  Две темы: по умолчанию системная, пользователь переключает вручную —
+  выбор пишется в data-theme на <html> и в localStorage.
 */
-@theme {
-  /* Поверхности и серые */
-  --color-obsidian: #08080a; /* фон страницы */
-  --color-onyx: #040406;     /* карточки */
-  --color-carbon: #121317;   /* панели, инпуты */
-  --color-graphite: #1c1d22; /* hairline-бордеры */
-  --color-slate: #2e3038;    /* вторичные бордеры */
-  --color-smoke: #464853;
-  --color-ash: #5e616e;
-  --color-steel: #777a88;    /* бордеры кнопок, ghost-элементы */
-  --color-fog: #9194a1;      /* навигация, вторичный текст */
-  --color-mist: #acafb9;
-  --color-silver: #c7c9d1;
-  --color-bone: #e2e3e9;     /* основной текст */
-  --color-copper: #cc9166;   /* единственный акцент: категории, editorial-ссылки */
 
-  /* Типографика */
-  --font-serif: "Playfair Display", Georgia, serif;
-  --font-sans: "Inter", ui-sans-serif, system-ui, sans-serif;
+@theme inline {
+  --color-canvas: var(--c-canvas);
+  --color-surface: var(--c-surface);
+  --color-sunken: var(--c-sunken);
+  --color-line: var(--c-line);
+  --color-line-strong: var(--c-line-strong);
+  --color-ink: var(--c-ink);
+  --color-muted: var(--c-muted);
+  --color-faint: var(--c-faint);
+  --color-accent: var(--c-accent);
+  --color-accent-soft: var(--c-accent-soft);
+  --color-invert: var(--c-invert);
+  --color-on-invert: var(--c-on-invert);
 
-  /* Радиусы */
-  --radius-nav: 2px;
-  --radius-cards: 10px;
+  --font-sans: "Inter", ui-sans-serif, system-ui, -apple-system, sans-serif;
+  --font-mono: ui-monospace, "SF Mono", SFMono-Regular, Menlo, Consolas, monospace;
 
-  /* Тень-кольцо для иконок */
-  --shadow-subtle: rgba(255, 255, 255, 0.2) 0px 0px 0px 1px;
+  --radius-card: 6px;
+  --radius-chip: 4px;
 }
 
+/* ── Тёмная тема (база) ───────────────────────────────────────────── */
 :root {
   color-scheme: dark;
+  --c-canvas: #08090a;
+  --c-surface: #0e0f12;
+  --c-sunken: #0a0b0d;
+  --c-line: #1c1e22;
+  --c-line-strong: #26282e;
+  --c-ink: #f4f5f7;
+  --c-muted: #8b8d98;
+  /* Мелкие подписи набраны этим цветом — держим контраст не ниже 4.5:1 */
+  --c-faint: #7a7c86;
+  --c-accent: #8b9bff;
+  --c-accent-soft: rgba(139, 155, 255, 0.13);
+  --c-invert: #f4f5f7;
+  --c-on-invert: #08090a;
+}
+
+/* ── Светлая тема ─────────────────────────────────────────────────── */
+@media (prefers-color-scheme: light) {
+  :root:not([data-theme="dark"]) {
+    color-scheme: light;
+    --c-canvas: #ffffff;
+    --c-surface: #fcfcfd;
+    --c-sunken: #fafafb;
+    --c-line: #e8e9ec;
+    --c-line-strong: #dcdde1;
+    --c-ink: #101114;
+    --c-muted: #63656f;
+    --c-faint: #75777f;
+    --c-accent: #4a5bd4;
+    --c-accent-soft: rgba(74, 91, 212, 0.09);
+    --c-invert: #101114;
+    --c-on-invert: #ffffff;
+  }
+}
+
+:root[data-theme="light"] {
+  color-scheme: light;
+  --c-canvas: #ffffff;
+  --c-surface: #fcfcfd;
+  --c-sunken: #fafafb;
+  --c-line: #e8e9ec;
+  --c-line-strong: #dcdde1;
+  --c-ink: #101114;
+  --c-muted: #63656f;
+  --c-faint: #75777f;
+  --c-accent: #4a5bd4;
+  --c-accent-soft: rgba(74, 91, 212, 0.09);
+  --c-invert: #101114;
+  --c-on-invert: #ffffff;
+}
+
+:root[data-theme="dark"] {
+  color-scheme: dark;
+  --c-canvas: #08090a;
+  --c-surface: #0e0f12;
+  --c-sunken: #0a0b0d;
+  --c-line: #1c1e22;
+  --c-line-strong: #26282e;
+  --c-ink: #f4f5f7;
+  --c-muted: #8b8d98;
+  --c-faint: #7a7c86;
+  --c-accent: #8b9bff;
+  --c-accent-soft: rgba(139, 155, 255, 0.13);
+  --c-invert: #f4f5f7;
+  --c-on-invert: #08090a;
 }
 
 body {
-  background: var(--color-obsidian);
-  color: var(--color-bone);
+  background: var(--c-canvas);
+  color: var(--c-ink);
   font-family: var(--font-sans);
   font-size: 16px;
-  line-height: 1.5;
+  line-height: 1.55;
   -webkit-font-smoothing: antialiased;
 }
 
-/* Serif-заголовки с фирменным положительным трекингом 0.01em */
+/* Заголовки: плотный Inter с отрицательным трекингом — почерк жанра */
 .font-display {
-  font-family: var(--font-serif);
-  font-weight: 400;
-  letter-spacing: 0.01em;
+  font-family: var(--font-sans);
+  font-weight: 640;
+  letter-spacing: -0.032em;
 }
 
-/* Золотой градиент — только для data-акцентов */
-.gilded {
-  background: linear-gradient(
-    103deg,
-    rgb(174, 147, 87),
-    rgb(255, 240, 204) 40%,
-    rgb(174, 147, 87) 70%,
-    rgba(189, 157, 79, 0)
-  );
+/* Служебная рубрика: моно, капитель, акцент */
+.eyebrow {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  letter-spacing: 0.13em;
+  text-transform: uppercase;
+  color: var(--c-accent);
+}
+
+/* Свой раскрывающийся блок: убираем маркер-треугольник браузера */
+summary {
+  list-style: none;
+}
+summary::-webkit-details-marker {
+  display: none;
+}
+
+/* Видимый фокус для клавиатуры */
+:focus-visible {
+  outline: 2px solid var(--c-accent);
+  outline-offset: 2px;
+  border-radius: 2px;
 }
 
 ::selection {
-  background: #cc9166;
-  color: #08080a;
+  background: var(--c-accent);
+  color: var(--c-canvas);
 }

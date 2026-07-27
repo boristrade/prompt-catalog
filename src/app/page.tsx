@@ -7,120 +7,122 @@ import { TOOLS } from "@/lib/tools";
 const freeCount = PROMPTS.filter((p) => p.tier === "free").length;
 
 const STATS = [
-  { value: `${PROMPTS.length}`, label: "готовых промтов" },
-  { value: `${freeCount}`, label: "бесплатно" },
-  { value: `${CATEGORIES.length}`, label: "направления" },
-  { value: `${TOOLS.length}`, label: "инструментов" },
+  { value: PROMPTS.length, label: "готовых промтов" },
+  { value: freeCount, label: "бесплатно" },
+  { value: CATEGORIES.length, label: "направления" },
+  { value: TOOLS.length, label: "инструментов" },
+];
+
+const STEPS = [
+  {
+    t: "Выберите промт",
+    d: "Найдите задачу в своём разделе — под каждым промтом есть пример результата.",
+  },
+  {
+    t: "Подставьте своё",
+    d: "Замените подсвеченные переменные в фигурных скобках на свой продукт и аудиторию.",
+  },
+  {
+    t: "Копируйте и запускайте",
+    d: "Один клик — и промт в буфере. Вставьте в ChatGPT, Claude или Midjourney.",
+  },
 ];
 
 export default function HomePage() {
   return (
     <>
       {/* Hero */}
-      <section className="pt-24 pb-20 md:pt-36 md:pb-24">
-        <p className="text-[13px] font-semibold tracking-tight text-copper">
-          Каталог AI-промтов
-        </p>
-        <h1 className="font-display mt-5 max-w-3xl text-[44px] leading-[1.05] text-white md:text-[72px]">
-          Промты, которые работают. Проверено на практике.
+      <section className="pt-20 pb-16 md:pt-28 md:pb-20">
+        <p className="eyebrow">Каталог AI-промтов</p>
+        <h1 className="font-display mt-4 max-w-2xl text-[38px] leading-[1.04] text-ink md:text-[60px]">
+          Промты, которые работают
         </h1>
-        <p className="mt-6 max-w-xl text-lg font-light leading-relaxed text-fog">
+        <p className="mt-5 max-w-xl text-[16.5px] leading-relaxed text-muted">
           Отобранные промты для дизайнеров, маркетологов, UGC-креаторов и
-          продавцов маркетплейсов. Бесплатные и премиальные — с примерами
-          результата и копированием в один клик.
+          продавцов маркетплейсов. С примерами результата и копированием в один
+          клик.
         </p>
-        <div className="mt-10 flex flex-wrap items-center gap-4">
+        <div className="mt-8 flex flex-wrap items-center gap-3">
           <Link
             href={`/prompts/${CATEGORIES[0].slug}`}
-            className="rounded-full bg-white px-5 py-2.5 text-sm font-medium text-black transition-opacity hover:opacity-85"
+            className="rounded-chip bg-invert px-4 py-2.5 text-[13.5px] font-medium text-on-invert transition-opacity hover:opacity-85"
           >
-            Смотреть каталог
+            Открыть каталог
           </Link>
           <Link
             href="/tools"
-            className="rounded-full border border-white px-5 py-2.5 text-sm font-medium text-white transition-opacity hover:opacity-80"
+            className="rounded-chip border border-line-strong px-4 py-2.5 text-[13.5px] font-medium text-ink transition-colors hover:bg-surface"
           >
-            Полезные инструменты
+            Инструменты
           </Link>
         </div>
       </section>
 
       {/* Статистика */}
-      <section className="pb-24">
-        <div className="grid grid-cols-2 gap-px overflow-hidden rounded-[10px] border border-graphite bg-graphite sm:grid-cols-4">
+      <section className="pb-20">
+        <div className="grid grid-cols-2 gap-px overflow-hidden rounded-card border border-line bg-line sm:grid-cols-4">
           {STATS.map((s) => (
-            <div key={s.label} className="bg-onyx px-6 py-8 text-center">
-              <div className="font-display text-[36px] leading-none text-white md:text-[44px]">
+            <div key={s.label} className="bg-canvas px-5 py-6">
+              <div className="font-display text-[30px] leading-none text-ink">
                 {s.value}
               </div>
-              <div className="mt-2 text-[13px] text-fog">{s.label}</div>
+              <div className="mt-2 font-mono text-[11px] text-faint">
+                {s.label}
+              </div>
             </div>
           ))}
         </div>
       </section>
 
       {/* Категории */}
-      <section className="pb-24">
-        <h2 className="font-display text-[32px] text-white md:text-[44px]">
+      <section className="pb-20">
+        <h2 className="font-display text-[26px] text-ink md:text-[34px]">
           Четыре направления
         </h2>
-        <div className="mt-10 grid gap-4 sm:grid-cols-2">
+        <div className="mt-7 grid gap-3 sm:grid-cols-2">
           {CATEGORIES.map((c) => (
             <Link
               key={c.slug}
               href={`/prompts/${c.slug}`}
-              className="group rounded-[10px] border border-graphite bg-onyx p-6 transition-colors hover:border-slate"
+              className="group rounded-card border border-line bg-surface p-5 transition-colors hover:border-line-strong"
             >
-              <div className="flex items-center justify-between">
-                <h3 className="text-lg font-medium text-white">{c.nav}</h3>
+              <div className="flex items-center justify-between gap-3">
+                <h3 className="text-[15.5px] font-semibold tracking-[-0.015em] text-ink">
+                  {c.nav}
+                </h3>
                 <ArrowRight
-                  size={18}
-                  className="text-steel transition-transform group-hover:translate-x-1 group-hover:text-copper"
+                  size={15}
+                  className="shrink-0 text-faint transition-transform group-hover:translate-x-0.5 group-hover:text-accent"
                 />
               </div>
-              <p className="mt-2 text-sm leading-relaxed text-fog">
+              <p className="mt-2 text-[13.5px] leading-relaxed text-muted">
                 {c.description}
               </p>
-              <span className="mt-4 inline-block text-[13px] font-medium text-copper">
-                {countByCategory(c.slug)} промтов →
+              <span className="mt-3.5 inline-block font-mono text-[11px] text-accent">
+                {countByCategory(c.slug)} промтов
               </span>
             </Link>
           ))}
         </div>
       </section>
 
-      {/* Как это работает */}
-      <section className="pb-24">
-        <h2 className="font-display text-[32px] text-white md:text-[44px]">
+      {/* Как пользоваться */}
+      <section className="pb-20">
+        <h2 className="font-display text-[26px] text-ink md:text-[34px]">
           Как пользоваться
         </h2>
-        <div className="mt-10 grid gap-4 sm:grid-cols-3">
-          {[
-            {
-              n: "01",
-              t: "Выберите промт",
-              d: "Найдите нужную задачу в своём разделе — под каждой есть пример результата.",
-            },
-            {
-              n: "02",
-              t: "Подставьте своё",
-              d: "Замените {переменные} в фигурных скобках на свой продукт и аудиторию.",
-            },
-            {
-              n: "03",
-              t: "Копируйте и запускайте",
-              d: "Один клик — и промт в буфере. Вставьте в ChatGPT, Claude или Midjourney.",
-            },
-          ].map((step) => (
-            <div
-              key={step.n}
-              className="rounded-[10px] border border-graphite bg-onyx p-6"
-            >
-              <div className="font-display text-[22px] text-copper">
-                {step.n}
+        <div className="mt-7 grid gap-px overflow-hidden rounded-card border border-line bg-line sm:grid-cols-3">
+          {STEPS.map((step, i) => (
+            <div key={step.t} className="bg-canvas p-5">
+              <div className="font-mono text-[11px] text-accent">
+                {String(i + 1).padStart(2, "0")}
               </div>
-              <h3 className="mt-3 text-lg font-medium text-white">{step.t}</h3>
-              <p className="mt-2 text-sm leading-relaxed text-fog">{step.d}</p>
+              <h3 className="mt-2.5 text-[15px] font-semibold tracking-[-0.015em] text-ink">
+                {step.t}
+              </h3>
+              <p className="mt-1.5 text-[13.5px] leading-relaxed text-muted">
+                {step.d}
+              </p>
             </div>
           ))}
         </div>

@@ -30,39 +30,35 @@ export default async function CategoryPage({
   const freeCount = prompts.filter((p) => p.tier === "free").length;
 
   return (
-    <section className="pt-20 pb-24 md:pt-28">
-      <p className="text-[13px] font-semibold tracking-tight text-copper">
-        Каталог
-      </p>
-      <h1 className="font-display mt-4 text-[36px] text-white md:text-[52px]">
+    <section className="pt-16 pb-20 md:pt-20">
+      <p className="eyebrow">Каталог</p>
+      <h1 className="font-display mt-4 text-[30px] text-ink md:text-[44px]">
         {cat.title}
       </h1>
-      <p className="mt-4 max-w-xl text-lg font-light text-fog">
+      <p className="mt-4 max-w-xl text-[16px] leading-relaxed text-muted">
         {cat.description}
       </p>
 
-      <div className="mt-6 flex flex-wrap items-center gap-x-5 gap-y-2 text-sm text-fog">
+      <div className="mt-5 flex flex-wrap items-center gap-x-4 gap-y-2 font-mono text-[11.5px] text-faint">
         <span>
-          <span className="font-semibold text-white">{prompts.length}</span>{" "}
-          промтов
+          <span className="text-ink">{prompts.length}</span> промтов
         </span>
-        <span className="h-1 w-1 rounded-full bg-slate" />
+        <span className="text-line-strong">·</span>
         <span>
-          <span className="font-semibold text-white">{freeCount}</span>{" "}
-          бесплатно
+          <span className="text-ink">{freeCount}</span> бесплатно
         </span>
-        <span className="h-1 w-1 rounded-full bg-slate" />
-        <span>Копируются в один клик</span>
+        <span className="text-line-strong">·</span>
+        <span>копируются в один клик</span>
       </div>
 
       {prompts.length > 0 ? (
-        <div className="mt-14 grid gap-5 lg:grid-cols-2">
+        <div className="mt-10 grid items-start gap-3 lg:grid-cols-2">
           {prompts.map((p) => (
             <PromptCard key={p.id} prompt={p} />
           ))}
         </div>
       ) : (
-        <div className="mt-14 rounded-[10px] border border-graphite bg-onyx p-10 text-center text-sm text-fog">
+        <div className="mt-10 rounded-card border border-line bg-surface p-10 text-center text-[13.5px] text-muted">
           Промты для этого раздела скоро появятся.
         </div>
       )}

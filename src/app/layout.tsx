@@ -12,14 +12,21 @@ export const metadata: Metadata = {
     "Отобранные AI-промты для дизайнеров, маркетологов, UGC-креаторов и продавцов маркетплейсов.",
 };
 
+/*
+  Выставляем тему до первой отрисовки, иначе при сохранённом «светло»
+  страница успевает мигнуть тёмным. Скрипт крошечный и синхронный.
+*/
+const themeInit = `(function(){try{var t=localStorage.getItem("theme");if(t==="light"||t==="dark"){document.documentElement.setAttribute("data-theme",t)}}catch(e){}})()`;
+
 export default function RootLayout({
   children,
 }: Readonly<{ children: React.ReactNode }>) {
   return (
-    <html lang="ru">
+    <html lang="ru" suppressHydrationWarning>
       <head>
-        {/* Inter — UI-шрифт, Playfair Display — serif для заголовков (замена Ivy Presto).
-            Подключаем через <link>, а не next/font, чтобы сборка не требовала сети. */}
+        <script dangerouslySetInnerHTML={{ __html: themeInit }} />
+        {/* Inter — единственная гарнитура. Подключаем через <link>,
+            а не next/font, чтобы сборка не требовала сети. */}
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link
           rel="preconnect"
@@ -27,13 +34,13 @@ export default function RootLayout({
           crossOrigin="anonymous"
         />
         <link
-          href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Playfair+Display:wght@400;500&display=swap"
+          href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap"
           rel="stylesheet"
         />
       </head>
       <body className="min-h-screen flex flex-col antialiased">
         <Header />
-        <main className="flex-1 w-full max-w-[1216px] mx-auto px-5 md:px-8">
+        <main className="flex-1 w-full max-w-[1120px] mx-auto px-5 md:px-8">
           {children}
         </main>
         <Footer />

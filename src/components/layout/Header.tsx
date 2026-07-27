@@ -5,11 +5,12 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { Menu, X } from "lucide-react";
 import { CATEGORIES } from "@/lib/categories";
+import ThemeToggle from "@/components/ThemeToggle";
 
 const NAV = [
   { href: "/", label: "Главная" },
   ...CATEGORIES.map((c) => ({ href: `/prompts/${c.slug}`, label: c.nav })),
-  { href: "/tools", label: "Полезные инструменты" },
+  { href: "/tools", label: "Инструменты" },
 ];
 
 export default function Header() {
@@ -17,23 +18,24 @@ export default function Header() {
   const pathname = usePathname();
 
   return (
-    <header className="sticky top-0 z-50 border-b border-graphite bg-obsidian/90 backdrop-blur">
-      <div className="mx-auto flex h-16 max-w-[1216px] items-center justify-between px-5 md:px-8">
-        {/* Логотип */}
-        <Link href="/" className="font-display text-[22px] text-white">
-          Promp<span className="text-copper">Tom</span>
+    <header className="sticky top-0 z-50 border-b border-line bg-canvas/85 backdrop-blur-md">
+      <div className="mx-auto flex h-14 max-w-[1120px] items-center justify-between px-5 md:px-8">
+        <Link
+          href="/"
+          className="text-[17px] font-semibold tracking-[-0.025em] text-ink"
+        >
+          Promp<span className="text-accent">Tom</span>
         </Link>
 
-        {/* Десктоп-навигация */}
-        <nav className="hidden items-center gap-1 lg:flex">
+        <nav className="hidden items-center gap-0.5 lg:flex">
           {NAV.map((item) => (
             <Link
               key={item.href}
               href={item.href}
-              className={`rounded-[2px] px-2.5 py-1.5 text-sm transition-colors ${
+              className={`rounded-chip px-2.5 py-1.5 text-[13.5px] transition-colors ${
                 pathname === item.href
-                  ? "text-white"
-                  : "text-fog hover:text-white"
+                  ? "text-ink"
+                  : "text-muted hover:text-ink"
               }`}
             >
               {item.label}
@@ -41,35 +43,39 @@ export default function Header() {
           ))}
         </nav>
 
-        <div className="hidden items-center gap-3 lg:flex">
-          {/* Заглушка — в Фазе 3 здесь появится имя пользователя / профиль */}
+        <div className="hidden items-center gap-2 lg:flex">
+          <ThemeToggle />
           <Link
             href="/login"
-            className="rounded-full border border-white px-5 py-2.5 text-sm font-medium text-white transition-opacity hover:opacity-80"
+            className="rounded-chip bg-invert px-3.5 py-1.5 text-[13px] font-medium text-on-invert transition-opacity hover:opacity-85"
           >
             Войти
           </Link>
         </div>
 
-        {/* Мобильное меню */}
-        <button
-          className="text-bone lg:hidden"
-          onClick={() => setOpen(!open)}
-          aria-label={open ? "Закрыть меню" : "Открыть меню"}
-        >
-          {open ? <X size={22} /> : <Menu size={22} />}
-        </button>
+        <div className="flex items-center gap-2 lg:hidden">
+          <ThemeToggle />
+          <button
+            type="button"
+            className="inline-flex h-8 w-8 items-center justify-center rounded-chip border border-line text-muted transition-colors hover:text-ink"
+            onClick={() => setOpen(!open)}
+            aria-label={open ? "Закрыть меню" : "Открыть меню"}
+            aria-expanded={open}
+          >
+            {open ? <X size={15} /> : <Menu size={15} />}
+          </button>
+        </div>
       </div>
 
       {open && (
-        <nav className="border-t border-graphite bg-obsidian px-5 pb-6 pt-3 lg:hidden">
+        <nav className="border-t border-line bg-canvas px-5 pb-5 pt-2 lg:hidden">
           {NAV.map((item) => (
             <Link
               key={item.href}
               href={item.href}
               onClick={() => setOpen(false)}
-              className={`block py-2.5 text-[15px] ${
-                pathname === item.href ? "text-white" : "text-fog"
+              className={`block border-b border-line py-2.5 text-[14.5px] last:border-0 ${
+                pathname === item.href ? "text-ink" : "text-muted"
               }`}
             >
               {item.label}
@@ -78,7 +84,7 @@ export default function Header() {
           <Link
             href="/login"
             onClick={() => setOpen(false)}
-            className="mt-4 block w-full rounded-full border border-white py-2.5 text-center text-sm font-medium text-white"
+            className="mt-4 block w-full rounded-chip bg-invert py-2.5 text-center text-[13.5px] font-medium text-on-invert"
           >
             Войти
           </Link>
