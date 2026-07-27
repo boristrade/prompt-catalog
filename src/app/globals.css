@@ -133,6 +133,118 @@ summary::-webkit-details-marker {
   display: none;
 }
 
+/* ═══ Движение ═══════════════════════════════════════════════════════
+   Правила жанра: коротко (0.2–0.55 с), только прозрачность и небольшой
+   сдвиг, без пружин и подпрыгиваний. Анимация помогает понять, что
+   появилось, и никогда не задерживает работу с каталогом.
+   ═══════════════════════════════════════════════════════════════════ */
+
+/* Плавность прокрутки к якорям промтов */
+html {
+  scroll-behavior: smooth;
+}
+
+@keyframes rise {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@keyframes slide-down {
+  from {
+    opacity: 0;
+    transform: translateY(-6px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@keyframes pop {
+  0% {
+    transform: scale(0.7);
+  }
+  55% {
+    transform: scale(1.12);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+
+/* Появление первого экрана: каскад сверху вниз */
+.rise {
+  animation: rise 0.55s cubic-bezier(0.22, 0.61, 0.36, 1) both;
+}
+.rise-1 { animation-delay: 0.05s; }
+.rise-2 { animation-delay: 0.11s; }
+.rise-3 { animation-delay: 0.17s; }
+.rise-4 { animation-delay: 0.23s; }
+
+.slide-down {
+  animation: slide-down 0.22s cubic-bezier(0.22, 0.61, 0.36, 1) both;
+}
+
+.pop {
+  animation: pop 0.32s cubic-bezier(0.22, 0.61, 0.36, 1);
+}
+
+/* Раскрытие примера результата */
+details[open] .example-body {
+  animation: rise 0.28s cubic-bezier(0.22, 0.61, 0.36, 1) both;
+}
+
+/* Появление при прокрутке.
+   Начальное состояние ставим только когда есть JS (html[data-js]) —
+   иначе без скриптов контент остался бы невидимым. */
+html[data-js] .reveal {
+  opacity: 0;
+  transform: translateY(10px);
+  transition:
+    opacity 0.5s ease,
+    transform 0.5s cubic-bezier(0.22, 0.61, 0.36, 1);
+}
+html[data-js] .reveal.shown {
+  opacity: 1;
+  transform: none;
+}
+
+/* Переключение темы: краткий кроссфейд цветов вместо резкого скачка.
+   Класс живёт ~300 мс, только на время переключения. */
+html.theme-switching,
+html.theme-switching *,
+html.theme-switching *::before,
+html.theme-switching *::after {
+  transition:
+    background-color 0.28s ease,
+    border-color 0.28s ease,
+    color 0.28s ease !important;
+}
+
+/* Кому движение мешает — отдаём статику. */
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+  }
+  html[data-js] .reveal {
+    opacity: 1 !important;
+    transform: none !important;
+  }
+}
+
 /* Видимый фокус для клавиатуры */
 :focus-visible {
   outline: 2px solid var(--c-accent);

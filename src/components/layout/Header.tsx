@@ -57,7 +57,7 @@ export default function Header() {
           <ThemeToggle />
           <button
             type="button"
-            className="inline-flex h-8 w-8 items-center justify-center rounded-chip border border-line text-muted transition-colors hover:text-ink"
+            className="inline-flex h-8 w-8 items-center justify-center rounded-chip border border-line text-muted transition-colors duration-200 hover:text-ink active:scale-95"
             onClick={() => setOpen(!open)}
             aria-label={open ? "Закрыть меню" : "Открыть меню"}
             aria-expanded={open}
@@ -68,7 +68,7 @@ export default function Header() {
       </div>
 
       {open && (
-        <nav className="border-t border-line bg-canvas px-5 pb-5 pt-2 lg:hidden">
+        <nav className="slide-down border-t border-line bg-canvas px-5 pb-5 pt-2 lg:hidden">
           {NAV.map((item) => (
             <Link
               key={item.href}

@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { Check, Copy } from "lucide-react";
+import { Check, ChevronDown, Copy } from "lucide-react";
 import type { Prompt } from "@/lib/prompts";
 
 /*
@@ -37,7 +37,7 @@ export default function PromptCard({ prompt }: { prompt: Prompt }) {
   return (
     <article
       id={prompt.id}
-      className="flex flex-col rounded-card border border-line bg-surface p-5 transition-colors hover:border-line-strong"
+      className="flex flex-col rounded-card border border-line bg-surface p-5 transition-[border-color,transform] duration-200 ease-out hover:-translate-y-0.5 hover:border-line-strong"
     >
       <div className="flex items-start justify-between gap-3">
         <h3 className="text-[15.5px] font-semibold leading-snug tracking-[-0.015em] text-ink">
@@ -82,23 +82,27 @@ export default function PromptCard({ prompt }: { prompt: Prompt }) {
           onClick={copy}
           title={copied ? "Скопировано" : "Скопировать промт"}
           aria-label={copied ? "Скопировано" : "Скопировать промт"}
-          className={`absolute right-2.5 top-2.5 inline-flex h-7 w-7 items-center justify-center rounded-chip transition-colors ${
+          className={`absolute right-2.5 top-2.5 inline-flex h-7 w-7 items-center justify-center rounded-chip transition-colors duration-200 active:scale-90 ${
             copied
               ? "bg-accent-soft text-accent"
               : "border border-line-strong bg-surface text-muted hover:text-ink"
           }`}
         >
-          {copied ? <Check size={13} /> : <Copy size={13} />}
+          {copied ? <Check size={13} className="pop" /> : <Copy size={13} />}
         </button>
       </div>
 
       {/* Пример результата */}
       <details className="group mt-3.5">
-        <summary className="cursor-pointer select-none font-mono text-[11.5px] text-muted transition-colors hover:text-ink [&::-webkit-details-marker]:hidden">
+        <summary className="inline-flex cursor-pointer select-none items-center gap-1.5 font-mono text-[11.5px] text-muted transition-colors duration-200 hover:text-ink">
+          <ChevronDown
+            size={13}
+            className="shrink-0 transition-transform duration-300 ease-out group-open:rotate-180"
+          />
           <span className="group-open:hidden">Показать пример результата</span>
           <span className="hidden group-open:inline">Скрыть пример</span>
         </summary>
-        <p className="mt-2.5 whitespace-pre-wrap rounded-card border border-line bg-sunken p-3.5 text-[12.5px] leading-relaxed text-muted">
+        <p className="example-body mt-2.5 whitespace-pre-wrap rounded-card border border-line bg-sunken p-3.5 text-[12.5px] leading-relaxed text-muted">
           {prompt.example}
         </p>
       </details>

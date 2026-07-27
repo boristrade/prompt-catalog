@@ -34,8 +34,15 @@ export default function ThemeToggle({
 
   function toggle() {
     const next: Theme = theme === "light" ? "dark" : "light";
+    const root = document.documentElement;
+
+    // Класс включает кроссфейд цветов и снимается сразу после перехода,
+    // чтобы не тормозить остальные анимации на странице.
+    root.classList.add("theme-switching");
+    window.setTimeout(() => root.classList.remove("theme-switching"), 320);
+
     setTheme(next);
-    document.documentElement.setAttribute("data-theme", next);
+    root.setAttribute("data-theme", next);
     try {
       localStorage.setItem("theme", next);
     } catch {
@@ -50,12 +57,12 @@ export default function ThemeToggle({
       aria-label={
         theme === "light" ? "Включить тёмную тему" : "Включить светлую тему"
       }
-      className={`inline-flex h-8 w-8 items-center justify-center rounded-chip border border-line text-muted transition-colors hover:border-line-strong hover:text-ink ${className}`}
+      className={`inline-flex h-8 w-8 items-center justify-center rounded-chip border border-line text-muted transition-colors duration-200 hover:border-line-strong hover:text-ink active:scale-95 ${className}`}
     >
       {theme === "light" ? (
-        <Moon size={14} />
+        <Moon size={14} className="pop" />
       ) : theme === "dark" ? (
-        <Sun size={14} />
+        <Sun size={14} className="pop" />
       ) : (
         <span className="block h-3.5 w-3.5" />
       )}

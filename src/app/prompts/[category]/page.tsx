@@ -2,6 +2,7 @@ import { notFound } from "next/navigation";
 import { CATEGORIES, getCategory } from "@/lib/categories";
 import { getPromptsByCategory } from "@/lib/prompts";
 import PromptCard from "@/components/PromptCard";
+import Reveal from "@/components/Reveal";
 
 export function generateStaticParams() {
   return CATEGORIES.map((c) => ({ category: c.slug }));
@@ -31,15 +32,15 @@ export default async function CategoryPage({
 
   return (
     <section className="pt-16 pb-20 md:pt-20">
-      <p className="eyebrow">Каталог</p>
-      <h1 className="font-display mt-4 text-[30px] text-ink md:text-[44px]">
+      <p className="eyebrow rise">Каталог</p>
+      <h1 className="font-display rise rise-1 mt-4 text-[30px] text-ink md:text-[44px]">
         {cat.title}
       </h1>
-      <p className="mt-4 max-w-xl text-[16px] leading-relaxed text-muted">
+      <p className="rise rise-2 mt-4 max-w-xl text-[16px] leading-relaxed text-muted">
         {cat.description}
       </p>
 
-      <div className="mt-5 flex flex-wrap items-center gap-x-4 gap-y-2 font-mono text-[11.5px] text-faint">
+      <div className="rise rise-3 mt-5 flex flex-wrap items-center gap-x-4 gap-y-2 font-mono text-[11.5px] text-faint">
         <span>
           <span className="text-ink">{prompts.length}</span> промтов
         </span>
@@ -53,8 +54,12 @@ export default async function CategoryPage({
 
       {prompts.length > 0 ? (
         <div className="mt-10 grid items-start gap-3 lg:grid-cols-2">
-          {prompts.map((p) => (
-            <PromptCard key={p.id} prompt={p} />
+          {prompts.map((p, i) => (
+            // Каскад только внутри пары соседних карточек — иначе нижние
+            // ряды ждали бы слишком долго.
+            <Reveal key={p.id} delay={(i % 2) * 70}>
+              <PromptCard prompt={p} />
+            </Reveal>
           ))}
         </div>
       ) : (

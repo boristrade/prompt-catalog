@@ -16,7 +16,7 @@ export const metadata: Metadata = {
   Выставляем тему до первой отрисовки, иначе при сохранённом «светло»
   страница успевает мигнуть тёмным. Скрипт крошечный и синхронный.
 */
-const themeInit = `(function(){try{var t=localStorage.getItem("theme");if(t==="light"||t==="dark"){document.documentElement.setAttribute("data-theme",t)}}catch(e){}})()`;
+const themeInit = `(function(){var d=document.documentElement;d.setAttribute("data-js","");try{var t=localStorage.getItem("theme");if(t==="light"||t==="dark"){d.setAttribute("data-theme",t)}}catch(e){}})()`;
 
 export default function RootLayout({
   children,
