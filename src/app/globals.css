@@ -1,10 +1,10 @@
 @import "tailwindcss";
 
 /*
-  Дизайн-система «Graphite».
-  Волосяные границы, графитовые поверхности, плотная типографика Inter.
-  Единственный акцент — индиго, и только в мелочах: рубриках, метках,
-  переменных промта. Крупные плоскости он никогда не заливает.
+  Дизайн-система «Violet».
+  Тёмная фиолетово-чёрная база, единственный акцент — фиолетовый градиент.
+  Градиент работает на главных действиях и смысловых акцентах: кнопка,
+  часть заголовка, иконки категорий. Обычные поверхности остаются тихими.
 
   Две темы: по умолчанию системная, пользователь переключает вручную —
   выбор пишется в data-theme на <html> и в localStorage.
@@ -21,32 +21,35 @@
   --color-faint: var(--c-faint);
   --color-accent: var(--c-accent);
   --color-accent-soft: var(--c-accent-soft);
+  --color-violet: var(--c-violet);
   --color-invert: var(--c-invert);
   --color-on-invert: var(--c-on-invert);
 
   --font-sans: "Inter", ui-sans-serif, system-ui, -apple-system, sans-serif;
   --font-mono: ui-monospace, "SF Mono", SFMono-Regular, Menlo, Consolas, monospace;
 
-  --radius-card: 6px;
-  --radius-chip: 4px;
+  --radius-card: 12px;
+  --radius-chip: 8px;
 }
 
 /* ── Тёмная тема (база) ───────────────────────────────────────────── */
 :root {
   color-scheme: dark;
-  --c-canvas: #08090a;
-  --c-surface: #0e0f12;
-  --c-sunken: #0a0b0d;
-  --c-line: #1c1e22;
-  --c-line-strong: #26282e;
-  --c-ink: #f4f5f7;
-  --c-muted: #8b8d98;
-  /* Мелкие подписи набраны этим цветом — держим контраст не ниже 4.5:1 */
-  --c-faint: #7a7c86;
-  --c-accent: #8b9bff;
-  --c-accent-soft: rgba(139, 155, 255, 0.13);
-  --c-invert: #f4f5f7;
-  --c-on-invert: #08090a;
+  --c-canvas: #09090f;
+  --c-surface: #101019;
+  --c-sunken: #0c0c14;
+  --c-line: #1c1c2b;
+  --c-line-strong: #2b2b40;
+  --c-ink: #f5f5fa;
+  --c-muted: #9d9db4;
+  --c-faint: #7c7c95;
+  --c-accent: #a78bfa;
+  --c-accent-soft: rgba(139, 92, 246, 0.14);
+  --c-violet: #8b5cf6;
+  --c-invert: #f5f5fa;
+  --c-on-invert: #09090f;
+  --grad: linear-gradient(115deg, #7c3aed 0%, #a855f7 100%);
+  --glow: rgba(124, 58, 237, 0.28);
 }
 
 /* ── Светлая тема ─────────────────────────────────────────────────── */
@@ -54,50 +57,59 @@
   :root:not([data-theme="dark"]) {
     color-scheme: light;
     --c-canvas: #ffffff;
-    --c-surface: #fcfcfd;
-    --c-sunken: #fafafb;
-    --c-line: #e8e9ec;
-    --c-line-strong: #dcdde1;
-    --c-ink: #101114;
-    --c-muted: #63656f;
-    --c-faint: #75777f;
-    --c-accent: #4a5bd4;
-    --c-accent-soft: rgba(74, 91, 212, 0.09);
-    --c-invert: #101114;
+    --c-surface: #fbfaff;
+    --c-sunken: #f6f5fc;
+    --c-line: #eae8f5;
+    --c-line-strong: #dcd9ec;
+    --c-ink: #121220;
+    --c-muted: #5c5c78;
+    --c-faint: #7b7b96;
+    --c-accent: #6d28d9;
+    --c-accent-soft: rgba(124, 58, 237, 0.09);
+    --c-violet: #7c3aed;
+    --c-invert: #121220;
     --c-on-invert: #ffffff;
+    --grad: linear-gradient(115deg, #7c3aed 0%, #a855f7 100%);
+    --glow: rgba(124, 58, 237, 0.14);
   }
 }
 
 :root[data-theme="light"] {
   color-scheme: light;
   --c-canvas: #ffffff;
-  --c-surface: #fcfcfd;
-  --c-sunken: #fafafb;
-  --c-line: #e8e9ec;
-  --c-line-strong: #dcdde1;
-  --c-ink: #101114;
-  --c-muted: #63656f;
-  --c-faint: #75777f;
-  --c-accent: #4a5bd4;
-  --c-accent-soft: rgba(74, 91, 212, 0.09);
-  --c-invert: #101114;
+  --c-surface: #fbfaff;
+  --c-sunken: #f6f5fc;
+  --c-line: #eae8f5;
+  --c-line-strong: #dcd9ec;
+  --c-ink: #121220;
+  --c-muted: #5c5c78;
+  --c-faint: #7b7b96;
+  --c-accent: #6d28d9;
+  --c-accent-soft: rgba(124, 58, 237, 0.09);
+  --c-violet: #7c3aed;
+  --c-invert: #121220;
   --c-on-invert: #ffffff;
+  --grad: linear-gradient(115deg, #7c3aed 0%, #a855f7 100%);
+  --glow: rgba(124, 58, 237, 0.14);
 }
 
 :root[data-theme="dark"] {
   color-scheme: dark;
-  --c-canvas: #08090a;
-  --c-surface: #0e0f12;
-  --c-sunken: #0a0b0d;
-  --c-line: #1c1e22;
-  --c-line-strong: #26282e;
-  --c-ink: #f4f5f7;
-  --c-muted: #8b8d98;
-  --c-faint: #7a7c86;
-  --c-accent: #8b9bff;
-  --c-accent-soft: rgba(139, 155, 255, 0.13);
-  --c-invert: #f4f5f7;
-  --c-on-invert: #08090a;
+  --c-canvas: #09090f;
+  --c-surface: #101019;
+  --c-sunken: #0c0c14;
+  --c-line: #1c1c2b;
+  --c-line-strong: #2b2b40;
+  --c-ink: #f5f5fa;
+  --c-muted: #9d9db4;
+  --c-faint: #7c7c95;
+  --c-accent: #a78bfa;
+  --c-accent-soft: rgba(139, 92, 246, 0.14);
+  --c-violet: #8b5cf6;
+  --c-invert: #f5f5fa;
+  --c-on-invert: #09090f;
+  --grad: linear-gradient(115deg, #7c3aed 0%, #a855f7 100%);
+  --glow: rgba(124, 58, 237, 0.28);
 }
 
 body {
@@ -109,14 +121,43 @@ body {
   -webkit-font-smoothing: antialiased;
 }
 
-/* Заголовки: плотный Inter с отрицательным трекингом — почерк жанра */
+/* Заголовки: плотный Inter с отрицательным трекингом */
 .font-display {
   font-family: var(--font-sans);
-  font-weight: 640;
-  letter-spacing: -0.032em;
+  font-weight: 700;
+  letter-spacing: -0.03em;
 }
 
-/* Служебная рубрика: моно, капитель, акцент */
+/* ═══ Градиент — единственный акцент ═════════════════════════════════ */
+
+/* Заливка: главные кнопки и активные состояния */
+.grad-fill {
+  background-image: var(--grad);
+  color: #fff;
+}
+
+/* Градиентный текст — только для части заголовка */
+.grad-text {
+  background-image: var(--grad);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+/* Мягкое свечение под первым экраном.
+   По горизонтали не выходим за контейнер — иначе на узком экране
+   появляется горизонтальная прокрутка. */
+.glow::before {
+  content: "";
+  position: absolute;
+  inset: -15% 0 auto 0;
+  height: 380px;
+  background: radial-gradient(closest-side, var(--glow), transparent 72%);
+  pointer-events: none;
+  z-index: 0;
+}
+
+/* Служебная рубрика */
 .eyebrow {
   font-family: var(--font-mono);
   font-size: 11px;
@@ -134,12 +175,9 @@ summary::-webkit-details-marker {
 }
 
 /* ═══ Движение ═══════════════════════════════════════════════════════
-   Правила жанра: коротко (0.2–0.55 с), только прозрачность и небольшой
-   сдвиг, без пружин и подпрыгиваний. Анимация помогает понять, что
-   появилось, и никогда не задерживает работу с каталогом.
+   Коротко (0.2–0.55 с), только прозрачность и небольшой сдвиг.
    ═══════════════════════════════════════════════════════════════════ */
 
-/* Плавность прокрутки к якорям промтов */
 html {
   scroll-behavior: smooth;
 }
@@ -178,7 +216,6 @@ html {
   }
 }
 
-/* Появление первого экрана: каскад сверху вниз */
 .rise {
   animation: rise 0.55s cubic-bezier(0.22, 0.61, 0.36, 1) both;
 }
@@ -195,14 +232,11 @@ html {
   animation: pop 0.32s cubic-bezier(0.22, 0.61, 0.36, 1);
 }
 
-/* Раскрытие примера результата */
 details[open] .example-body {
   animation: rise 0.28s cubic-bezier(0.22, 0.61, 0.36, 1) both;
 }
 
-/* Появление при прокрутке.
-   Начальное состояние ставим только когда есть JS (html[data-js]) —
-   иначе без скриптов контент остался бы невидимым. */
+/* Появление при прокрутке. Скрытое состояние — только при наличии JS. */
 html[data-js] .reveal {
   opacity: 0;
   transform: translateY(10px);
@@ -215,8 +249,7 @@ html[data-js] .reveal.shown {
   transform: none;
 }
 
-/* Переключение темы: краткий кроссфейд цветов вместо резкого скачка.
-   Класс живёт ~300 мс, только на время переключения. */
+/* Переключение темы: краткий кроссфейд цветов. */
 html.theme-switching,
 html.theme-switching *,
 html.theme-switching *::before,
@@ -225,6 +258,18 @@ html.theme-switching *::after {
     background-color 0.28s ease,
     border-color 0.28s ease,
     color 0.28s ease !important;
+}
+
+/* Видимый фокус для клавиатуры */
+:focus-visible {
+  outline: 2px solid var(--c-violet);
+  outline-offset: 2px;
+  border-radius: 4px;
+}
+
+::selection {
+  background: var(--c-violet);
+  color: #fff;
 }
 
 /* Кому движение мешает — отдаём статику. */
@@ -243,16 +288,4 @@ html.theme-switching *::after {
     opacity: 1 !important;
     transform: none !important;
   }
-}
-
-/* Видимый фокус для клавиатуры */
-:focus-visible {
-  outline: 2px solid var(--c-accent);
-  outline-offset: 2px;
-  border-radius: 2px;
-}
-
-::selection {
-  background: var(--c-accent);
-  color: var(--c-canvas);
 }

@@ -7,11 +7,29 @@ import { Menu, X } from "lucide-react";
 import { CATEGORIES } from "@/lib/categories";
 import ThemeToggle from "@/components/ThemeToggle";
 
+// В шапке нужны короткие подписи: «Для дизайнеров» и т.п. переносят строку.
 const NAV = [
   { href: "/", label: "Главная" },
-  ...CATEGORIES.map((c) => ({ href: `/prompts/${c.slug}`, label: c.nav })),
+  ...CATEGORIES.map((c) => ({
+    href: `/prompts/${c.slug}`,
+    label: c.nav.replace(/^Для /, ""),
+    full: c.nav,
+  })),
   { href: "/tools", label: "Инструменты" },
 ];
+
+function Logo() {
+  return (
+    <Link href="/" className="flex items-center gap-2.5">
+      <span className="grad-fill flex h-7 w-7 items-center justify-center rounded-[7px] text-[14px] font-bold">
+        P
+      </span>
+      <span className="text-[17px] font-bold tracking-[-0.02em] text-ink">
+        PrompTom
+      </span>
+    </Link>
+  );
+}
 
 export default function Header() {
   const [open, setOpen] = useState(false);
@@ -19,20 +37,15 @@ export default function Header() {
 
   return (
     <header className="sticky top-0 z-50 border-b border-line bg-canvas/85 backdrop-blur-md">
-      <div className="mx-auto flex h-14 max-w-[1120px] items-center justify-between px-5 md:px-8">
-        <Link
-          href="/"
-          className="text-[17px] font-semibold tracking-[-0.025em] text-ink"
-        >
-          Promp<span className="text-accent">Tom</span>
-        </Link>
+      <div className="mx-auto flex h-16 max-w-[1120px] items-center justify-between px-5 md:px-8">
+        <Logo />
 
-        <nav className="hidden items-center gap-0.5 lg:flex">
+        <nav className="hidden items-center gap-1 lg:flex">
           {NAV.map((item) => (
             <Link
               key={item.href}
               href={item.href}
-              className={`rounded-chip px-2.5 py-1.5 text-[13.5px] transition-colors ${
+              className={`whitespace-nowrap rounded-chip px-2.5 py-1.5 text-[13.5px] transition-colors duration-200 ${
                 pathname === item.href
                   ? "text-ink"
                   : "text-muted hover:text-ink"
@@ -43,13 +56,19 @@ export default function Header() {
           ))}
         </nav>
 
-        <div className="hidden items-center gap-2 lg:flex">
+        <div className="hidden items-center gap-2.5 lg:flex">
           <ThemeToggle />
           <Link
             href="/login"
-            className="rounded-chip bg-invert px-3.5 py-1.5 text-[13px] font-medium text-on-invert transition-opacity hover:opacity-85"
+            className="rounded-chip border border-line-strong px-4 py-2 text-[13px] font-medium text-ink transition-[background-color,transform] duration-200 hover:bg-surface active:scale-[0.97]"
           >
             Войти
+          </Link>
+          <Link
+            href="/login"
+            className="grad-fill rounded-chip px-4 py-2 text-[13px] font-semibold shadow-[0_6px_20px_-8px_var(--glow)] transition-[opacity,transform] duration-200 hover:opacity-90 active:scale-[0.97]"
+          >
+            Регистрация
           </Link>
         </div>
 
@@ -57,12 +76,12 @@ export default function Header() {
           <ThemeToggle />
           <button
             type="button"
-            className="inline-flex h-8 w-8 items-center justify-center rounded-chip border border-line text-muted transition-colors duration-200 hover:text-ink active:scale-95"
+            className="inline-flex h-9 w-9 items-center justify-center rounded-chip border border-line text-muted transition-colors duration-200 hover:text-ink active:scale-95"
             onClick={() => setOpen(!open)}
             aria-label={open ? "Закрыть меню" : "Открыть меню"}
             aria-expanded={open}
           >
-            {open ? <X size={15} /> : <Menu size={15} />}
+            {open ? <X size={16} /> : <Menu size={16} />}
           </button>
         </div>
       </div>
@@ -74,19 +93,20 @@ export default function Header() {
               key={item.href}
               href={item.href}
               onClick={() => setOpen(false)}
-              className={`block border-b border-line py-2.5 text-[14.5px] last:border-0 ${
+              className={`block border-b border-line py-3 text-[14.5px] last:border-0 ${
                 pathname === item.href ? "text-ink" : "text-muted"
               }`}
             >
-              {item.label}
+              {/* В выпадающем меню места хватает — показываем полное название */}
+              {"full" in item ? item.full : item.label}
             </Link>
           ))}
           <Link
             href="/login"
             onClick={() => setOpen(false)}
-            className="mt-4 block w-full rounded-chip bg-invert py-2.5 text-center text-[13.5px] font-medium text-on-invert"
+            className="grad-fill mt-4 block w-full rounded-chip py-2.5 text-center text-[13.5px] font-semibold"
           >
-            Войти
+            Регистрация
           </Link>
         </nav>
       )}
