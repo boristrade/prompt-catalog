@@ -1,14 +1,19 @@
 import Link from "next/link";
 import { redirect } from "next/navigation";
-import { isSupabaseConfigured } from "@/lib/supabase/config";
+import {
+  isGoogleAuthEnabled,
+  isSupabaseConfigured,
+} from "@/lib/supabase/config";
 import { getCurrentUser } from "@/lib/supabase/server";
 import GoogleSignIn from "@/components/GoogleSignIn";
+import EmailSignIn from "@/components/EmailSignIn";
 
 export const metadata = { title: "Вход" };
 
 const ERRORS: Record<string, string> = {
   config: "Авторизация ещё не настроена. Загляните позже.",
-  exchange: "Вход не завершился. Попробуйте ещё раз.",
+  exchange:
+    "Ссылка не сработала: она одноразовая и живёт час. Запросите новую.",
 };
 
 export default async function LoginPage({
@@ -37,11 +42,25 @@ export default async function LoginPage({
 
           <div className="mt-6">
             {configured ? (
-              <GoogleSignIn next={safeNext} />
+              <>
+                {/* Google — сверху, если настроен: он в один клик.
+                    Почта работает всегда и потому идёт как основной путь. */}
+                {isGoogleAuthEnabled() && (
+                  <div className="mb-5">
+                    <GoogleSignIn next={safeNext} />
+                    <div className="mt-5 flex items-center gap-3">
+                      <span className="h-px flex-1 bg-line" />
+                      <span className="text-[12px] text-faint">или</span>
+                      <span className="h-px flex-1 bg-line" />
+                    </div>
+                  </div>
+                )}
+                <EmailSignIn next={safeNext} />
+              </>
             ) : (
               <div className="rounded-chip border border-dashed border-line-strong px-4 py-4 text-center text-[13px] leading-relaxed text-muted">
-                Вход через Google подключается — осталось задать ключи Supabase
-                в переменных окружения.
+                Вход подключается — осталось задать ключи Supabase в переменных
+                окружения.
               </div>
             )}
           </div>

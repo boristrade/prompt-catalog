@@ -12,6 +12,16 @@ export function isSupabaseConfigured(): boolean {
   return SUPABASE_URL.length > 0 && SUPABASE_ANON_KEY.length > 0;
 }
 
+/*
+  Вход по ссылке на почту работает в Supabase сразу, а Google требует
+  отдельной настройки в Google Cloud. Узнать со стороны сайта, включён ли
+  провайдер, нельзя — поэтому спрашиваем явным флагом. Иначе кнопка Google
+  висела бы всегда и падала бы с «Unsupported provider».
+*/
+export function isGoogleAuthEnabled(): boolean {
+  return process.env.NEXT_PUBLIC_GOOGLE_AUTH === "true";
+}
+
 /** Базовый адрес сайта — нужен для redirect после входа через Google. */
 export function siteUrl(): string {
   const explicit = process.env.NEXT_PUBLIC_SITE_URL;
