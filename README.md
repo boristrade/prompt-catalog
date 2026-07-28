@@ -1,4 +1,4 @@
-# PromptVault — каталог AI-промтов
+# PrompTom — каталог AI-промтов
 
 Продакшн-каталог AI-промтов: Next.js (App Router) + TypeScript + Tailwind CSS v4, Supabase (Postgres, Auth, Storage, RLS), оплата через ЮKassa.
 
@@ -10,15 +10,79 @@ cp .env.example .env.local   # заполните ключи
 npm run dev                  # http://localhost:3000
 ```
 
+Без ключей Supabase сайт тоже работает: каталог статичный, авторизация просто выключена и на странице входа висит пояснение.
+
+## Вход через Google
+
+Код авторизации уже в проекте. Чтобы кнопка заработала, нужно настроить два внешних сервиса.
+
+### 1. Google Cloud
+
+**APIs & Services → Credentials → Create credentials → OAuth client ID**, тип **Web application**.
+
+В **Authorized redirect URIs** добавьте адрес обратного вызова Supabase:
+
+```
+https://<ваш-проект>.supabase.co/auth/v1/callback
+```
+
+Сохраните **Client ID** и **Client secret**.
+
+### 2. Supabase
+
+**Authentication → Providers → Google**: включите и вставьте Client ID и Client secret из предыдущего шага.
+
+**Authentication → URL Configuration**:
+
+| Поле | Значение |
+|---|---|
+| Site URL | адрес прода: `https://prompt-catalog-alpha.vercel.app` |
+| Redirect URLs | `http://localhost:3000/auth/callback` и `https://<домен>/auth/callback` |
+
+### 3. Переменные окружения
+
+В `.env.local` (локально) и в переменных проекта на Vercel:
+
+```
+NEXT_PUBLIC_SUPABASE_URL=https://<проект>.supabase.co
+NEXT_PUBLIC_SUPABASE_ANON_KEY=<anon-ключ>
+NEXT_PUBLIC_SITE_URL=https://prompt-catalog-alpha.vercel.app
+```
+
+`anon`-ключ публичный, его можно отдавать в браузер. `SUPABASE_SERVICE_ROLE_KEY` в авторизации не участвует и на клиент попадать не должен.
+
+### Как это устроено
+
+| Файл | Роль |
+|---|---|
+| `src/lib/supabase/client.ts` | клиент для браузера |
+| `src/lib/supabase/server.ts` | серверный клиент, читает сессию из cookie |
+| `src/middleware.ts` | продлевает сессию, иначе вход слетал бы через час |
+| `src/app/auth/callback/route.ts` | меняет код Google на сессию |
+| `src/app/auth/signout/route.ts` | выход, только POST |
+
+Пользователь проверяется через `getUser()`, а не `getSession()`: первый подтверждает токен на сервере Supabase, второму на сервере доверять нельзя.
+
 ## Структура
 
 ```
 src/
   app/            — страницы (App Router)
   components/     — UI-компоненты
-  lib/            — категории, клиенты Supabase (Фаза 3), оплата (Фаза 5)
+  lib/            — категории, промты, инструменты, клиенты Supabase
 supabase/
   migrations/     — SQL-миграции (Фаза 2)
 ```
 
-Полная инструкция по Supabase, миграциям, ЮKassa и деплою на Vercel будет дописана в Фазе 7.
+## Деплой
+
+Проект `prompt-catalog` на Vercel связан с этим репозиторием напрямую, поэтому публикация идёт сама:
+
+| Событие | Что происходит |
+|---|---|
+| мёрж в `main` | продакшн-деплой на `https://prompt-catalog-alpha.vercel.app` |
+| пуш в ветку с pull request | превью-деплой, ссылка появляется в PR |
+
+Ни токенов, ни GitHub Actions для этого не нужно. Раньше здесь лежал `deploy.yml`, который через Vercel CLI обновлял отдельный проект `promptvault`; он удалён — интеграция с git делает то же самое надёжнее.
+
+Переменные окружения задаются в настройках проекта на Vercel (**Settings → Environment Variables**), а не в репозитории.

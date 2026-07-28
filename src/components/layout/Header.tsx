@@ -6,6 +6,7 @@ import { usePathname } from "next/navigation";
 import { Menu, X } from "lucide-react";
 import { CATEGORIES } from "@/lib/categories";
 import ThemeToggle from "@/components/ThemeToggle";
+import UserMenu, { type SessionUser } from "@/components/layout/UserMenu";
 
 // В шапке нужны короткие подписи: «Для дизайнеров» и т.п. переносят строку.
 const NAV = [
@@ -31,7 +32,7 @@ function Logo() {
   );
 }
 
-export default function Header() {
+export default function Header({ user }: { user: SessionUser | null }) {
   const [open, setOpen] = useState(false);
   const pathname = usePathname();
 
@@ -58,18 +59,24 @@ export default function Header() {
 
         <div className="hidden items-center gap-2.5 lg:flex">
           <ThemeToggle />
-          <Link
-            href="/login"
-            className="rounded-chip border border-line-strong px-4 py-2 text-[13px] font-medium text-ink transition-[background-color,transform] duration-200 hover:bg-surface active:scale-[0.97]"
-          >
-            Войти
-          </Link>
-          <Link
-            href="/login"
-            className="grad-fill rounded-chip px-4 py-2 text-[13px] font-semibold shadow-[0_6px_20px_-8px_var(--glow)] transition-[opacity,transform] duration-200 hover:opacity-90 active:scale-[0.97]"
-          >
-            Регистрация
-          </Link>
+          {user ? (
+            <UserMenu user={user} />
+          ) : (
+            <>
+              <Link
+                href="/login"
+                className="rounded-chip border border-line-strong px-4 py-2 text-[13px] font-medium text-ink transition-[background-color,transform] duration-200 hover:bg-surface active:scale-[0.97]"
+              >
+                Войти
+              </Link>
+              <Link
+                href="/login"
+                className="grad-fill rounded-chip px-4 py-2 text-[13px] font-semibold shadow-[0_6px_20px_-8px_var(--glow)] transition-[opacity,transform] duration-200 hover:opacity-90 active:scale-[0.97]"
+              >
+                Регистрация
+              </Link>
+            </>
+          )}
         </div>
 
         <div className="flex items-center gap-2 lg:hidden">
@@ -101,13 +108,33 @@ export default function Header() {
               {"full" in item ? item.full : item.label}
             </Link>
           ))}
-          <Link
-            href="/login"
-            onClick={() => setOpen(false)}
-            className="grad-fill mt-4 block w-full rounded-chip py-2.5 text-center text-[13.5px] font-semibold"
-          >
-            Регистрация
-          </Link>
+
+          {user ? (
+            <div className="mt-4 rounded-card border border-line p-3">
+              <div className="truncate text-[13px] font-medium text-ink">
+                {user.name || "Аккаунт"}
+              </div>
+              <div className="mt-0.5 truncate text-[12px] text-muted">
+                {user.email}
+              </div>
+              <form action="/auth/signout" method="post" className="mt-3">
+                <button
+                  type="submit"
+                  className="w-full rounded-chip border border-line-strong py-2 text-[13px] font-medium text-ink"
+                >
+                  Выйти
+                </button>
+              </form>
+            </div>
+          ) : (
+            <Link
+              href="/login"
+              onClick={() => setOpen(false)}
+              className="grad-fill mt-4 block w-full rounded-chip py-2.5 text-center text-[13.5px] font-semibold"
+            >
+              Войти через Google
+            </Link>
+          )}
         </nav>
       )}
     </header>
