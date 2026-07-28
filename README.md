@@ -36,7 +36,7 @@ npm run dev                  # http://localhost:3000
 {{ .SiteURL }}/auth/callback?token_hash={{ .TokenHash }}&type=email
 ```
 
-Бесплатный тариф Supabase шлёт письма через общий SMTP с лимитом в несколько писем в час. Для реальной нагрузки подключите свой SMTP в **Project Settings → Auth**.
+Встроенная почта Supabase — общая на всех проектах и шлёт **2 письма в час**. Этого не хватает даже на отладку: пара попыток входа, и следующая ссылка придёт только через час. Подключите свой SMTP в **Project Settings → Authentication → SMTP Settings** — у Resend, Brevo и подобных есть бесплатные тарифы на тысячи писем.
 
 ### Добавить Google (по желанию)
 
