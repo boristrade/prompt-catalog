@@ -12,11 +12,37 @@ npm run dev                  # http://localhost:3000
 
 Без ключей Supabase сайт тоже работает: каталог статичный, авторизация просто выключена и на странице входа висит пояснение.
 
-## Вход через Google
+## Вход
 
-Код авторизации уже в проекте. Чтобы кнопка заработала, нужно настроить два внешних сервиса.
+Два способа, оба уже написаны. Разница только в том, сколько нужно настроить.
 
-### 1. Google Cloud
+| Способ | Что настраивать |
+|---|---|
+| **Ссылка на почту** | ничего, кроме ключей Supabase — провайдер email включён по умолчанию |
+| Google | дополнительно OAuth-клиент в Google Cloud |
+
+### Быстрый путь: ссылка на почту
+
+1. Создайте проект на [supabase.com/dashboard](https://supabase.com/dashboard/projects).
+2. Скопируйте **Project URL** и ключ **anon public** из **Project Settings → API**.
+3. **Authentication → URL Configuration**: в **Site URL** укажите адрес прода, в **Redirect URLs** добавьте `<адрес>/auth/callback`.
+4. Задайте `NEXT_PUBLIC_SUPABASE_URL`, `NEXT_PUBLIC_SUPABASE_ANON_KEY` и `NEXT_PUBLIC_SITE_URL` — локально в `.env.local`, на проде в переменных проекта Vercel.
+
+Всё. На странице входа появится поле для почты: пользователь вводит адрес, получает письмо со ссылкой и входит по ней. Паролей нет.
+
+Одно ограничение стоит знать. Ссылка по умолчанию использует PKCE: секрет остаётся в браузере, который запросил вход. Если запросить ссылку в одном браузере, а открыть письмо в другом, обмен не пройдёт и пользователь увидит «Ссылка не сработала». Роут `/auth/callback` умеет и второй способ проверки — `token_hash`, который от устройства не зависит; чтобы Supabase присылал такие ссылки, в **Authentication → Email Templates** замените `{{ .ConfirmationURL }}` на:
+
+```
+{{ .SiteURL }}/auth/callback?token_hash={{ .TokenHash }}&type=email
+```
+
+Бесплатный тариф Supabase шлёт письма через общий SMTP с лимитом в несколько писем в час. Для реальной нагрузки подключите свой SMTP в **Project Settings → Auth**.
+
+### Добавить Google (по желанию)
+
+Нужен ещё один сервис. Кнопка Google появится, только когда переменная `NEXT_PUBLIC_GOOGLE_AUTH=true` **и** провайдер включён в Supabase — иначе она падала бы с «Unsupported provider».
+
+#### 1. Google Cloud
 
 **APIs & Services → Credentials → Create credentials → OAuth client ID**, тип **Web application**.
 
@@ -28,28 +54,34 @@ https://<ваш-проект>.supabase.co/auth/v1/callback
 
 Сохраните **Client ID** и **Client secret**.
 
-### 2. Supabase
+Важно: сюда идёт адрес **Supabase**, а не сайта. Google возвращает пользователя в Supabase, и уже Supabase — на сайт. Адрес сайта здесь даёт ошибку `redirect_uri_mismatch`.
+
+Пока приложение в режиме **Testing** (экран **Audience**), войти смогут только добавленные вручную тестировщики. Для публичного сайта нажмите **Publish app**.
+
+#### 2. Supabase
 
 **Authentication → Providers → Google**: включите и вставьте Client ID и Client secret из предыдущего шага.
 
-**Authentication → URL Configuration**:
+#### 3. Переменная
 
-| Поле | Значение |
-|---|---|
-| Site URL | адрес прода: `https://prompt-catalog-alpha.vercel.app` |
-| Redirect URLs | `http://localhost:3000/auth/callback` и `https://<домен>/auth/callback` |
+```
+NEXT_PUBLIC_GOOGLE_AUTH=true
+```
 
-### 3. Переменные окружения
+### Переменные окружения
 
 В `.env.local` (локально) и в переменных проекта на Vercel:
 
-```
-NEXT_PUBLIC_SUPABASE_URL=https://<проект>.supabase.co
-NEXT_PUBLIC_SUPABASE_ANON_KEY=<anon-ключ>
-NEXT_PUBLIC_SITE_URL=https://prompt-catalog-alpha.vercel.app
-```
+| Переменная | Значение |
+|---|---|
+| `NEXT_PUBLIC_SUPABASE_URL` | `https://<проект>.supabase.co` |
+| `NEXT_PUBLIC_SUPABASE_ANON_KEY` | `anon public` из Project Settings → API |
+| `NEXT_PUBLIC_SITE_URL` | `https://prompt-catalog-alpha.vercel.app` |
+| `NEXT_PUBLIC_GOOGLE_AUTH` | `true`, только если настроен Google |
 
 `anon`-ключ публичный, его можно отдавать в браузер. `SUPABASE_SERVICE_ROLE_KEY` в авторизации не участвует и на клиент попадать не должен.
+
+`NEXT_PUBLIC_*` подставляются на сборке, а не в рантайме: после изменения переменных на Vercel нужен **Redeploy**, иначе старый деплой их не увидит.
 
 ### Как это устроено
 
@@ -58,7 +90,9 @@ NEXT_PUBLIC_SITE_URL=https://prompt-catalog-alpha.vercel.app
 | `src/lib/supabase/client.ts` | клиент для браузера |
 | `src/lib/supabase/server.ts` | серверный клиент, читает сессию из cookie |
 | `src/middleware.ts` | продлевает сессию, иначе вход слетал бы через час |
-| `src/app/auth/callback/route.ts` | меняет код Google на сессию |
+| `src/components/EmailSignIn.tsx` | форма входа по ссылке на почту |
+| `src/components/GoogleSignIn.tsx` | кнопка Google |
+| `src/app/auth/callback/route.ts` | меняет код или token_hash на сессию |
 | `src/app/auth/signout/route.ts` | выход, только POST |
 
 Пользователь проверяется через `getUser()`, а не `getSession()`: первый подтверждает токен на сервере Supabase, второму на сервере доверять нельзя.
