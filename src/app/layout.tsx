@@ -1,6 +1,8 @@
 import type { Metadata } from "next";
 import Header from "@/components/layout/Header";
 import Footer from "@/components/layout/Footer";
+import { getCurrentUser } from "@/lib/supabase/server";
+import type { SessionUser } from "@/components/layout/UserMenu";
 import "./globals.css";
 
 export const metadata: Metadata = {
@@ -18,9 +20,23 @@ export const metadata: Metadata = {
 */
 const themeInit = `(function(){var d=document.documentElement;d.setAttribute("data-js","");try{var t=localStorage.getItem("theme");if(t==="light"||t==="dark"){d.setAttribute("data-theme",t)}}catch(e){}})()`;
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: Readonly<{ children: React.ReactNode }>) {
+  // Данные Google приходят в user_metadata: имя и ссылка на аватар.
+  const account = await getCurrentUser();
+  const user: SessionUser | null = account
+    ? {
+        email: account.email ?? "",
+        name:
+          (account.user_metadata?.full_name as string | undefined) ??
+          (account.user_metadata?.name as string | undefined) ??
+          "",
+        avatarUrl:
+          (account.user_metadata?.avatar_url as string | undefined) ?? null,
+      }
+    : null;
+
   return (
     <html lang="ru" suppressHydrationWarning>
       <head>
@@ -39,7 +55,7 @@ export default function RootLayout({
         />
       </head>
       <body className="min-h-screen flex flex-col antialiased">
-        <Header />
+        <Header user={user} />
         <main className="flex-1 w-full max-w-[1120px] mx-auto px-5 md:px-8">
           {children}
         </main>
