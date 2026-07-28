@@ -36,7 +36,7 @@ https://<ваш-проект>.supabase.co/auth/v1/callback
 
 | Поле | Значение |
 |---|---|
-| Site URL | адрес прода, например `https://promptvault-theta-rose.vercel.app` |
+| Site URL | адрес прода: `https://prompt-catalog-alpha.vercel.app` |
 | Redirect URLs | `http://localhost:3000/auth/callback` и `https://<домен>/auth/callback` |
 
 ### 3. Переменные окружения
@@ -46,7 +46,7 @@ https://<ваш-проект>.supabase.co/auth/v1/callback
 ```
 NEXT_PUBLIC_SUPABASE_URL=https://<проект>.supabase.co
 NEXT_PUBLIC_SUPABASE_ANON_KEY=<anon-ключ>
-NEXT_PUBLIC_SITE_URL=https://<домен прода>
+NEXT_PUBLIC_SITE_URL=https://prompt-catalog-alpha.vercel.app
 ```
 
 `anon`-ключ публичный, его можно отдавать в браузер. `SUPABASE_SERVICE_ROLE_KEY` в авторизации не участвует и на клиент попадать не должен.
@@ -76,4 +76,13 @@ supabase/
 
 ## Деплой
 
-Публикация на Vercel идёт через GitHub Actions: `.github/workflows/deploy.yml`. Нужен секрет репозитория `VERCEL_TOKEN`.
+Проект `prompt-catalog` на Vercel связан с этим репозиторием напрямую, поэтому публикация идёт сама:
+
+| Событие | Что происходит |
+|---|---|
+| мёрж в `main` | продакшн-деплой на `https://prompt-catalog-alpha.vercel.app` |
+| пуш в ветку с pull request | превью-деплой, ссылка появляется в PR |
+
+Ни токенов, ни GitHub Actions для этого не нужно. Раньше здесь лежал `deploy.yml`, который через Vercel CLI обновлял отдельный проект `promptvault`; он удалён — интеграция с git делает то же самое надёжнее.
+
+Переменные окружения задаются в настройках проекта на Vercel (**Settings → Environment Variables**), а не в репозитории.
