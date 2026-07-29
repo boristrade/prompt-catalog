@@ -1,6 +1,8 @@
 import Link from "next/link";
 import { Instagram, Send, Youtube } from "lucide-react";
 import { CATEGORIES } from "@/lib/categories";
+import type { Locale } from "@/lib/i18n/config";
+import type { Dictionary } from "@/lib/i18n/dictionaries";
 
 const SOCIALS = [
   { href: "https://t.me", label: "Telegram", Icon: Send },
@@ -8,20 +10,26 @@ const SOCIALS = [
   { href: "https://instagram.com", label: "Instagram", Icon: Instagram },
 ];
 
-const SUPPORT = [
-  { label: "Тарифы", href: "/pricing" },
-  { label: "Кабинет", href: "/account" },
-  { label: "Частые вопросы", href: "/tools" },
-  { label: "Обратная связь", href: "mailto:support@example.com" },
-];
+export default function Footer({
+  locale,
+  t,
+}: {
+  locale: Locale;
+  t: Dictionary;
+}) {
+  const support = [
+    { label: t.footer.pricing, href: `/${locale}/pricing` },
+    { label: t.footer.account, href: `/${locale}/account` },
+    { label: t.footer.faq, href: `/${locale}/tools` },
+    { label: t.footer.feedback, href: "mailto:support@example.com" },
+  ];
 
-const LEGAL = [
-  { label: "Политика конфиденциальности", href: "/login" },
-  { label: "Условия использования", href: "/login" },
-  { label: "Пользовательское соглашение", href: "/login" },
-];
+  const legal = [
+    { label: t.footer.privacy, href: `/${locale}/login` },
+    { label: t.footer.terms, href: `/${locale}/login` },
+    { label: t.footer.agreement, href: `/${locale}/login` },
+  ];
 
-export default function Footer() {
   return (
     <footer className="mt-24 border-t border-line bg-sunken">
       <div className="mx-auto max-w-[1120px] px-5 py-14 md:px-8">
@@ -37,22 +45,23 @@ export default function Footer() {
               </span>
             </div>
             <p className="mt-3.5 max-w-[32ch] text-[13.5px] leading-relaxed text-muted">
-              Каталог отобранных AI-промтов для работы и творчества. С примерами
-              результата и копированием в один клик.
+              {t.footer.tagline}
             </p>
           </div>
 
           {/* Навигация */}
           <div>
-            <div className="text-[13px] font-semibold text-ink">Каталог</div>
+            <div className="text-[13px] font-semibold text-ink">
+              {t.footer.catalog}
+            </div>
             <ul className="mt-4 space-y-2.5">
               {CATEGORIES.map((c) => (
                 <li key={c.slug}>
                   <Link
-                    href={`/prompts/${c.slug}`}
+                    href={`/${locale}/prompts/${c.slug}`}
                     className="text-[13.5px] text-muted transition-colors duration-200 hover:text-accent"
                   >
-                    {c.nav}
+                    {t.categories[c.slug].nav}
                   </Link>
                 </li>
               ))}
@@ -61,9 +70,11 @@ export default function Footer() {
 
           {/* Поддержка */}
           <div>
-            <div className="text-[13px] font-semibold text-ink">Поддержка</div>
+            <div className="text-[13px] font-semibold text-ink">
+              {t.footer.support}
+            </div>
             <ul className="mt-4 space-y-2.5">
-              {SUPPORT.map((s) => (
+              {support.map((s) => (
                 <li key={s.label}>
                   <Link
                     href={s.href}
@@ -79,10 +90,10 @@ export default function Footer() {
           {/* Правовая информация */}
           <div>
             <div className="text-[13px] font-semibold text-ink">
-              Правовая информация
+              {t.footer.legal}
             </div>
             <ul className="mt-4 space-y-2.5">
-              {LEGAL.map((l) => (
+              {legal.map((l) => (
                 <li key={l.label}>
                   <Link
                     href={l.href}
@@ -94,10 +105,11 @@ export default function Footer() {
               ))}
             </ul>
           </div>
+
           {/* Соцсети */}
           <div>
             <div className="text-[13px] font-semibold text-ink">
-              Следите за нами
+              {t.footer.follow}
             </div>
             <div className="mt-4 flex items-center gap-2.5">
               {SOCIALS.map(({ href, label, Icon }) => (
@@ -117,7 +129,7 @@ export default function Footer() {
         </div>
 
         <div className="mt-12 border-t border-line pt-6 text-center text-[12.5px] text-faint">
-          © {new Date().getFullYear()} PrompTom. Все права защищены.
+          © {new Date().getFullYear()} PrompTom. {t.footer.rights}
         </div>
       </div>
     </footer>

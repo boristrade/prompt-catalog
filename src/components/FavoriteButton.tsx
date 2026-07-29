@@ -4,6 +4,7 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { Heart } from "lucide-react";
 import { createClient } from "@/lib/supabase/client";
+import type { Locale } from "@/lib/i18n/config";
 
 interface Props {
   promptId: string;
@@ -11,9 +12,19 @@ interface Props {
   initial: boolean;
   /** Гостю кнопка ведёт на вход, а не пытается писать в базу. */
   signedIn: boolean;
+  locale: Locale;
+  addLabel: string;
+  removeLabel: string;
 }
 
-export default function FavoriteButton({ promptId, initial, signedIn }: Props) {
+export default function FavoriteButton({
+  promptId,
+  initial,
+  signedIn,
+  locale,
+  addLabel,
+  removeLabel,
+}: Props) {
   const [active, setActive] = useState(initial);
   const [busy, setBusy] = useState(false);
   const router = useRouter();
@@ -21,7 +32,9 @@ export default function FavoriteButton({ promptId, initial, signedIn }: Props) {
   async function toggle() {
     if (!signedIn) {
       // Возвращаем человека к тому же промту, а не на главную.
-      router.push(`/login?next=${encodeURIComponent(`/#${promptId}`)}`);
+      router.push(
+        `/${locale}/login?next=${encodeURIComponent(`/${locale}#${promptId}`)}`,
+      );
       return;
     }
     if (busy) return;
@@ -46,7 +59,7 @@ export default function FavoriteButton({ promptId, initial, signedIn }: Props) {
     }
   }
 
-  const label = active ? "Убрать из избранного" : "В избранное";
+  const label = active ? removeLabel : addLabel;
 
   return (
     <button

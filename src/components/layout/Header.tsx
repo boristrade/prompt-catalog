@@ -5,24 +5,15 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { Menu, X } from "lucide-react";
 import { CATEGORIES } from "@/lib/categories";
+import type { Locale } from "@/lib/i18n/config";
+import type { Dictionary } from "@/lib/i18n/dictionaries";
 import ThemeToggle from "@/components/ThemeToggle";
+import LanguageSwitcher from "@/components/LanguageSwitcher";
 import UserMenu, { type SessionUser } from "@/components/layout/UserMenu";
 
-// В шапке нужны короткие подписи: «Для дизайнеров» и т.п. переносят строку.
-const NAV = [
-  { href: "/", label: "Главная" },
-  ...CATEGORIES.map((c) => ({
-    href: `/prompts/${c.slug}`,
-    label: c.nav.replace(/^Для /, ""),
-    full: c.nav,
-  })),
-  { href: "/tools", label: "Инструменты" },
-  { href: "/pricing", label: "Тарифы" },
-];
-
-function Logo() {
+function Logo({ locale }: { locale: Locale }) {
   return (
-    <Link href="/" className="flex items-center gap-2.5">
+    <Link href={`/${locale}`} className="flex items-center gap-2.5">
       <span className="grad-fill flex h-7 w-7 items-center justify-center rounded-[7px] text-[14px] font-bold">
         P
       </span>
@@ -33,17 +24,40 @@ function Logo() {
   );
 }
 
-export default function Header({ user }: { user: SessionUser | null }) {
+export default function Header({
+  user,
+  locale,
+  t,
+}: {
+  user: SessionUser | null;
+  locale: Locale;
+  t: Dictionary;
+}) {
   const [open, setOpen] = useState(false);
   const pathname = usePathname();
+
+  /*
+    В шапке нужны короткие подписи: «Для дизайнеров» и т.п. переносят
+    строку. Полные названия остаются в выпадающем меню, где место есть.
+  */
+  const nav = [
+    { href: `/${locale}`, label: t.nav.home, full: t.nav.home },
+    ...CATEGORIES.map((c) => ({
+      href: `/${locale}/prompts/${c.slug}`,
+      label: t.nav[c.slug],
+      full: t.categories[c.slug].nav,
+    })),
+    { href: `/${locale}/tools`, label: t.nav.tools, full: t.nav.tools },
+    { href: `/${locale}/pricing`, label: t.nav.pricing, full: t.nav.pricing },
+  ];
 
   return (
     <header className="sticky top-0 z-50 border-b border-line bg-canvas/85 backdrop-blur-md">
       <div className="mx-auto flex h-16 max-w-[1120px] items-center justify-between px-5 md:px-8">
-        <Logo />
+        <Logo locale={locale} />
 
         <nav className="hidden items-center gap-1 lg:flex">
-          {NAV.map((item) => (
+          {nav.map((item) => (
             <Link
               key={item.href}
               href={item.href}
@@ -58,35 +72,37 @@ export default function Header({ user }: { user: SessionUser | null }) {
           ))}
         </nav>
 
-        <div className="hidden items-center gap-2.5 lg:flex">
-          <ThemeToggle />
+        <div className="hidden items-center gap-2 lg:flex">
+          <LanguageSwitcher locale={locale} label={t.header.language} />
+          <ThemeToggle toLight={t.header.toLight} toDark={t.header.toDark} />
           {user ? (
-            <UserMenu user={user} />
+            <UserMenu user={user} locale={locale} t={t} />
           ) : (
             <>
               <Link
-                href="/login"
+                href={`/${locale}/login`}
                 className="rounded-chip border border-line-strong px-4 py-2 text-[13px] font-medium text-ink transition-[background-color,transform] duration-200 hover:bg-surface active:scale-[0.97]"
               >
-                Войти
+                {t.header.signIn}
               </Link>
               <Link
-                href="/login"
+                href={`/${locale}/login`}
                 className="grad-fill rounded-chip px-4 py-2 text-[13px] font-semibold shadow-[0_6px_20px_-8px_var(--glow)] transition-[opacity,transform] duration-200 hover:opacity-90 active:scale-[0.97]"
               >
-                Регистрация
+                {t.header.signUp}
               </Link>
             </>
           )}
         </div>
 
         <div className="flex items-center gap-2 lg:hidden">
-          <ThemeToggle />
+          <LanguageSwitcher locale={locale} label={t.header.language} />
+          <ThemeToggle toLight={t.header.toLight} toDark={t.header.toDark} />
           <button
             type="button"
             className="inline-flex h-9 w-9 items-center justify-center rounded-chip border border-line text-muted transition-colors duration-200 hover:text-ink active:scale-95"
             onClick={() => setOpen(!open)}
-            aria-label={open ? "Закрыть меню" : "Открыть меню"}
+            aria-label={open ? t.header.closeMenu : t.header.openMenu}
             aria-expanded={open}
           >
             {open ? <X size={16} /> : <Menu size={16} />}
@@ -96,7 +112,7 @@ export default function Header({ user }: { user: SessionUser | null }) {
 
       {open && (
         <nav className="slide-down border-t border-line bg-canvas px-5 pb-5 pt-2 lg:hidden">
-          {NAV.map((item) => (
+          {nav.map((item) => (
             <Link
               key={item.href}
               href={item.href}
@@ -105,44 +121,41 @@ export default function Header({ user }: { user: SessionUser | null }) {
                 pathname === item.href ? "text-ink" : "text-muted"
               }`}
             >
-              {/* В выпадающем меню места хватает — показываем полное название */}
-              {"full" in item ? item.full : item.label}
+              {item.full}
             </Link>
           ))}
 
           {user ? (
             <div className="mt-4 rounded-card border border-line p-3">
               <div className="truncate text-[13px] font-medium text-ink">
-                {user.name || "Аккаунт"}
+                {user.name || t.header.accountFallback}
               </div>
               <div className="mt-0.5 truncate text-[12px] text-muted">
                 {user.email}
               </div>
               <Link
-                href="/account"
+                href={`/${locale}/account`}
                 onClick={() => setOpen(false)}
                 className="mt-3 block rounded-chip border border-line-strong py-2 text-center text-[13px] font-medium text-ink"
               >
-                Кабинет и избранное
+                {t.header.account}
               </Link>
               <form action="/auth/signout" method="post" className="mt-2">
                 <button
                   type="submit"
                   className="w-full rounded-chip border border-line-strong py-2 text-[13px] font-medium text-ink"
                 >
-                  Выйти
+                  {t.header.logout}
                 </button>
               </form>
             </div>
           ) : (
             <Link
-              href="/login"
+              href={`/${locale}/login`}
               onClick={() => setOpen(false)}
               className="grad-fill mt-4 block w-full rounded-chip py-2.5 text-center text-[13.5px] font-semibold"
             >
-              {/* Без названия способа: их набор задаётся переменными
-                  окружения, и «через Google» врало бы при выключенном Google. */}
-              Войти
+              {t.header.signIn}
             </Link>
           )}
         </nav>

@@ -4,7 +4,8 @@ import { CalendarClock, Heart, LogOut, Sparkles } from "lucide-react";
 import { getCurrentUser } from "@/lib/supabase/server";
 import { getAccount } from "@/lib/account";
 import { getPromptById, isLocked, veil } from "@/lib/prompts";
-import { getCategory } from "@/lib/categories";
+import { CATEGORIES } from "@/lib/categories";
+import { pageLocale } from "@/lib/i18n";
 import PromptCard from "@/components/PromptCard";
 import Reveal from "@/components/Reveal";
 
@@ -15,11 +16,26 @@ import Reveal from "@/components/Reveal";
 */
 export const dynamic = "force-dynamic";
 
-export const metadata = { title: "Кабинет" };
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ locale: string }>;
+}) {
+  const { t } = await pageLocale(params);
+  return { title: t.account.eyebrow };
+}
 
-export default async function AccountPage() {
+export default async function AccountPage({
+  params,
+}: {
+  params: Promise<{ locale: string }>;
+}) {
+  const { locale, t } = await pageLocale(params);
+
   const user = await getCurrentUser();
-  if (!user) redirect("/login?next=%2Faccount");
+  if (!user) {
+    redirect(`/${locale}/login?next=${encodeURIComponent(`/${locale}/account`)}`);
+  }
 
   const account = await getAccount();
   const plan = account?.plan ?? "free";
@@ -49,7 +65,7 @@ export default async function AccountPage() {
 
   return (
     <section className="pt-16 pb-20 md:pt-20">
-      <p className="eyebrow rise">Кабинет</p>
+      <p className="eyebrow rise">{t.account.eyebrow}</p>
 
       <div className="rise rise-1 mt-6 flex flex-col gap-5 rounded-card border border-line bg-surface p-6 sm:flex-row sm:items-center sm:justify-between">
         <div className="flex items-center gap-4">
@@ -73,7 +89,7 @@ export default async function AccountPage() {
 
           <div className="min-w-0">
             <div className="truncate text-[17px] font-semibold text-ink">
-              {name || "Аккаунт"}
+              {name || t.header.accountFallback}
             </div>
             <div className="mt-0.5 truncate text-[13px] text-muted">
               {user.email}
@@ -98,7 +114,7 @@ export default async function AccountPage() {
               className="inline-flex items-center gap-2 rounded-chip border border-line-strong px-3.5 py-2 text-[13px] font-medium text-muted transition-[color,background-color,transform] duration-200 hover:bg-sunken hover:text-ink active:scale-[0.97]"
             >
               <LogOut size={14} />
-              Выйти
+              {t.account.logout}
             </button>
           </form>
         </div>
@@ -113,8 +129,8 @@ export default async function AccountPage() {
               </span>
               <div>
                 <div className="text-[14.5px] font-semibold text-ink">
-                  Доступ до{" "}
-                  {until.toLocaleDateString("ru-RU", {
+                  {t.account.accessUntil}{" "}
+                  {until.toLocaleDateString(locale, {
                     day: "numeric",
                     month: "long",
                     year: "numeric",
@@ -123,16 +139,16 @@ export default async function AccountPage() {
                 <p className="mt-1 text-[13px] leading-relaxed text-muted">
                   {/* Про отсутствие автосписания говорим прямо: человек
                       вправе знать, что деньги сами не спишутся. */}
-                  Осталось {daysLeft} дн. Подписка не продлевается сама —
-                  продлите вручную, когда срок подойдёт к концу.
+                  {t.account.daysLeft} {daysLeft} {t.account.days}{" "}
+                  {t.account.noAutoRenew}
                 </p>
               </div>
             </div>
             <Link
-              href="/pricing"
+              href={`/${locale}/pricing`}
               className="shrink-0 rounded-chip border border-line-strong px-5 py-2.5 text-center text-[13.5px] font-medium text-ink transition-[background-color,transform] duration-200 hover:bg-sunken active:scale-[0.97]"
             >
-              Продлить
+              {t.account.renew}
             </Link>
           </div>
         </Reveal>
@@ -147,19 +163,18 @@ export default async function AccountPage() {
               </span>
               <div>
                 <div className="text-[14.5px] font-semibold text-ink">
-                  Откройте весь каталог
+                  {t.account.upgradeTitle}
                 </div>
                 <p className="mt-1 max-w-md text-[13px] leading-relaxed text-muted">
-                  PRO-промты сейчас под замком. С подпиской открываются все, и
-                  новые подборки приходят каждый месяц.
+                  {t.account.upgradeText}
                 </p>
               </div>
             </div>
             <Link
-              href="/pricing"
+              href={`/${locale}/pricing`}
               className="grad-fill shrink-0 rounded-chip px-5 py-2.5 text-center text-[13.5px] font-semibold shadow-[0_6px_20px_-8px_var(--glow)] transition-[opacity,transform] duration-200 hover:opacity-90 active:scale-[0.97]"
             >
-              Смотреть тарифы
+              {t.account.seePlans}
             </Link>
           </div>
         </Reveal>
@@ -168,7 +183,7 @@ export default async function AccountPage() {
       <div className="mt-14 flex items-center gap-2.5">
         <Heart size={15} className="text-accent" />
         <h2 className="text-[19px] font-semibold tracking-[-0.015em] text-ink">
-          Избранное
+          {t.account.favorites}
         </h2>
         <span className="font-mono text-[11.5px] text-faint">
           {favorites.length}
@@ -186,6 +201,8 @@ export default async function AccountPage() {
                   locked={locked}
                   favorited
                   signedIn
+                  locale={locale}
+                  t={t}
                 />
               </Reveal>
             );
@@ -194,23 +211,18 @@ export default async function AccountPage() {
       ) : (
         <div className="mt-6 rounded-card border border-dashed border-line-strong bg-surface p-10 text-center">
           <p className="text-[13.5px] leading-relaxed text-muted">
-            Пока пусто. Нажмите на сердечко у любого промта в каталоге — он
-            появится здесь.
+            {t.account.empty}
           </p>
           <div className="mt-5 flex flex-wrap justify-center gap-2">
-            {["designers", "marketers", "ugc", "marketplaces"].map((slug) => {
-              const cat = getCategory(slug);
-              if (!cat) return null;
-              return (
-                <Link
-                  key={slug}
-                  href={`/prompts/${slug}`}
-                  className="rounded-chip border border-line px-3.5 py-2 text-[12.5px] text-muted transition-[color,border-color] duration-200 hover:border-line-strong hover:text-ink"
-                >
-                  {cat.nav}
-                </Link>
-              );
-            })}
+            {CATEGORIES.map((c) => (
+              <Link
+                key={c.slug}
+                href={`/${locale}/prompts/${c.slug}`}
+                className="rounded-chip border border-line px-3.5 py-2 text-[12.5px] text-muted transition-[color,border-color] duration-200 hover:border-line-strong hover:text-ink"
+              >
+                {t.categories[c.slug].nav}
+              </Link>
+            ))}
           </div>
         </div>
       )}
