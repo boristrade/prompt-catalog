@@ -48,6 +48,25 @@ export function isPeriodId(value: string): value is PeriodId {
   return value in PERIODS;
 }
 
-/** Ссылка на страницу автора в Donatello — оттуда человек и платит. */
-export const DONATELLO_URL =
-  process.env.NEXT_PUBLIC_DONATELLO_URL ?? "https://donatello.to/";
+/*
+  Идентификатор заказа для Cryptomus. Внутрь кладём код платежа и срок —
+  по ним уведомление об оплате находит, кому и на сколько открывать
+  доступ. Метка времени делает его уникальным: повторная оплата тем же
+  человеком не должна натыкаться на «такой заказ уже есть».
+
+  Внутренний uuid пользователя сюда не попадает: order_id виден в чужой
+  системе, и светить им идентификаторы своей базы незачем.
+*/
+export function buildOrderId(paymentCode: string, period: PeriodId): string {
+  return `${paymentCode}-${period}-${Date.now().toString(36)}`;
+}
+
+export function parseOrderId(
+  orderId: string,
+): { paymentCode: string; period: PeriodId } | null {
+  const parts = orderId.split("-");
+  if (parts.length < 3) return null;
+  const [paymentCode, period] = parts;
+  if (!paymentCode || !isPeriodId(period)) return null;
+  return { paymentCode, period };
+}

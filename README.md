@@ -1,6 +1,6 @@
 # PrompTom — каталог AI-промтов
 
-Продакшн-каталог AI-промтов: Next.js (App Router) + TypeScript + Tailwind CSS v4, Supabase (Postgres, Auth, Storage, RLS), оплата через ЮKassa.
+Продакшн-каталог AI-промтов: Next.js (App Router) + TypeScript + Tailwind CSS v4, Supabase (Postgres, Auth, RLS), оплата криптовалютой через Cryptomus.
 
 ## Запуск локально
 
@@ -110,19 +110,12 @@ NEXT_PUBLIC_GOOGLE_AUTH=true
 
 | Таблица | Что хранит |
 |---|---|
-| `profiles` | тариф пользователя (`free` / `pro`), создаётся триггером при регистрации |
+| `profiles` | код платежа и срок доступа, создаётся триггером при регистрации |
 | `favorites` | пары «пользователь — промт» |
 
-Обе под RLS: человек видит и меняет только свои строки. Политики на `update` у `profiles` нет вовсе — тариф пользователь себе поднять не может, это задача будущего обработчика оплаты с сервисным ключом.
+Обе под RLS: человек видит и меняет только свои строки. Политики на `update` у `profiles` нет вовсе — продлить себе доступ пользователь не может, это делает обработчик оплаты сервисным ключом.
 
-### Как выдать PRO вручную
-
-Пока оплата не подключена, доступ выдаётся запросом в SQL Editor:
-
-```sql
-update public.profiles set plan = 'pro'
-where id = (select id from auth.users where email = 'кому@example.com');
-```
+Срок доступа и код платежа добавляет вторая миграция — см. раздел «Оплата».
 
 ### Что видно на бесплатном тарифе
 
@@ -136,28 +129,42 @@ where id = (select id from auth.users where email = 'кому@example.com');
 
 Автосписание требует ФОП или юрлица, поэтому оплата **разовая**: человек платит за 30 дней или за 365, доступ живёт до даты и не продлевается сам. В `profiles` за это отвечает `pro_until` — единственный источник правды. Истёк срок — доступ закрылся сам, без задачи по расписанию.
 
-Миграция: `supabase/migrations/0002_access_period.sql`.
+Приём платежей — **Cryptomus**, криптовалютой. Миграция: `supabase/migrations/0002_access_period.sql`.
 
 ### Как проходит платёж
 
 1. На `/pricing` человек жмёт «Оплатить» и попадает на `/pay?period=monthly|yearly`.
-2. Там он видит свой `payment_code` — восемь символов, привязанных к аккаунту.
-3. Платит в Donatello и вставляет код в комментарий.
-4. Обработчик находит платёж по коду и вызывает `/api/billing/activate`.
+2. Кнопка стучится в `/api/billing/checkout` — тот создаёт счёт в Cryptomus и отдаёт ссылку.
+3. Человек платит на стороне Cryptomus.
+4. Cryptomus шлёт уведомление на `/api/billing/cryptomus`, оно проверяется по подписи и открывает доступ.
+
+Сумма берётся с сервера из `src/lib/billing.ts`, а не из тела запроса: иначе любой выставил бы себе счёт на один цент и получил год доступа.
 
 ### Переменные окружения
 
 | Переменная | Зачем |
 |---|---|
-| `NEXT_PUBLIC_DONATELLO_URL` | адрес вашей страницы в Donatello |
-| `BILLING_WEBHOOK_SECRET` | токен для `/api/billing/activate`, `openssl rand -hex 32` |
-| `SUPABASE_SERVICE_ROLE_KEY` | нужен, чтобы сервер менял чужой `pro_until` в обход RLS |
+| `CRYPTOMUS_MERCHANT_ID` | из кабинета Cryptomus, Настройки → API |
+| `CRYPTOMUS_API_KEY` | там же, **Payment API key** |
+| `BILLING_WEBHOOK_SECRET` | для ручного открытия доступа, `openssl rand -hex 32` |
+| `SUPABASE_SERVICE_ROLE_KEY` | сервер меняет чужой `pro_until` в обход RLS |
+| `NEXT_PUBLIC_SITE_URL` | из него строятся адреса возврата и уведомления |
 
-`SUPABASE_SERVICE_ROLE_KEY` даёт полный доступ к базе. Он не должен иметь префикс `NEXT_PUBLIC_` и не должен попадать в браузер: файл `src/lib/supabase/admin.ts` помечен `server-only`, и сборка упадёт при попытке затянуть его в клиентский компонент.
+`CRYPTOMUS_API_KEY` и `SUPABASE_SERVICE_ROLE_KEY` — настоящие секреты. Без префикса `NEXT_PUBLIC_`, в браузер попадать не должны: `src/lib/cryptomus.ts` и `src/lib/supabase/admin.ts` помечены `server-only`, и сборка упадёт при попытке затянуть их в клиентский компонент.
+
+### Настройка в кабинете Cryptomus
+
+Адрес для уведомлений задавать отдельно не нужно — он передаётся в каждом счёте полем `url_callback`. Достаточно создать мерчанта и взять оттуда два ключа.
+
+### О подписи
+
+Cryptomus подписывает так: `md5(base64(тело) + api_key)`. Тонкость, на которой ломается большинство интеграций: PHP на их стороне экранирует слэши (`\/`), а `JSON.stringify` — нет, и от любого url в теле подписи расходятся.
+
+Поэтому исходящее тело сериализуется вручную с экранированием и подписывается ровно та строка, которая уходит. Входящее уведомление сверяется с обоими вариантами — это не ослабляет проверку, потому что обе подписи считаются от одних данных с тем же ключом.
 
 ### Открыть доступ вручную
 
-Пока автоматика не подключена — и как запасной путь, когда человек забыл указать код:
+Запасной путь, когда платёж не долетел:
 
 ```bash
 curl -X POST https://prompt-catalog-alpha.vercel.app/api/billing/activate \
@@ -166,7 +173,7 @@ curl -X POST https://prompt-catalog-alpha.vercel.app/api/billing/activate \
   -d '{"code":"A1B2C3D4","period":"yearly"}'
 ```
 
-Или прямо в SQL Editor:
+Или в SQL Editor:
 
 ```sql
 update public.profiles set pro_until = now() + interval '1 year'
@@ -179,12 +186,6 @@ where id = (select id from auth.users where email = 'кому@example.com');
 select u.email, p.payment_code, p.pro_until
 from public.profiles p join auth.users u on u.id = p.id;
 ```
-
-### Что ещё не сделано
-
-Связка с Donatello — их API отдаёт список донатов по ключу, и нужен небольшой обработчик, который периодически его читает, ищет код в комментарии и дёргает `/api/billing/activate`. Точный формат ответа Donatello не опубликован, поэтому дописывается после первого живого платежа.
-
-Сам сайт от платёжной системы не зависит: `/api/billing/activate` — общая точка входа. Смена Donatello на что угодно другое не потребует правок в каталоге, кабинете и тарифах.
 
 ## Структура
 

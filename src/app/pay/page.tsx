@@ -1,9 +1,9 @@
 import Link from "next/link";
 import { redirect } from "next/navigation";
-import { ArrowUpRight, Clock, Info } from "lucide-react";
+import { Bitcoin, Clock, Info } from "lucide-react";
 import { getAccount } from "@/lib/account";
-import { DONATELLO_URL, PERIODS, isPeriodId } from "@/lib/billing";
-import CopyCode from "@/components/CopyCode";
+import { PERIODS, isPeriodId } from "@/lib/billing";
+import PayButton from "@/components/PayButton";
 
 export const dynamic = "force-dynamic";
 
@@ -17,87 +17,50 @@ export default async function PayPage({
   const { period: raw } = await searchParams;
   const period = raw && isPeriodId(raw) ? PERIODS[raw] : PERIODS.monthly;
 
+  // Счёт выставляется на конкретный аккаунт, поэтому без входа страница
+  // бессмысленна — возвращаем сюда же после авторизации.
   const account = await getAccount();
-  // Код платежа привязан к аккаунту, поэтому без входа страница бессмысленна.
-  if (!account) redirect(`/login?next=${encodeURIComponent(`/pay?period=${period.id}`)}`);
+  if (!account) {
+    redirect(`/login?next=${encodeURIComponent(`/pay?period=${period.id}`)}`);
+  }
 
   return (
     <section className="pt-16 pb-20 md:pt-20">
-      <div className="mx-auto max-w-lg">
+      <div className="mx-auto max-w-md">
         <p className="eyebrow rise">Оплата</p>
         <h1 className="font-display rise rise-1 mt-4 text-[28px] text-ink md:text-[36px]">
-          {period.name} — <span className="grad-text">${period.price}</span>
+          {period.name}
         </h1>
-        <p className="rise rise-2 mt-3 text-[14px] leading-relaxed text-muted">
-          Доступ откроется на {period.days} дней с момента зачисления.
-        </p>
 
-        <ol className="rise rise-3 mt-9 space-y-5">
-          <li className="flex gap-4">
-            <span className="grad-fill flex h-7 w-7 shrink-0 items-center justify-center rounded-full text-[12px] font-bold">
-              1
+        <div className="rise rise-2 mt-7 rounded-card border border-violet/40 bg-surface p-7 shadow-[0_20px_60px_-40px_var(--glow)]">
+          <div className="flex items-baseline gap-2">
+            <span className="grad-text font-display text-[40px]">
+              ${period.price}
             </span>
-            <div className="min-w-0 flex-1">
-              <div className="text-[14.5px] font-medium text-ink">
-                Скопируйте свой код
-              </div>
-              <p className="mt-1 text-[13px] leading-relaxed text-muted">
-                Он привязан к вашему аккаунту — по нему мы поймём, кому
-                открывать доступ.
-              </p>
-              <div className="mt-3">
-                <CopyCode code={account.paymentCode ?? ""} />
-              </div>
-            </div>
-          </li>
+            <span className="text-[13px] text-faint">{period.period}</span>
+          </div>
 
-          <li className="flex gap-4">
-            <span className="grad-fill flex h-7 w-7 shrink-0 items-center justify-center rounded-full text-[12px] font-bold">
-              2
+          <p className="mt-3 text-[13.5px] leading-relaxed text-muted">
+            Доступ ко всему каталогу на {period.days} дней. Откроется сразу
+            после подтверждения оплаты.
+          </p>
+
+          <div className="mt-6">
+            <PayButton period={period.id} amount={period.price} />
+          </div>
+
+          <div className="mt-4 flex items-start gap-2.5">
+            <span className="mt-0.5 shrink-0 text-faint">
+              <Bitcoin size={14} />
             </span>
-            <div className="min-w-0 flex-1">
-              <div className="text-[14.5px] font-medium text-ink">
-                Переведите ${period.price} и вставьте код в комментарий
-              </div>
-              <p className="mt-1 text-[13px] leading-relaxed text-muted">
-                Поле комментария к платежу — единственное обязательное. Без
-                кода платёж не привяжется к аккаунту.
-              </p>
-              <a
-                href={DONATELLO_URL}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="grad-fill mt-3 inline-flex items-center gap-2 rounded-chip px-5 py-2.5 text-[13.5px] font-semibold shadow-[0_6px_20px_-8px_var(--glow)] transition-[opacity,transform] duration-200 hover:opacity-90 active:scale-[0.97]"
-              >
-                Перейти к оплате
-                <ArrowUpRight size={15} />
-              </a>
-            </div>
-          </li>
+            <p className="text-[12px] leading-relaxed text-faint">
+              Оплата криптовалютой через Cryptomus. Поддерживаются USDT, BTC,
+              ETH и ещё больше сотни монет — выберете на следующем шаге.
+            </p>
+          </div>
+        </div>
 
-          <li className="flex gap-4">
-            <span className="grad-fill flex h-7 w-7 shrink-0 items-center justify-center rounded-full text-[12px] font-bold">
-              3
-            </span>
-            <div className="min-w-0 flex-1">
-              <div className="text-[14.5px] font-medium text-ink">
-                Вернитесь в кабинет
-              </div>
-              <p className="mt-1 text-[13px] leading-relaxed text-muted">
-                Доступ откроется автоматически. Обычно это занимает несколько
-                минут.
-              </p>
-              <Link
-                href="/account"
-                className="mt-3 inline-block rounded-chip border border-line-strong px-4 py-2 text-[13px] font-medium text-ink transition-[background-color,transform] duration-200 hover:bg-sunken active:scale-[0.97]"
-              >
-                В кабинет
-              </Link>
-            </div>
-          </li>
-        </ol>
-
-        <div className="mt-10 flex items-start gap-3 rounded-card border border-line bg-sunken p-4">
+        <div className="mt-4 flex items-start gap-3 rounded-card border border-line bg-sunken p-4">
           <span className="mt-0.5 shrink-0 text-faint">
             <Clock size={14} />
           </span>
@@ -112,14 +75,16 @@ export default async function PayPage({
             <Info size={14} />
           </span>
           <p className="text-[12.5px] leading-relaxed text-muted">
-            Забыли указать код или доступ не открылся за час — напишите на{" "}
+            Оплатили, а доступ не открылся за полчаса — напишите на{" "}
             <a
               href="mailto:support@example.com"
               className="text-accent transition-opacity duration-200 hover:opacity-80"
             >
               support@example.com
-            </a>
-            , откроем вручную.
+            </a>{" "}
+            и укажите код{" "}
+            <span className="font-mono text-ink">{account.paymentCode}</span>,
+            откроем вручную.
           </p>
         </div>
 
