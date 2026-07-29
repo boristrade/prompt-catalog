@@ -13,13 +13,28 @@ export function isSupabaseConfigured(): boolean {
 }
 
 /*
+  Значения переменных люди вбивают руками в форму на Vercel, поэтому
+  сравнивать с одной-единственной строкой нельзя: «False», кавычки или
+  случайный пробел молча ломают флаг, а понять это по сайту невозможно —
+  просто ничего не меняется. Разбираем терпимо, неизвестное считаем
+  незаданным, чтобы сработало значение по умолчанию.
+*/
+function flag(raw: string | undefined): boolean | undefined {
+  const value = raw?.trim().toLowerCase().replace(/^["']|["']$/g, "");
+  if (!value) return undefined;
+  if (["true", "1", "yes", "on"].includes(value)) return true;
+  if (["false", "0", "no", "off"].includes(value)) return false;
+  return undefined;
+}
+
+/*
   Вход по ссылке на почту работает в Supabase сразу, а Google требует
   отдельной настройки в Google Cloud. Узнать со стороны сайта, включён ли
   провайдер, нельзя — поэтому спрашиваем явным флагом. Иначе кнопка Google
   висела бы всегда и падала бы с «Unsupported provider».
 */
 export function isGoogleAuthEnabled(): boolean {
-  return process.env.NEXT_PUBLIC_GOOGLE_AUTH === "true";
+  return flag(process.env.NEXT_PUBLIC_GOOGLE_AUTH) === true;
 }
 
 /*
@@ -29,7 +44,7 @@ export function isGoogleAuthEnabled(): boolean {
   настроен и письма уходят только на адрес владельца.
 */
 export function isEmailAuthEnabled(): boolean {
-  return process.env.NEXT_PUBLIC_EMAIL_AUTH !== "false";
+  return flag(process.env.NEXT_PUBLIC_EMAIL_AUTH) !== false;
 }
 
 /** Базовый адрес сайта — нужен для redirect после входа. */
