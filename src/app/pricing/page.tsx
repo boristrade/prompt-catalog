@@ -2,6 +2,7 @@ import Link from "next/link";
 import { Check, Lock, Minus } from "lucide-react";
 import { PROMPTS } from "@/lib/prompts";
 import { getAccount } from "@/lib/account";
+import { PERIODS, YEARLY_PER_MONTH, YEARLY_SAVING } from "@/lib/billing";
 import Reveal from "@/components/Reveal";
 
 /*
@@ -16,19 +17,17 @@ export const metadata = { title: "Тарифы" };
 const proCount = PROMPTS.filter((p) => p.tier === "pro").length;
 const freeCount = PROMPTS.length - proCount;
 
-const MONTHLY = 7.99;
-const YEARLY = 59;
-
-// Считаем, а не вписываем: поменяется цена — цифры сойдутся сами.
-const perMonthYearly = (YEARLY / 12).toFixed(2);
-const saving = Math.round(((MONTHLY * 12 - YEARLY) / (MONTHLY * 12)) * 100);
+// Цены и сроки живут в одном месте — их же читают страница оплаты и
+// обработчик активации.
+const MONTHLY = PERIODS.monthly.price;
+const YEARLY = PERIODS.yearly.price;
 
 interface Plan {
   id: string;
   name: string;
   price: string;
   period: string;
-  /** Какой доступ даёт. В базе тариф только free или pro — срок оплаты она не хранит. */
+  /** Какой доступ даёт: закрытые промты открывает только pro. */
   grants: "free" | "pro";
   summary: string;
   note?: string;
@@ -80,8 +79,8 @@ const PLANS: Plan[] = [
     period: "в год",
     grants: "pro",
     summary: "То же самое, но дешевле почти вдвое.",
-    note: `${perMonthYearly} $ в месяц при оплате сразу за год`,
-    highlight: `−${saving}%`,
+    note: `${YEARLY_PER_MONTH} $ в месяц при оплате сразу за год`,
+    highlight: `−${YEARLY_SAVING}%`,
     features: PRO_FEATURES,
   },
 ];
@@ -128,8 +127,8 @@ export default async function PricingPage() {
                   </h2>
                   {/*
                     У бесплатного отмечаем текущий тариф. У платных этого не
-                    делаем: база хранит только free/pro и не знает, оплачен
-                    месяц или год — отметка на обеих карточках врала бы.
+                    делаем: база хранит дату окончания доступа, но не то, за
+                    какой срок платили, — отметка на обеих карточках врала бы.
                   */}
                   {owned && !isPro && (
                     <span className="rounded-chip border border-line-strong px-2 py-0.5 font-mono text-[10px] tracking-[0.08em] text-muted">
@@ -183,21 +182,12 @@ export default async function PricingPage() {
                       {isPro ? "Доступ уже открыт" : "Тариф уже подключён"}
                     </div>
                   ) : isPro ? (
-                    /*
-                      Оплата ещё не подключена. Живой кнопки здесь не будет,
-                      пока она не начнёт списывать деньги: неработающая кнопка
-                      «Оплатить» подрывает доверие сильнее, чем честная надпись.
-                    */
-                    <div className="rounded-chip border border-dashed border-line-strong px-4 py-3 text-center text-[13px] leading-relaxed text-muted">
-                      Оплата скоро откроется. Напишите на{" "}
-                      <a
-                        href="mailto:support@example.com"
-                        className="text-accent transition-opacity duration-200 hover:opacity-80"
-                      >
-                        support@example.com
-                      </a>
-                      , если доступ нужен сейчас.
-                    </div>
+                    <Link
+                      href={`/pay?period=${p.id === "pro-yearly" ? "yearly" : "monthly"}`}
+                      className="grad-fill block rounded-chip px-4 py-3 text-center text-[13.5px] font-semibold shadow-[0_6px_20px_-8px_var(--glow)] transition-[opacity,transform] duration-200 hover:opacity-90 active:scale-[0.98]"
+                    >
+                      Оплатить
+                    </Link>
                   ) : (
                     <Link
                       href="/login"
