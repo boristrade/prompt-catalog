@@ -1,13 +1,14 @@
 "use client";
 
 import { useState } from "react";
-import { Check, ChevronDown, Copy } from "lucide-react";
+import Link from "next/link";
+import { Check, ChevronDown, Copy, Lock } from "lucide-react";
 import type { Prompt } from "@/lib/prompts";
+import FavoriteButton from "@/components/FavoriteButton";
 
 /*
   Подсвечиваем {переменные} акцентом: сразу видно, что заменять на своё,
-  ещё до чтения текста. Это единственное место, кроме рубрик и меток,
-  где в системе «Graphite» появляется цвет.
+  ещё до чтения текста.
 */
 function highlightVars(text: string) {
   return text.split(/(\{[^{}]*\})/g).map((part, i) =>
@@ -21,7 +22,40 @@ function highlightVars(text: string) {
   );
 }
 
-export default function PromptCard({ prompt }: { prompt: Prompt }) {
+/*
+  Заглушка под замком. Настоящий текст закрытого промта на клиент не
+  уходит вовсе — размытие это лишь картинка, и через инструменты
+  разработчика его читали бы как обычный текст.
+*/
+const VEIL = `Роль: {специалист}, {лет} лет практики в нише {ниша}.
+Задача: подготовить {результат} для {аудитория}.
+
+Контекст:
+— площадка: {площадка}
+— цель: {цель}
+— ограничения: {ограничения}
+
+Формат ответа:
+1. {первый блок}
+2. {второй блок}
+3. {третий блок}
+
+Тон: {тон}. Объём: {объём}.`;
+
+interface Props {
+  prompt: Prompt;
+  /** PRO-промт у пользователя без подписки: текст заменён заглушкой. */
+  locked?: boolean;
+  favorited?: boolean;
+  signedIn?: boolean;
+}
+
+export default function PromptCard({
+  prompt,
+  locked = false,
+  favorited = false,
+  signedIn = false,
+}: Props) {
   const [copied, setCopied] = useState(false);
 
   async function copy() {
@@ -43,15 +77,22 @@ export default function PromptCard({ prompt }: { prompt: Prompt }) {
         <h3 className="text-[15.5px] font-semibold leading-snug tracking-[-0.015em] text-ink">
           {prompt.title}
         </h3>
-        <span
-          className={`shrink-0 rounded-chip px-2 py-1 font-mono text-[10px] tracking-[0.08em] ${
-            prompt.tier === "pro"
-              ? "border border-accent/40 text-accent"
-              : "border border-line-strong text-faint"
-          }`}
-        >
-          {prompt.tier === "pro" ? "PRO" : "FREE"}
-        </span>
+        <div className="flex shrink-0 items-center gap-1.5">
+          <FavoriteButton
+            promptId={prompt.id}
+            initial={favorited}
+            signedIn={signedIn}
+          />
+          <span
+            className={`rounded-chip px-2 py-1 font-mono text-[10px] tracking-[0.08em] ${
+              prompt.tier === "pro"
+                ? "border border-accent/40 text-accent"
+                : "border border-line-strong text-faint"
+            }`}
+          >
+            {prompt.tier === "pro" ? "PRO" : "FREE"}
+          </span>
+        </div>
       </div>
 
       <p className="mt-2 text-[13.5px] leading-relaxed text-muted">
@@ -72,40 +113,70 @@ export default function PromptCard({ prompt }: { prompt: Prompt }) {
         ))}
       </div>
 
-      {/* Текст промта. Кнопка — только иконка, иначе она перекрывает текст. */}
-      <div className="relative mt-4">
-        <pre className="max-h-72 overflow-auto whitespace-pre-wrap rounded-card border border-line bg-sunken p-3.5 pr-11 font-mono text-[12px] leading-[1.65] text-muted">
-          {highlightVars(prompt.prompt)}
-        </pre>
-        <button
-          type="button"
-          onClick={copy}
-          title={copied ? "Скопировано" : "Скопировать промт"}
-          aria-label={copied ? "Скопировано" : "Скопировать промт"}
-          className={`absolute right-2.5 top-2.5 inline-flex h-7 w-7 items-center justify-center rounded-chip transition-colors duration-200 active:scale-90 ${
-            copied
-              ? "bg-accent-soft text-accent"
-              : "border border-line-strong bg-surface text-muted hover:text-ink"
-          }`}
-        >
-          {copied ? <Check size={13} className="pop" /> : <Copy size={13} />}
-        </button>
-      </div>
+      {locked ? (
+        <div className="relative mt-4">
+          <pre
+            aria-hidden
+            className="pointer-events-none max-h-72 select-none overflow-hidden whitespace-pre-wrap rounded-card border border-line bg-sunken p-3.5 font-mono text-[12px] leading-[1.65] text-muted blur-[5px]"
+          >
+            {VEIL}
+          </pre>
 
-      {/* Пример результата */}
-      <details className="group mt-3.5">
-        <summary className="inline-flex cursor-pointer select-none items-center gap-1.5 font-mono text-[11.5px] text-muted transition-colors duration-200 hover:text-ink">
-          <ChevronDown
-            size={13}
-            className="shrink-0 transition-transform duration-300 ease-out group-open:rotate-180"
-          />
-          <span className="group-open:hidden">Показать пример результата</span>
-          <span className="hidden group-open:inline">Скрыть пример</span>
-        </summary>
-        <p className="example-body mt-2.5 whitespace-pre-wrap rounded-card border border-line bg-sunken p-3.5 text-[12.5px] leading-relaxed text-muted">
-          {prompt.example}
-        </p>
-      </details>
+          <div className="absolute inset-0 flex flex-col items-center justify-center gap-3 rounded-card bg-surface/55 px-5 text-center">
+            <span className="flex h-10 w-10 items-center justify-center rounded-full border border-line-strong bg-surface text-accent">
+              <Lock size={16} />
+            </span>
+            <p className="text-[12.5px] leading-relaxed text-muted">
+              Промт входит в PRO-подборку
+            </p>
+            <Link
+              href="/pricing"
+              className="grad-fill rounded-chip px-4 py-2 text-[12.5px] font-semibold shadow-[0_6px_20px_-8px_var(--glow)] transition-[opacity,transform] duration-200 hover:opacity-90 active:scale-[0.97]"
+            >
+              Открыть доступ
+            </Link>
+          </div>
+        </div>
+      ) : (
+        <>
+          {/* Текст промта. Кнопка — только иконка, иначе перекрывает текст. */}
+          <div className="relative mt-4">
+            <pre className="max-h-72 overflow-auto whitespace-pre-wrap rounded-card border border-line bg-sunken p-3.5 pr-11 font-mono text-[12px] leading-[1.65] text-muted">
+              {highlightVars(prompt.prompt)}
+            </pre>
+            <button
+              type="button"
+              onClick={copy}
+              title={copied ? "Скопировано" : "Скопировать промт"}
+              aria-label={copied ? "Скопировано" : "Скопировать промт"}
+              className={`absolute right-2.5 top-2.5 inline-flex h-7 w-7 items-center justify-center rounded-chip transition-colors duration-200 active:scale-90 ${
+                copied
+                  ? "bg-accent-soft text-accent"
+                  : "border border-line-strong bg-surface text-muted hover:text-ink"
+              }`}
+            >
+              {copied ? <Check size={13} className="pop" /> : <Copy size={13} />}
+            </button>
+          </div>
+
+          {/* Пример результата */}
+          <details className="group mt-3.5">
+            <summary className="inline-flex cursor-pointer select-none items-center gap-1.5 font-mono text-[11.5px] text-muted transition-colors duration-200 hover:text-ink">
+              <ChevronDown
+                size={13}
+                className="shrink-0 transition-transform duration-300 ease-out group-open:rotate-180"
+              />
+              <span className="group-open:hidden">
+                Показать пример результата
+              </span>
+              <span className="hidden group-open:inline">Скрыть пример</span>
+            </summary>
+            <p className="example-body mt-2.5 whitespace-pre-wrap rounded-card border border-line bg-sunken p-3.5 text-[12.5px] leading-relaxed text-muted">
+              {prompt.example}
+            </p>
+          </details>
+        </>
+      )}
     </article>
   );
 }

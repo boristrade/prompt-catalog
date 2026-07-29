@@ -9,8 +9,9 @@ const SOCIALS = [
 ];
 
 const SUPPORT = [
+  { label: "Тарифы", href: "/pricing" },
+  { label: "Кабинет", href: "/account" },
   { label: "Частые вопросы", href: "/tools" },
-  { label: "Помощь", href: "/tools" },
   { label: "Обратная связь", href: "mailto:support@example.com" },
 ];
 

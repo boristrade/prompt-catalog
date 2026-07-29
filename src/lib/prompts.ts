@@ -1269,3 +1269,22 @@ export function getPromptsByCategory(category: CategorySlug): Prompt[] {
 export function countByCategory(category: CategorySlug): number {
   return getPromptsByCategory(category).length;
 }
+
+export function getPromptById(id: string): Prompt | undefined {
+  return PROMPTS.find((p) => p.id === id);
+}
+
+/*
+  Готовит промт к отправке в браузер для того, у кого нет доступа.
+  Размытие в карточке — только оформление: текст, попавший в разметку,
+  прочитали бы через инструменты разработчика. Поэтому вырезаем его здесь,
+  на сервере, а карточка под замком рисует собственную заглушку.
+*/
+export function veil(prompt: Prompt): Prompt {
+  return { ...prompt, prompt: "", example: "" };
+}
+
+/** Закрыт ли промт для пользователя с таким тарифом. */
+export function isLocked(prompt: Prompt, plan: "free" | "pro"): boolean {
+  return prompt.tier === "pro" && plan !== "pro";
+}
