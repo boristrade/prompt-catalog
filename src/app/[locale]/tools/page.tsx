@@ -1,27 +1,44 @@
 import { ArrowUpRight } from "lucide-react";
 import { toolsByCategory, TOOLS } from "@/lib/tools";
+import { LOCALES } from "@/lib/i18n/config";
+import { pageLocale } from "@/lib/i18n";
 import Reveal from "@/components/Reveal";
 
-export const metadata = { title: "Полезные инструменты" };
+export function generateStaticParams() {
+  return LOCALES.map((locale) => ({ locale }));
+}
 
-const PRICING_LABEL: Record<string, string> = {
-  free: "бесплатно",
-  freemium: "есть free-план",
-  paid: "платно",
-};
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ locale: string }>;
+}) {
+  const { t } = await pageLocale(params);
+  return { title: t.tools.title };
+}
 
-export default function ToolsPage() {
+export default async function ToolsPage({
+  params,
+}: {
+  params: Promise<{ locale: string }>;
+}) {
+  const { t } = await pageLocale(params);
   const grouped = toolsByCategory();
+
+  const pricingLabel: Record<string, string> = {
+    free: t.tools.free,
+    freemium: t.tools.freemium,
+    paid: t.tools.paid,
+  };
 
   return (
     <section className="pt-16 pb-20 md:pt-20">
-      <p className="eyebrow rise">Подборка</p>
+      <p className="eyebrow rise">{t.tools.eyebrow}</p>
       <h1 className="font-display rise rise-1 mt-4 text-[30px] text-ink md:text-[44px]">
-        Полезные инструменты
+        {t.tools.title}
       </h1>
       <p className="rise rise-2 mt-4 max-w-xl text-[16px] leading-relaxed text-muted">
-        {TOOLS.length} сервисов и нейросетей, которые мы используем сами — по
-        задачам: тексты, изображения, дизайн, видео и маркетплейсы.
+        {TOOLS.length} {t.tools.subtitle1} {t.tools.subtitle2}
       </p>
 
       <div className="mt-12 space-y-10">
@@ -50,11 +67,11 @@ export default function ToolsPage() {
                         className="shrink-0 text-faint transition-[transform,color] duration-200 group-hover:-translate-y-0.5 group-hover:translate-x-0.5 group-hover:text-accent"
                       />
                     </div>
-                    <p className="mt-1.5 flex-1 text-[13px] leading-relaxed text-muted">
+                    <p className="mt-2 flex-1 text-[12.5px] leading-relaxed text-muted">
                       {tool.description}
                     </p>
-                    <span className="mt-3 w-fit rounded-chip bg-sunken px-2 py-1 font-mono text-[10.5px] text-faint">
-                      {PRICING_LABEL[tool.pricing]}
+                    <span className="mt-3 inline-block rounded-chip bg-sunken px-2 py-1 font-mono text-[10.5px] text-faint">
+                      {pricingLabel[tool.pricing]}
                     </span>
                   </a>
                 </Reveal>

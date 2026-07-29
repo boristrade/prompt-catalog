@@ -7,8 +7,12 @@ type Theme = "light" | "dark";
 
 export default function ThemeToggle({
   className = "",
+  toLight,
+  toDark,
 }: {
   className?: string;
+  toLight: string;
+  toDark: string;
 }) {
   // null до монтирования: на сервере тема неизвестна, иконку не рисуем,
   // иначе разметка разойдётся с клиентской.
@@ -54,9 +58,7 @@ export default function ThemeToggle({
     <button
       type="button"
       onClick={toggle}
-      aria-label={
-        theme === "light" ? "Включить тёмную тему" : "Включить светлую тему"
-      }
+      aria-label={theme === "light" ? toDark : toLight}
       className={`inline-flex h-8 w-8 items-center justify-center rounded-chip border border-line text-muted transition-colors duration-200 hover:border-line-strong hover:text-ink active:scale-95 ${className}`}
     >
       {theme === "light" ? (

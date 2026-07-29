@@ -7,9 +7,17 @@ import type { PeriodId } from "@/lib/billing";
 export default function PayButton({
   period,
   amount,
+  payLabel,
+  preparingLabel,
+  errInvoice,
+  errUnavailable,
 }: {
   period: PeriodId;
   amount: number;
+  payLabel: string;
+  preparingLabel: string;
+  errInvoice: string;
+  errUnavailable: string;
 }) {
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -28,7 +36,7 @@ export default function PayButton({
       const json = (await response.json()) as { url?: string; error?: string };
 
       if (!response.ok || !json.url) {
-        setError("Не удалось создать счёт. Попробуйте ещё раз.");
+        setError(errInvoice);
         setBusy(false);
         return;
       }
@@ -37,7 +45,7 @@ export default function PayButton({
       // кнопка должна остаться неактивной, пока браузер переходит.
       window.location.href = json.url;
     } catch {
-      setError("Сервис оплаты недоступен.");
+      setError(errUnavailable);
       setBusy(false);
     }
   }
@@ -50,7 +58,7 @@ export default function PayButton({
         disabled={busy}
         className="grad-fill inline-flex w-full items-center justify-center gap-2 rounded-chip px-5 py-3.5 text-[14px] font-semibold shadow-[0_6px_20px_-8px_var(--glow)] transition-[opacity,transform] duration-200 hover:opacity-90 active:scale-[0.98] disabled:opacity-60"
       >
-        {busy ? "Готовим счёт…" : `Оплатить $${amount}`}
+        {busy ? preparingLabel : `${payLabel} $${amount}`}
         {!busy && <ArrowUpRight size={15} />}
       </button>
 

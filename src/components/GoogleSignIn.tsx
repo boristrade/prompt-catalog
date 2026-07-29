@@ -27,7 +27,19 @@ function GoogleMark() {
   );
 }
 
-export default function GoogleSignIn({ next = "/" }: { next?: string }) {
+export default function GoogleSignIn({
+  next = "/",
+  label,
+  loadingLabel,
+  errLabel,
+  errUnavailable,
+}: {
+  next?: string;
+  label: string;
+  loadingLabel: string;
+  errLabel: string;
+  errUnavailable: string;
+}) {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -46,12 +58,12 @@ export default function GoogleSignIn({ next = "/" }: { next?: string }) {
       });
 
       if (error) {
-        setError("Не удалось начать вход. Попробуйте ещё раз.");
+        setError(errLabel);
         setLoading(false);
       }
       // При успехе браузер уходит на Google — состояние сбрасывать не нужно.
     } catch {
-      setError("Сервис авторизации недоступен.");
+      setError(errUnavailable);
       setLoading(false);
     }
   }
@@ -65,7 +77,7 @@ export default function GoogleSignIn({ next = "/" }: { next?: string }) {
         className="flex w-full items-center justify-center gap-2.5 rounded-chip border border-line-strong bg-surface px-4 py-3 text-[14px] font-medium text-ink transition-[background-color,transform] duration-200 hover:bg-sunken active:scale-[0.98] disabled:opacity-60"
       >
         <GoogleMark />
-        {loading ? "Открываем Google…" : "Продолжить с Google"}
+        {loading ? loadingLabel : label}
       </button>
 
       {error && (

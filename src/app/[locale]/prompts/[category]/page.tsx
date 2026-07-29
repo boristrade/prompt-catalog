@@ -2,6 +2,7 @@ import { notFound } from "next/navigation";
 import { getCategory } from "@/lib/categories";
 import { getPromptsByCategory, isLocked, veil } from "@/lib/prompts";
 import { getAccount } from "@/lib/account";
+import { pageLocale } from "@/lib/i18n";
 import PromptCard from "@/components/PromptCard";
 import Reveal from "@/components/Reveal";
 
@@ -12,28 +13,25 @@ import Reveal from "@/components/Reveal";
 */
 export const dynamic = "force-dynamic";
 
-/*
-  generateStaticParams здесь больше нет намеренно: он пересиливает
-  force-dynamic, и страница снова уезжала бы в предсборку. Категорий
-  всего четыре и данные лежат в коде — рендер дешёвый.
-*/
-
 export async function generateMetadata({
   params,
 }: {
-  params: Promise<{ category: string }>;
+  params: Promise<{ locale: string; category: string }>;
 }) {
-  const { category } = await params;
+  const { category, locale } = await params;
+  const { t } = await pageLocale(Promise.resolve({ locale }));
   const cat = getCategory(category);
-  return { title: cat ? cat.title : "Каталог" };
+  return { title: cat ? t.categories[cat.slug].title : t.catalog.title };
 }
 
 export default async function CategoryPage({
   params,
 }: {
-  params: Promise<{ category: string }>;
+  params: Promise<{ locale: string; category: string }>;
 }) {
-  const { category } = await params;
+  const { category, locale: rawLocale } = await params;
+  const { locale, t } = await pageLocale(Promise.resolve({ locale: rawLocale }));
+
   const cat = getCategory(category);
   if (!cat) notFound();
 
@@ -46,24 +44,24 @@ export default async function CategoryPage({
 
   return (
     <section className="pt-16 pb-20 md:pt-20">
-      <p className="eyebrow rise">Каталог</p>
+      <p className="eyebrow rise">{t.catalog.eyebrow}</p>
       <h1 className="font-display rise rise-1 mt-4 text-[30px] text-ink md:text-[44px]">
-        {cat.title}
+        {t.categories[cat.slug].title}
       </h1>
       <p className="rise rise-2 mt-4 max-w-xl text-[16px] leading-relaxed text-muted">
-        {cat.description}
+        {t.categories[cat.slug].description}
       </p>
 
       <div className="rise rise-3 mt-5 flex flex-wrap items-center gap-x-4 gap-y-2 font-mono text-[11.5px] text-faint">
         <span>
-          <span className="text-ink">{prompts.length}</span> промтов
+          <span className="text-ink">{prompts.length}</span> {t.catalog.prompts}
         </span>
         <span className="text-line-strong">·</span>
         <span>
-          <span className="text-ink">{freeCount}</span> бесплатно
+          <span className="text-ink">{freeCount}</span> {t.catalog.free}
         </span>
         <span className="text-line-strong">·</span>
-        <span>копируются в один клик</span>
+        <span>{t.catalog.oneClick}</span>
       </div>
 
       {prompts.length > 0 ? (
@@ -79,6 +77,8 @@ export default async function CategoryPage({
                   locked={locked}
                   favorited={account?.favorites.has(p.id) ?? false}
                   signedIn={Boolean(account)}
+                  locale={locale}
+                  t={t}
                 />
               </Reveal>
             );
@@ -86,7 +86,7 @@ export default async function CategoryPage({
         </div>
       ) : (
         <div className="mt-10 rounded-card border border-line bg-surface p-10 text-center text-[13.5px] text-muted">
-          Промты для этого раздела скоро появятся.
+          {t.catalog.empty}
         </div>
       )}
     </section>

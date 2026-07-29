@@ -6,7 +6,15 @@ import { createClient } from "@/lib/supabase/client";
 
 type Status = "idle" | "sending" | "sent";
 
-export default function EmailSignIn({ next = "/" }: { next?: string }) {
+import type { Dictionary } from "@/lib/i18n/dictionaries";
+
+export default function EmailSignIn({
+  next = "/",
+  t,
+}: {
+  next?: string;
+  t: Dictionary;
+}) {
   const [email, setEmail] = useState("");
   const [status, setStatus] = useState<Status>("idle");
   const [error, setError] = useState<string | null>(null);
@@ -34,8 +42,8 @@ export default function EmailSignIn({ next = "/" }: { next?: string }) {
         */
         setError(
           error.status === 429
-            ? "Ссылку уже отправляли. Повторить можно чуть позже."
-            : "Не удалось отправить письмо. Проверьте адрес и попробуйте ещё раз.",
+            ? t.login.errRate
+            : t.login.errSend,
         );
         setStatus("idle");
         return;
@@ -43,7 +51,7 @@ export default function EmailSignIn({ next = "/" }: { next?: string }) {
 
       setStatus("sent");
     } catch {
-      setError("Сервис авторизации недоступен.");
+      setError(t.login.errUnavailable);
       setStatus("idle");
     }
   }
@@ -60,18 +68,17 @@ export default function EmailSignIn({ next = "/" }: { next?: string }) {
           <Mail size={17} />
         </div>
         <p className="mt-3.5 text-[13.5px] leading-relaxed text-ink">
-          Ссылка отправлена на <span className="font-medium">{email}</span>
+          {t.login.sentTo} <span className="font-medium">{email}</span>
         </p>
         <p className="mt-1.5 text-[12.5px] leading-relaxed text-muted">
-          Откройте письмо и нажмите на ссылку — вход произойдёт сам. Если письма
-          нет, загляните в «Спам».
+          {t.login.sentHint}
         </p>
         <button
           type="button"
           onClick={() => setStatus("idle")}
           className="mt-4 text-[12.5px] text-muted underline underline-offset-4 transition-colors duration-200 hover:text-ink"
         >
-          Указать другой адрес
+          {t.login.otherEmail}
         </button>
       </div>
     );
@@ -83,7 +90,7 @@ export default function EmailSignIn({ next = "/" }: { next?: string }) {
         htmlFor="email"
         className="block text-[12.5px] font-medium text-muted"
       >
-        Почта
+        {t.login.emailLabel}
       </label>
       <input
         id="email"
@@ -101,11 +108,11 @@ export default function EmailSignIn({ next = "/" }: { next?: string }) {
         disabled={status === "sending"}
         className="grad-fill mt-3 w-full rounded-chip px-4 py-3 text-[14px] font-semibold shadow-[0_6px_20px_-8px_var(--glow)] transition-[opacity,transform] duration-200 hover:opacity-90 active:scale-[0.98] disabled:opacity-60"
       >
-        {status === "sending" ? "Отправляем…" : "Получить ссылку для входа"}
+        {status === "sending" ? t.login.sending : t.login.sendLink}
       </button>
 
       <p className="mt-2.5 text-[12px] leading-relaxed text-faint">
-        Пароль не нужен — пришлём ссылку на почту.
+        {t.login.noPassword}
       </p>
 
       {error && (

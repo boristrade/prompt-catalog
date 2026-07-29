@@ -1,17 +1,21 @@
+import { headers } from "next/headers";
 import type { Metadata } from "next";
 import Header from "@/components/layout/Header";
 import Footer from "@/components/layout/Footer";
 import { getCurrentUser } from "@/lib/supabase/server";
 import type { SessionUser } from "@/components/layout/UserMenu";
+import { DEFAULT_LOCALE, isLocale } from "@/lib/i18n/config";
+import { getDictionary } from "@/lib/i18n/dictionaries";
+import { LOCALE_HEADER } from "@/middleware";
 import "./globals.css";
 
 export const metadata: Metadata = {
   title: {
-    default: "PrompTom — каталог AI-промтов",
+    default: "PrompTom — AI prompt catalogue",
     template: "%s — PrompTom",
   },
   description:
-    "Отобранные AI-промты для дизайнеров, маркетологов, UGC-креаторов и продавцов маркетплейсов.",
+    "Curated AI prompts for designers, marketers, UGC creators and marketplace sellers.",
 };
 
 /*
@@ -23,6 +27,15 @@ const themeInit = `(function(){var d=document.documentElement;d.setAttribute("da
 export default async function RootLayout({
   children,
 }: Readonly<{ children: React.ReactNode }>) {
+  /*
+    Язык кладёт в заголовок middleware. Прочитать сегмент пути из
+    корневого layout нельзя, а <html lang> нужен именно здесь: он
+    подсказывает переносы, озвучку и предложение перевести страницу.
+  */
+  const raw = (await headers()).get(LOCALE_HEADER) ?? "";
+  const locale = isLocale(raw) ? raw : DEFAULT_LOCALE;
+  const t = getDictionary(locale);
+
   // Данные Google приходят в user_metadata: имя и ссылка на аватар.
   const account = await getCurrentUser();
   const user: SessionUser | null = account
@@ -38,7 +51,7 @@ export default async function RootLayout({
     : null;
 
   return (
-    <html lang="ru" suppressHydrationWarning>
+    <html lang={locale} suppressHydrationWarning>
       <head>
         <script dangerouslySetInnerHTML={{ __html: themeInit }} />
         {/* Inter — единственная гарнитура. Подключаем через <link>,
@@ -55,11 +68,11 @@ export default async function RootLayout({
         />
       </head>
       <body className="min-h-screen flex flex-col antialiased">
-        <Header user={user} />
+        <Header user={user} locale={locale} t={t} />
         <main className="flex-1 w-full max-w-[1120px] mx-auto px-5 md:px-8">
           {children}
         </main>
-        <Footer />
+        <Footer locale={locale} t={t} />
       </body>
     </html>
   );

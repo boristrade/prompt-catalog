@@ -3,6 +3,8 @@
 import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { CreditCard, LogOut, User } from "lucide-react";
+import type { Locale } from "@/lib/i18n/config";
+import type { Dictionary } from "@/lib/i18n/dictionaries";
 
 export interface SessionUser {
   email: string;
@@ -11,7 +13,15 @@ export interface SessionUser {
 }
 
 /** Аватар с выпадающим меню и выходом. */
-export default function UserMenu({ user }: { user: SessionUser }) {
+export default function UserMenu({
+  user,
+  locale,
+  t,
+}: {
+  user: SessionUser;
+  locale: Locale;
+  t: Dictionary;
+}) {
   const [open, setOpen] = useState(false);
   const ref = useRef<HTMLDivElement>(null);
 
@@ -45,7 +55,7 @@ export default function UserMenu({ user }: { user: SessionUser }) {
         onClick={() => setOpen(!open)}
         aria-haspopup="menu"
         aria-expanded={open}
-        aria-label="Меню пользователя"
+        aria-label={t.header.userMenu}
         className="flex items-center gap-2 rounded-chip border border-line px-1.5 py-1.5 transition-colors duration-200 hover:border-line-strong"
       >
         {user.avatarUrl ? (
@@ -77,7 +87,7 @@ export default function UserMenu({ user }: { user: SessionUser }) {
         >
           <div className="border-b border-line px-4 py-3">
             <div className="truncate text-[13px] font-medium text-ink">
-              {user.name || "Аккаунт"}
+              {user.name || t.header.accountFallback}
             </div>
             <div className="mt-0.5 truncate text-[12px] text-muted">
               {user.email}
@@ -85,23 +95,23 @@ export default function UserMenu({ user }: { user: SessionUser }) {
           </div>
 
           <Link
-            href="/account"
+            href={`/${locale}/account`}
             role="menuitem"
             onClick={() => setOpen(false)}
             className="flex w-full items-center gap-2 px-4 py-3 text-left text-[13px] text-muted transition-colors duration-200 hover:bg-sunken hover:text-ink"
           >
             <User size={14} />
-            Кабинет и избранное
+            {t.header.account}
           </Link>
 
           <Link
-            href="/pricing"
+            href={`/${locale}/pricing`}
             role="menuitem"
             onClick={() => setOpen(false)}
             className="flex w-full items-center gap-2 border-b border-line px-4 py-3 text-left text-[13px] text-muted transition-colors duration-200 hover:bg-sunken hover:text-ink"
           >
             <CreditCard size={14} />
-            Тарифы
+            {t.header.pricing}
           </Link>
 
           <form action="/auth/signout" method="post">
@@ -111,7 +121,7 @@ export default function UserMenu({ user }: { user: SessionUser }) {
               className="flex w-full items-center gap-2 px-4 py-3 text-left text-[13px] text-muted transition-colors duration-200 hover:bg-sunken hover:text-ink"
             >
               <LogOut size={14} />
-              Выйти
+              {t.header.logout}
             </button>
           </form>
         </div>
