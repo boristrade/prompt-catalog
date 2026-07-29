@@ -54,8 +54,8 @@ export default async function PayPage({
               <Bitcoin size={14} />
             </span>
             <p className="text-[12px] leading-relaxed text-faint">
-              Оплата криптовалютой через Cryptomus. Поддерживаются USDT, BTC,
-              ETH и ещё больше сотни монет — выберете на следующем шаге.
+              Оплата криптовалютой через NOWPayments. Поддерживаются USDT, BTC,
+              ETH и ещё три сотни монет — выберете на следующем шаге.
             </p>
           </div>
         </div>

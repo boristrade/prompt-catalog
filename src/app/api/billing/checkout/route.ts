@@ -2,12 +2,12 @@ import { NextResponse, type NextRequest } from "next/server";
 import { createClient, getCurrentUser } from "@/lib/supabase/server";
 import { isSupabaseConfigured, siteUrl } from "@/lib/supabase/config";
 import { PERIODS, buildOrderId, isPeriodId } from "@/lib/billing";
-import { createInvoice } from "@/lib/cryptomus";
+import { createInvoice } from "@/lib/nowpayments";
 
 export const dynamic = "force-dynamic";
 
 /*
-  Создаёт счёт в Cryptomus и отдаёт ссылку на оплату.
+  Создаёт счёт в NOWPayments и отдаёт ссылку на оплату.
 
   Сумма берётся с сервера из PERIODS, а не из тела запроса: иначе любой
   желающий выставил бы себе счёт на один цент и получил год доступа.
@@ -50,10 +50,12 @@ export async function POST(request: NextRequest) {
 
     const base = siteUrl();
     const invoice = await createInvoice({
-      amount: period.price.toFixed(2),
+      amount: period.price,
       orderId: buildOrderId(code, period.id),
-      callbackUrl: `${base}/api/billing/cryptomus`,
-      returnUrl: `${base}/account`,
+      description: `PrompTom — ${period.name}`,
+      callbackUrl: `${base}/api/billing/nowpayments`,
+      successUrl: `${base}/account`,
+      cancelUrl: `${base}/pricing`,
     });
 
     return NextResponse.json({ url: invoice.url });
