@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { redirect } from "next/navigation";
-import { Heart, LogOut, Sparkles } from "lucide-react";
+import { CalendarClock, Heart, LogOut, Sparkles } from "lucide-react";
 import { getCurrentUser } from "@/lib/supabase/server";
 import { getAccount } from "@/lib/account";
 import { getPromptById, isLocked, veil } from "@/lib/prompts";
@@ -23,6 +23,14 @@ export default async function AccountPage() {
 
   const account = await getAccount();
   const plan = account?.plan ?? "free";
+
+  // Бессрочный доступ, выданный руками, показывать датой незачем.
+  const until = account?.proUntil ?? null;
+  const endless = until !== null && until.getFullYear() > 9000;
+  const daysLeft =
+    until && !endless
+      ? Math.max(0, Math.ceil((until.getTime() - Date.now()) / 86400000))
+      : null;
 
   const name =
     (user.user_metadata?.full_name as string | undefined) ??
@@ -95,6 +103,40 @@ export default async function AccountPage() {
           </form>
         </div>
       </div>
+
+      {plan === "pro" && !endless && until && (
+        <Reveal delay={60}>
+          <div className="mt-4 flex flex-col gap-4 rounded-card border border-line bg-surface p-6 sm:flex-row sm:items-center sm:justify-between">
+            <div className="flex items-start gap-3.5">
+              <span className="mt-0.5 shrink-0 text-accent">
+                <CalendarClock size={16} />
+              </span>
+              <div>
+                <div className="text-[14.5px] font-semibold text-ink">
+                  Доступ до{" "}
+                  {until.toLocaleDateString("ru-RU", {
+                    day: "numeric",
+                    month: "long",
+                    year: "numeric",
+                  })}
+                </div>
+                <p className="mt-1 text-[13px] leading-relaxed text-muted">
+                  {/* Про отсутствие автосписания говорим прямо: человек
+                      вправе знать, что деньги сами не спишутся. */}
+                  Осталось {daysLeft} дн. Подписка не продлевается сама —
+                  продлите вручную, когда срок подойдёт к концу.
+                </p>
+              </div>
+            </div>
+            <Link
+              href="/pricing"
+              className="shrink-0 rounded-chip border border-line-strong px-5 py-2.5 text-center text-[13.5px] font-medium text-ink transition-[background-color,transform] duration-200 hover:bg-sunken active:scale-[0.97]"
+            >
+              Продлить
+            </Link>
+          </div>
+        </Reveal>
+      )}
 
       {plan === "free" && (
         <Reveal delay={60}>

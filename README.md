@@ -132,6 +132,60 @@ where id = (select id from auth.users where email = 'кому@example.com');
 
 Из-за этого страницы каталога, тарифов и кабинета отдаются динамически: замки и избранное у каждого свои, предсобранная страница показала бы одному состояние другого.
 
+## Оплата
+
+Автосписание требует ФОП или юрлица, поэтому оплата **разовая**: человек платит за 30 дней или за 365, доступ живёт до даты и не продлевается сам. В `profiles` за это отвечает `pro_until` — единственный источник правды. Истёк срок — доступ закрылся сам, без задачи по расписанию.
+
+Миграция: `supabase/migrations/0002_access_period.sql`.
+
+### Как проходит платёж
+
+1. На `/pricing` человек жмёт «Оплатить» и попадает на `/pay?period=monthly|yearly`.
+2. Там он видит свой `payment_code` — восемь символов, привязанных к аккаунту.
+3. Платит в Donatello и вставляет код в комментарий.
+4. Обработчик находит платёж по коду и вызывает `/api/billing/activate`.
+
+### Переменные окружения
+
+| Переменная | Зачем |
+|---|---|
+| `NEXT_PUBLIC_DONATELLO_URL` | адрес вашей страницы в Donatello |
+| `BILLING_WEBHOOK_SECRET` | токен для `/api/billing/activate`, `openssl rand -hex 32` |
+| `SUPABASE_SERVICE_ROLE_KEY` | нужен, чтобы сервер менял чужой `pro_until` в обход RLS |
+
+`SUPABASE_SERVICE_ROLE_KEY` даёт полный доступ к базе. Он не должен иметь префикс `NEXT_PUBLIC_` и не должен попадать в браузер: файл `src/lib/supabase/admin.ts` помечен `server-only`, и сборка упадёт при попытке затянуть его в клиентский компонент.
+
+### Открыть доступ вручную
+
+Пока автоматика не подключена — и как запасной путь, когда человек забыл указать код:
+
+```bash
+curl -X POST https://prompt-catalog-alpha.vercel.app/api/billing/activate \
+  -H "Authorization: Bearer $BILLING_WEBHOOK_SECRET" \
+  -H "Content-Type: application/json" \
+  -d '{"code":"A1B2C3D4","period":"yearly"}'
+```
+
+Или прямо в SQL Editor:
+
+```sql
+update public.profiles set pro_until = now() + interval '1 year'
+where id = (select id from auth.users where email = 'кому@example.com');
+```
+
+Узнать чей код:
+
+```sql
+select u.email, p.payment_code, p.pro_until
+from public.profiles p join auth.users u on u.id = p.id;
+```
+
+### Что ещё не сделано
+
+Связка с Donatello — их API отдаёт список донатов по ключу, и нужен небольшой обработчик, который периодически его читает, ищет код в комментарии и дёргает `/api/billing/activate`. Точный формат ответа Donatello не опубликован, поэтому дописывается после первого живого платежа.
+
+Сам сайт от платёжной системы не зависит: `/api/billing/activate` — общая точка входа. Смена Donatello на что угодно другое не потребует правок в каталоге, кабинете и тарифах.
+
 ## Структура
 
 ```
