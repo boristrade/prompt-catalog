@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { redirect } from "next/navigation";
 import {
+  isEmailAuthEnabled,
   isGoogleAuthEnabled,
   isSupabaseConfigured,
 } from "@/lib/supabase/config";
@@ -28,6 +29,8 @@ export default async function LoginPage({
   if (user) redirect("/");
 
   const configured = isSupabaseConfigured();
+  const google = configured && isGoogleAuthEnabled();
+  const email = configured && isEmailAuthEnabled();
   const safeNext = next?.startsWith("/") && !next.startsWith("//") ? next : "/";
 
   return (
@@ -41,26 +44,27 @@ export default async function LoginPage({
           </p>
 
           <div className="mt-6">
-            {configured ? (
-              <>
-                {/* Google — сверху, если настроен: он в один клик.
-                    Почта работает всегда и потому идёт как основной путь. */}
-                {isGoogleAuthEnabled() && (
-                  <div className="mb-5">
-                    <GoogleSignIn next={safeNext} />
-                    <div className="mt-5 flex items-center gap-3">
-                      <span className="h-px flex-1 bg-line" />
-                      <span className="text-[12px] text-faint">или</span>
-                      <span className="h-px flex-1 bg-line" />
-                    </div>
-                  </div>
-                )}
-                <EmailSignIn next={safeNext} />
-              </>
-            ) : (
+            {/* Google идёт первым: он в один клик и без писем. */}
+            {google && <GoogleSignIn next={safeNext} />}
+
+            {/* Разделитель нужен, только когда способов правда два. */}
+            {google && email && (
+              <div className="my-5 flex items-center gap-3">
+                <span className="h-px flex-1 bg-line" />
+                <span className="text-[12px] text-faint">или</span>
+                <span className="h-px flex-1 bg-line" />
+              </div>
+            )}
+
+            {email && <EmailSignIn next={safeNext} />}
+
+            {/* Карточка без единого способа входа выглядела бы сломанной,
+                поэтому объясняем, что происходит. */}
+            {!google && !email && (
               <div className="rounded-chip border border-dashed border-line-strong px-4 py-4 text-center text-[13px] leading-relaxed text-muted">
-                Вход подключается — осталось задать ключи Supabase в переменных
-                окружения.
+                {configured
+                  ? "Способы входа сейчас отключены. Загляните позже."
+                  : "Вход подключается — осталось задать ключи Supabase в переменных окружения."}
               </div>
             )}
           </div>

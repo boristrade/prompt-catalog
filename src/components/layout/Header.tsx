@@ -132,7 +132,9 @@ export default function Header({ user }: { user: SessionUser | null }) {
               onClick={() => setOpen(false)}
               className="grad-fill mt-4 block w-full rounded-chip py-2.5 text-center text-[13.5px] font-semibold"
             >
-              Войти через Google
+              {/* Без названия способа: их набор задаётся переменными
+                  окружения, и «через Google» врало бы при выключенном Google. */}
+              Войти
             </Link>
           )}
         </nav>
