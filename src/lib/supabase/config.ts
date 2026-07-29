@@ -22,7 +22,17 @@ export function isGoogleAuthEnabled(): boolean {
   return process.env.NEXT_PUBLIC_GOOGLE_AUTH === "true";
 }
 
-/** Базовый адрес сайта — нужен для redirect после входа через Google. */
+/*
+  Обратный по смыслу флаг: почта включена, пока её явно не выключили.
+  Так свежий проект с одними ключами Supabase сразу пускает пользователей,
+  а выключать приходится осознанно — например, когда свой SMTP ещё не
+  настроен и письма уходят только на адрес владельца.
+*/
+export function isEmailAuthEnabled(): boolean {
+  return process.env.NEXT_PUBLIC_EMAIL_AUTH !== "false";
+}
+
+/** Базовый адрес сайта — нужен для redirect после входа. */
 export function siteUrl(): string {
   const explicit = process.env.NEXT_PUBLIC_SITE_URL;
   if (explicit) return explicit.replace(/\/$/, "");

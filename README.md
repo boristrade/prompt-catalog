@@ -36,6 +36,8 @@ npm run dev                  # http://localhost:3000
 {{ .SiteURL }}/auth/callback?token_hash={{ .TokenHash }}&type=email
 ```
 
+Пока свой SMTP не настроен, форму почты лучше убрать совсем: `NEXT_PUBLIC_EMAIL_AUTH=false`. Иначе посетитель введёт свой адрес и упрётся в ошибку отправки — обещать способ входа, который работает только у владельца, хуже, чем не показывать его.
+
 Встроенная почта Supabase — общая на всех проектах и шлёт **2 письма в час**. Этого не хватает даже на отладку: пара попыток входа, и следующая ссылка придёт только через час. Подключите свой SMTP в **Project Settings → Authentication → SMTP Settings** — у Resend, Brevo и подобных есть бесплатные тарифы на тысячи писем.
 
 ### Добавить Google (по желанию)
@@ -78,6 +80,7 @@ NEXT_PUBLIC_GOOGLE_AUTH=true
 | `NEXT_PUBLIC_SUPABASE_ANON_KEY` | `anon public` из Project Settings → API |
 | `NEXT_PUBLIC_SITE_URL` | `https://prompt-catalog-alpha.vercel.app` |
 | `NEXT_PUBLIC_GOOGLE_AUTH` | `true`, только если настроен Google |
+| `NEXT_PUBLIC_EMAIL_AUTH` | `false`, чтобы убрать вход по почте (по умолчанию включён) |
 
 `anon`-ключ публичный, его можно отдавать в браузер. `SUPABASE_SERVICE_ROLE_KEY` в авторизации не участвует и на клиент попадать не должен.
 
