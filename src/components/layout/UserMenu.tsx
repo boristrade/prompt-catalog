@@ -1,7 +1,8 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import { LogOut } from "lucide-react";
+import Link from "next/link";
+import { CreditCard, LogOut, User } from "lucide-react";
 
 export interface SessionUser {
   email: string;
@@ -82,6 +83,26 @@ export default function UserMenu({ user }: { user: SessionUser }) {
               {user.email}
             </div>
           </div>
+
+          <Link
+            href="/account"
+            role="menuitem"
+            onClick={() => setOpen(false)}
+            className="flex w-full items-center gap-2 px-4 py-3 text-left text-[13px] text-muted transition-colors duration-200 hover:bg-sunken hover:text-ink"
+          >
+            <User size={14} />
+            Кабинет и избранное
+          </Link>
+
+          <Link
+            href="/pricing"
+            role="menuitem"
+            onClick={() => setOpen(false)}
+            className="flex w-full items-center gap-2 border-b border-line px-4 py-3 text-left text-[13px] text-muted transition-colors duration-200 hover:bg-sunken hover:text-ink"
+          >
+            <CreditCard size={14} />
+            Тарифы
+          </Link>
 
           <form action="/auth/signout" method="post">
             <button

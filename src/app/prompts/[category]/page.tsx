@@ -1,12 +1,22 @@
 import { notFound } from "next/navigation";
-import { CATEGORIES, getCategory } from "@/lib/categories";
-import { getPromptsByCategory } from "@/lib/prompts";
+import { getCategory } from "@/lib/categories";
+import { getPromptsByCategory, isLocked, veil } from "@/lib/prompts";
+import { getAccount } from "@/lib/account";
 import PromptCard from "@/components/PromptCard";
 import Reveal from "@/components/Reveal";
 
-export function generateStaticParams() {
-  return CATEGORIES.map((c) => ({ category: c.slug }));
-}
+/*
+  Страница зависит от вошедшего пользователя: избранное, тариф и замки на
+  PRO-промтах у каждого свои. Без этой строки Next пытается отдать её из
+  предсборки, и один посетитель увидел бы состояние другого.
+*/
+export const dynamic = "force-dynamic";
+
+/*
+  generateStaticParams здесь больше нет намеренно: он пересиливает
+  force-dynamic, и страница снова уезжала бы в предсборку. Категорий
+  всего четыре и данные лежат в коде — рендер дешёвый.
+*/
 
 export async function generateMetadata({
   params,
@@ -29,6 +39,10 @@ export default async function CategoryPage({
 
   const prompts = getPromptsByCategory(cat.slug);
   const freeCount = prompts.filter((p) => p.tier === "free").length;
+
+  // Гость — тот же бесплатный тариф, только ещё и без избранного.
+  const account = await getAccount();
+  const plan = account?.plan ?? "free";
 
   return (
     <section className="pt-16 pb-20 md:pt-20">
@@ -54,13 +68,21 @@ export default async function CategoryPage({
 
       {prompts.length > 0 ? (
         <div className="mt-10 grid items-start gap-3 lg:grid-cols-2">
-          {prompts.map((p, i) => (
-            // Каскад только внутри пары соседних карточек — иначе нижние
-            // ряды ждали бы слишком долго.
-            <Reveal key={p.id} delay={(i % 2) * 70}>
-              <PromptCard prompt={p} />
-            </Reveal>
-          ))}
+          {prompts.map((p, i) => {
+            const locked = isLocked(p, plan);
+            return (
+              // Каскад только внутри пары соседних карточек — иначе нижние
+              // ряды ждали бы слишком долго.
+              <Reveal key={p.id} delay={(i % 2) * 70}>
+                <PromptCard
+                  prompt={locked ? veil(p) : p}
+                  locked={locked}
+                  favorited={account?.favorites.has(p.id) ?? false}
+                  signedIn={Boolean(account)}
+                />
+              </Reveal>
+            );
+          })}
         </div>
       ) : (
         <div className="mt-10 rounded-card border border-line bg-surface p-10 text-center text-[13.5px] text-muted">

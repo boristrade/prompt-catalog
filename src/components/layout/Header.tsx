@@ -17,6 +17,7 @@ const NAV = [
     full: c.nav,
   })),
   { href: "/tools", label: "Инструменты" },
+  { href: "/pricing", label: "Тарифы" },
 ];
 
 function Logo() {
@@ -117,7 +118,14 @@ export default function Header({ user }: { user: SessionUser | null }) {
               <div className="mt-0.5 truncate text-[12px] text-muted">
                 {user.email}
               </div>
-              <form action="/auth/signout" method="post" className="mt-3">
+              <Link
+                href="/account"
+                onClick={() => setOpen(false)}
+                className="mt-3 block rounded-chip border border-line-strong py-2 text-center text-[13px] font-medium text-ink"
+              >
+                Кабинет и избранное
+              </Link>
+              <form action="/auth/signout" method="post" className="mt-2">
                 <button
                   type="submit"
                   className="w-full rounded-chip border border-line-strong py-2 text-[13px] font-medium text-ink"
