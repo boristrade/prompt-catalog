@@ -15,12 +15,32 @@ import { CATEGORIES, type CategorySlug } from "@/lib/categories";
 import { PROMPTS, countByCategory } from "@/lib/prompts";
 import { TOOLS } from "@/lib/tools";
 import { LOCALES } from "@/lib/i18n/config";
-import { pageLocale } from "@/lib/i18n";
+import { localeAlternates, pageLocale } from "@/lib/i18n";
 import Reveal from "@/components/Reveal";
 import HeroVisual from "@/components/HeroVisual";
 
 export function generateStaticParams() {
   return LOCALES.map((locale) => ({ locale }));
+}
+
+/*
+  Заголовок вкладки и описание для поиска — на языке страницы. Без этого
+  главная брала их из корневого layout, то есть у француза и немца в
+  выдаче стояла английская строка при французском тексте на самой странице.
+*/
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ locale: string }>;
+}) {
+  const { locale, t } = await pageLocale(params);
+  return {
+    // Без второй половины заголовка: к ней шаблон добавит «— PrompTom»,
+    // и в выдаче строка обрежется на середине.
+    title: t.home.titleMain,
+    description: t.home.subtitle,
+    alternates: localeAlternates(locale),
+  };
 }
 
 const freeCount = PROMPTS.filter((p) => p.tier === "free").length;
