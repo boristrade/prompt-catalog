@@ -1,4 +1,5 @@
 import Link from "next/link";
+import Image from "next/image";
 import {
   ArrowRight,
   Check,
@@ -15,6 +16,7 @@ import {
 import { CATEGORIES, type CategorySlug } from "@/lib/categories";
 import { PROMPTS, countByCategory } from "@/lib/prompts";
 import { TOOLS } from "@/lib/tools";
+import { coverFor } from "@/lib/covers";
 import { LOCALES } from "@/lib/i18n/config";
 import { localeAlternates, pageLocale } from "@/lib/i18n";
 import Reveal from "@/components/Reveal";
@@ -182,34 +184,63 @@ export default async function HomePage({
         <div className="mt-7 grid gap-3 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5">
           {CATEGORIES.map((c, i) => {
             const { Icon, from, to } = CATEGORY_STYLE[c.slug];
+            const cover = coverFor(c.slug);
             return (
               <Reveal key={c.slug} delay={i * 70}>
                 <Link
                   href={`/${locale}/prompts/${c.slug}`}
-                  className="group flex h-full flex-col rounded-card border border-line bg-surface p-5 transition-[border-color,transform] duration-200 ease-out hover:-translate-y-1 hover:border-line-strong"
+                  className="group flex h-full flex-col overflow-hidden rounded-card border border-line bg-surface transition-[border-color,transform] duration-200 ease-out hover:-translate-y-1 hover:border-line-strong"
                 >
-                  <span
-                    className="mb-4 flex h-12 w-12 items-center justify-center rounded-[14px] text-white"
-                    style={{
-                      backgroundImage: `linear-gradient(135deg, ${from}, ${to})`,
-                      boxShadow: `0 12px 26px -14px ${from}`,
-                    }}
-                  >
-                    <Icon size={21} />
-                  </span>
-                  <h3 className="text-[15.5px] font-semibold tracking-[-0.015em] text-ink">
-                    {t.categories[c.slug].nav}
-                  </h3>
-                  <p className="mt-2 flex-1 text-[13px] leading-relaxed text-muted">
-                    {t.categories[c.slug].description}
-                  </p>
-                  <span className="mt-4 inline-flex items-center gap-1.5 text-[12.5px] font-medium text-accent">
-                    {countByCategory(c.slug)} {t.catalog.prompts}
-                    <ArrowRight
-                      size={13}
-                      className="transition-transform duration-200 group-hover:translate-x-1"
-                    />
-                  </span>
+                  {cover && (
+                    <div className="relative aspect-[16/10] w-full overflow-hidden bg-sunken">
+                      <Image
+                        src={cover}
+                        alt=""
+                        fill
+                        sizes="(min-width: 1280px) 20vw, (min-width: 1024px) 33vw, (min-width: 640px) 50vw, 100vw"
+                        className="object-cover transition-transform duration-300 ease-out group-hover:scale-[1.04]"
+                      />
+                      {/*
+                        Верхний градиент — под подпись, нижний — переход к
+                        плашке с иконкой. Оба нужны при любой заливке фото:
+                        без них белый текст потерялся бы на светлом кадре.
+                      */}
+                      <span className="absolute inset-x-0 top-0 h-2/5 bg-gradient-to-b from-black/55 to-transparent" />
+                      <span className="absolute inset-x-0 bottom-0 h-1/3 bg-gradient-to-t from-black/45 to-transparent" />
+                      <span className="absolute left-4 top-3.5 text-[13.5px] font-semibold uppercase tracking-[0.04em] text-white drop-shadow-[0_1px_3px_rgba(0,0,0,0.5)]">
+                        {t.categories[c.slug].nav}
+                      </span>
+                    </div>
+                  )}
+
+                  <div className="flex flex-1 flex-col p-5">
+                    <span
+                      className={`flex h-12 w-12 items-center justify-center rounded-[14px] text-white ${
+                        // С обложкой плашка наезжает на неё снизу, без обложки
+                        // просто стоит сверху, как раньше.
+                        cover ? "-mt-11 mb-3.5 ring-4 ring-surface" : "mb-4"
+                      }`}
+                      style={{
+                        backgroundImage: `linear-gradient(135deg, ${from}, ${to})`,
+                        boxShadow: `0 12px 26px -14px ${from}`,
+                      }}
+                    >
+                      <Icon size={21} />
+                    </span>
+                    <h3 className="text-[15.5px] font-semibold tracking-[-0.015em] text-ink">
+                      {t.categories[c.slug].nav}
+                    </h3>
+                    <p className="mt-2 flex-1 text-[13px] leading-relaxed text-muted">
+                      {t.categories[c.slug].description}
+                    </p>
+                    <span className="mt-4 inline-flex items-center gap-1.5 text-[12.5px] font-medium text-accent">
+                      {countByCategory(c.slug)} {t.catalog.prompts}
+                      <ArrowRight
+                        size={13}
+                        className="transition-transform duration-200 group-hover:translate-x-1"
+                      />
+                    </span>
+                  </div>
                 </Link>
               </Reveal>
             );
