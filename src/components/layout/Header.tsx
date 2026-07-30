@@ -10,7 +10,6 @@ import ThemeToggle from "@/components/ThemeToggle";
 import LanguageSwitcher from "@/components/LanguageSwitcher";
 import UserMenu, { type SessionUser } from "@/components/layout/UserMenu";
 import Logo from "@/components/layout/Logo";
-import NavMenu from "@/components/layout/NavMenu";
 
 export default function Header({
   user,
@@ -42,15 +41,19 @@ export default function Header({
         <Logo locale={locale} />
 
         <nav className="hidden items-center gap-1 lg:flex">
-          <Link
-            href={`/${locale}`}
-            className={`whitespace-nowrap rounded-chip px-2.5 py-1.5 text-[13.5px] transition-colors duration-200 ${
-              pathname === `/${locale}` ? "text-ink" : "text-muted hover:text-ink"
-            }`}
-          >
-            {t.nav.home}
-          </Link>
-          <NavMenu label={t.footer.support} items={supportItems} />
+          {nav.map((item) => (
+            <Link
+              key={item.href}
+              href={item.href}
+              className={`whitespace-nowrap rounded-chip px-2.5 py-1.5 text-[13.5px] transition-colors duration-200 ${
+                pathname === item.href
+                  ? "text-ink"
+                  : "text-muted hover:text-ink"
+              }`}
+            >
+              {item.label}
+            </Link>
+          ))}
         </nav>
 
         <div className="hidden items-center gap-2 lg:flex">
