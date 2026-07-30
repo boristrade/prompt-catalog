@@ -1,11 +1,29 @@
 import { Copy, Sailboat, Sparkles, User } from "lucide-react";
+import type { Dictionary } from "@/lib/i18n/dictionaries";
+
+/*
+  В демо-промте акцентом подсвечены куски, помеченные в словаре как
+  [[…]]. Хранить их отдельным списком было бы хуже: перевод меняет
+  порядок слов, и куски перестали бы совпадать с текстом.
+*/
+function highlight(text: string) {
+  return text.split(/(\[\[[^\]]*\]\])/g).map((part, i) =>
+    part.startsWith("[[") && part.endsWith("]]") ? (
+      <span key={i} className="text-accent">
+        {part.slice(2, -2)}
+      </span>
+    ) : (
+      <span key={i}>{part}</span>
+    ),
+  );
+}
 
 /*
   Визуал первого экрана: карточка примера промта и «плавающие» плитки
   AI-сервисов вокруг неё. Всё собрано на CSS — ни одной картинки,
   поэтому блок ничего не весит и корректно живёт в обеих темах.
 */
-export default function HeroVisual() {
+export default function HeroVisual({ t }: { t: Dictionary }) {
   return (
     /* Внутренние отступы дают плиткам место: они «вылетают» за карточку,
        но остаются внутри блока и не создают горизонтальную прокрутку. */
@@ -20,14 +38,11 @@ export default function HeroVisual() {
       <div className="relative z-10 rounded-[18px] border border-line-strong bg-surface p-4 shadow-[0_30px_80px_-40px_var(--glow)]">
         <div className="flex items-center gap-2 text-[12.5px] text-muted">
           <User size={13} className="text-accent" />
-          Пример промта
+          {t.home.heroLabel}
         </div>
 
         <div className="mt-3 rounded-[12px] border border-line bg-sunken p-3.5 font-mono text-[12px] leading-[1.7] text-muted">
-          Создай реалистичное изображение будущего города на закате,{" "}
-          <span className="text-accent">киберпанк стиль</span>, неоновые огни,
-          летящие машины, высокая детализация,{" "}
-          <span className="text-accent">8k, cinematic…</span>
+          {highlight(t.home.heroDemo)}
         </div>
 
         <div className="mt-3 flex flex-wrap gap-2">
@@ -43,7 +58,7 @@ export default function HeroVisual() {
 
         <div className="mt-4 flex justify-center">
           <span className="inline-flex items-center gap-2 rounded-chip border border-line-strong bg-sunken px-4 py-2 text-[12.5px] font-medium text-ink">
-            Копировать
+            {t.card.copy}
             <Copy size={13} className="text-accent" />
           </span>
         </div>

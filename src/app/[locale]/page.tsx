@@ -132,7 +132,7 @@ export default async function HomePage({
           </div>
 
           <div className="rise rise-2">
-            <HeroVisual />
+            <HeroVisual t={t} />
           </div>
         </div>
       </section>

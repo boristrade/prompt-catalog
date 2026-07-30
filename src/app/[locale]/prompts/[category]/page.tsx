@@ -41,7 +41,7 @@ export default async function CategoryPage({
   const cat = getCategory(category);
   if (!cat) notFound();
 
-  const prompts = getPromptsByCategory(cat.slug);
+  const prompts = getPromptsByCategory(cat.slug, locale);
   const freeCount = prompts.filter((p) => p.tier === "free").length;
 
   // Гость — тот же бесплатный тариф, только ещё и без избранного.

@@ -58,6 +58,9 @@ const ru = {
     },
   },
   home: {
+    heroLabel: "Пример промта",
+    heroDemo:
+      "Создай реалистичное изображение будущего города на закате, [[киберпанк стиль]], неоновые огни, летящие машины, высокая детализация, [[8k, cinematic…]]",
     titleMain: "Лучшие промты для любых задач",
     titleAccent: "с искусственным интеллектом",
     subtitle:
@@ -205,6 +208,13 @@ const ru = {
     errUnavailable: "Сервис оплаты недоступен.",
   },
   tools: {
+    groups: {
+      text: "Текст и ассистенты",
+      images: "Изображения",
+      design: "Дизайн и редактирование",
+      video: "Видео и UGC",
+      marketing: "Маркетинг и маркетплейсы",
+    },
     eyebrow: "Подборка",
     title: "Полезные инструменты",
     subtitle1: "сервисов и нейросетей, которые мы используем сами — по задачам:",
@@ -283,6 +293,9 @@ const en: Dictionary = {
     },
   },
   home: {
+    heroLabel: "Prompt example",
+    heroDemo:
+      "Create a realistic image of a future city at sunset, [[cyberpunk style]], neon lights, flying cars, high detail, [[8k, cinematic…]]",
     titleMain: "The best prompts for any task",
     titleAccent: "with artificial intelligence",
     subtitle:
@@ -429,6 +442,13 @@ const en: Dictionary = {
     errUnavailable: "The payment service is unavailable.",
   },
   tools: {
+    groups: {
+      text: "Text and assistants",
+      images: "Images",
+      design: "Design and editing",
+      video: "Video and UGC",
+      marketing: "Marketing and marketplaces",
+    },
     eyebrow: "Selection",
     title: "Useful tools",
     subtitle1: "services and neural networks we use ourselves — by task:",
@@ -506,6 +526,9 @@ const fr: Dictionary = {
     },
   },
   home: {
+    heroLabel: "Exemple de prompt",
+    heroDemo:
+      "Crée une image réaliste d'une ville du futur au coucher du soleil, [[style cyberpunk]], néons, voitures volantes, haute définition, [[8k, cinematic…]]",
     titleMain: "Les meilleurs prompts pour toutes vos tâches",
     titleAccent: "avec l'intelligence artificielle",
     subtitle:
@@ -658,6 +681,13 @@ const fr: Dictionary = {
     errUnavailable: "Le service de paiement est indisponible.",
   },
   tools: {
+    groups: {
+      text: "Texte et assistants",
+      images: "Images",
+      design: "Design et retouche",
+      video: "Vidéo et UGC",
+      marketing: "Marketing et marketplaces",
+    },
     eyebrow: "Sélection",
     title: "Outils utiles",
     subtitle1:
@@ -735,6 +765,9 @@ const uk: Dictionary = {
     },
   },
   home: {
+    heroLabel: "Приклад промту",
+    heroDemo:
+      "Створи реалістичне зображення міста майбутнього на заході сонця, [[кіберпанк-стиль]], неонові вогні, летючі машини, висока деталізація, [[8k, cinematic…]]",
     titleMain: "Найкращі промти для будь-яких завдань",
     titleAccent: "зі штучним інтелектом",
     subtitle:
@@ -882,6 +915,13 @@ const uk: Dictionary = {
     errUnavailable: "Сервіс оплати недоступний.",
   },
   tools: {
+    groups: {
+      text: "Текст і асистенти",
+      images: "Зображення",
+      design: "Дизайн і редагування",
+      video: "Відео та UGC",
+      marketing: "Маркетинг і маркетплейси",
+    },
     eyebrow: "Добірка",
     title: "Корисні інструменти",
     subtitle1:
@@ -959,6 +999,9 @@ const de: Dictionary = {
     },
   },
   home: {
+    heroLabel: "Prompt-Beispiel",
+    heroDemo:
+      "Erstelle ein realistisches Bild einer Stadt der Zukunft bei Sonnenuntergang, [[Cyberpunk-Stil]], Neonlichter, fliegende Autos, hohe Detailtiefe, [[8k, cinematic…]]",
     titleMain: "Die besten Prompts für jede Aufgabe",
     titleAccent: "mit künstlicher Intelligenz",
     subtitle:
@@ -1111,6 +1154,13 @@ const de: Dictionary = {
     errUnavailable: "Der Zahlungsdienst ist nicht erreichbar.",
   },
   tools: {
+    groups: {
+      text: "Text und Assistenten",
+      images: "Bilder",
+      design: "Design und Bearbeitung",
+      video: "Video und UGC",
+      marketing: "Marketing und Marktplätze",
+    },
     eyebrow: "Auswahl",
     title: "Nützliche Tools",
     subtitle1:
@@ -1188,6 +1238,9 @@ const pl: Dictionary = {
     },
   },
   home: {
+    heroLabel: "Przykład promptu",
+    heroDemo:
+      "Stwórz realistyczny obraz miasta przyszłości o zachodzie słońca, [[styl cyberpunk]], neony, latające samochody, wysoka szczegółowość, [[8k, cinematic…]]",
     titleMain: "Najlepsze prompty do każdego zadania",
     titleAccent: "ze sztuczną inteligencją",
     subtitle:
@@ -1336,6 +1389,13 @@ const pl: Dictionary = {
     errUnavailable: "Usługa płatności jest niedostępna.",
   },
   tools: {
+    groups: {
+      text: "Tekst i asystenci",
+      images: "Obrazy",
+      design: "Design i edycja",
+      video: "Wideo i UGC",
+      marketing: "Marketing i marketplace'y",
+    },
     eyebrow: "Zestawienie",
     title: "Przydatne narzędzia",
     subtitle1:

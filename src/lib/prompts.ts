@@ -1,4 +1,6 @@
 import type { CategorySlug } from "@/lib/categories";
+import type { Locale } from "@/lib/i18n/config";
+import { PROMPTS_EN } from "@/lib/prompts.en";
 
 export type PromptTier = "free" | "pro";
 
@@ -850,7 +852,7 @@ CTA: мягкий — «сохрани, чтобы не потерять» · с
 
 Дай:
 1. Имя профиля (поле поиска): 3 варианта «Имя | ниша по запросу».
-2. Первая строка описания — главное обещание, без «помогаю女».
+2. Первая строка описания — главное обещание, без «помогаю…».
 3. Полное описание в пределах лимита: кто, для кого, доказательство, призыв.
 4. Что вынести в закреплённое: 5 тем и зачем каждая.
 5. Названия хайлайтов: 6 штук, по логике пути клиента.
@@ -1262,16 +1264,53 @@ CTA: мягкий — «сохрани, чтобы не потерять» · с
   },
 ];
 
-export function getPromptsByCategory(category: CategorySlug): Prompt[] {
-  return PROMPTS.filter((p) => p.category === category);
+/** Поля промта, которые переводятся. Остальное — id, категория, тариф — общее. */
+export type PromptText = Pick<
+  Prompt,
+  "title" | "summary" | "bestFor" | "tags" | "prompt" | "example"
+>;
+
+/*
+  Промт без перевода ломает сборку. Молчаливый откат на русский был бы
+  хуже: француз увидел бы русский текст среди английских и решил, что
+  сайт сломан, а мы бы об этом не узнали.
+*/
+const untranslated = PROMPTS.filter((p) => !PROMPTS_EN[p.id]).map((p) => p.id);
+if (untranslated.length > 0) {
+  throw new Error(
+    `prompts.en.ts: нет английского текста для ${untranslated.join(", ")}`,
+  );
 }
 
+const PROMPTS_ENGLISH: Prompt[] = PROMPTS.map((p) => ({
+  ...p,
+  ...PROMPTS_EN[p.id],
+}));
+
+/*
+  Русский каталог — источник, английский собирается из него переводами.
+  На остальных языках отдаём английский: французский интерфейс с русским
+  содержимым бесполезен, а перевести 49 промтов на пять языков без потери
+  смысла нельзя — специализированные формулировки этого не переживают.
+*/
+export function promptsFor(locale: Locale): Prompt[] {
+  return locale === "ru" ? PROMPTS : PROMPTS_ENGLISH;
+}
+
+export function getPromptsByCategory(
+  category: CategorySlug,
+  locale: Locale,
+): Prompt[] {
+  return promptsFor(locale).filter((p) => p.category === category);
+}
+
+/** Промтов в направлении. Число одно на всех языках — каталог общий. */
 export function countByCategory(category: CategorySlug): number {
-  return getPromptsByCategory(category).length;
+  return PROMPTS.filter((p) => p.category === category).length;
 }
 
-export function getPromptById(id: string): Prompt | undefined {
-  return PROMPTS.find((p) => p.id === id);
+export function getPromptById(id: string, locale: Locale): Prompt | undefined {
+  return promptsFor(locale).find((p) => p.id === id);
 }
 
 /*
