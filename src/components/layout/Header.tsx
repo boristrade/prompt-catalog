@@ -26,6 +26,7 @@ export default function Header({
   const supportItems = [
     { href: `/${locale}/pricing`, label: t.footer.pricing },
     { href: `/${locale}/account`, label: t.footer.account },
+    { href: `/${locale}/account#favorites`, label: t.account.favorites },
     { href: `/${locale}/tools`, label: t.footer.faq },
     { href: "mailto:support@example.com", label: t.footer.feedback },
   ];
