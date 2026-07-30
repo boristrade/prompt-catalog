@@ -1,0 +1,22 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48">
+  <!--
+    Значок вкладки. Штрихов движения здесь нет намеренно: на 16 пикселях
+    они превращаются в грязь. Остаётся знак — «P» с пузырём и одной искрой
+    на плашке, он читается и в размер вкладки.
+  -->
+  <defs>
+    <linearGradient id="g" x1="0" y1="48" x2="48" y2="0" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#6d28d9"/>
+      <stop offset="1" stop-color="#a855f7"/>
+    </linearGradient>
+    <mask id="m">
+      <rect width="48" height="48" fill="#fff"/>
+      <path d="M15 8 H26 A11 11 0 0 1 26 30 V41 H15 Z" fill="#000"/>
+      <circle cx="27" cy="19" r="6.6" fill="#fff"/>
+      <path d="M23.8 23.6 L19.6 31.5 L28 24.8 Z" fill="#fff"/>
+      <path d="M26 13.6 C26 15.4 24.6 16.8 22.8 16.8 C24.6 16.8 26 18.2 26 20 C26 18.2 27.4 16.8 29.2 16.8 C27.4 16.8 26 15.4 26 13.6 Z" fill="#000"/>
+      <path d="M31.4 20.4 C31.4 21.4 30.7 22.1 29.7 22.1 C30.7 22.1 31.4 22.8 31.4 23.8 C31.4 22.8 32.1 22.1 33.1 22.1 C32.1 22.1 31.4 21.4 31.4 20.4 Z" fill="#000"/>
+    </mask>
+  </defs>
+  <rect width="48" height="48" rx="11" fill="url(#g)" mask="url(#m)"/>
+</svg>
