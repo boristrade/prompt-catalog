@@ -1,7 +1,7 @@
 import { ArrowUpRight } from "lucide-react";
-import { toolsByCategory, TOOLS } from "@/lib/tools";
+import { toolsByGroup, TOOLS } from "@/lib/tools";
 import { LOCALES } from "@/lib/i18n/config";
-import { pageLocale } from "@/lib/i18n";
+import { localeAlternates, pageLocale } from "@/lib/i18n";
 import Reveal from "@/components/Reveal";
 
 export function generateStaticParams() {
@@ -13,8 +13,12 @@ export async function generateMetadata({
 }: {
   params: Promise<{ locale: string }>;
 }) {
-  const { t } = await pageLocale(params);
-  return { title: t.tools.title };
+  const { locale, t } = await pageLocale(params);
+  return {
+    title: t.tools.title,
+    description: `${TOOLS.length} ${t.tools.subtitle1} ${t.tools.subtitle2}`,
+    alternates: localeAlternates(locale, "/tools"),
+  };
 }
 
 export default async function ToolsPage({
@@ -22,8 +26,8 @@ export default async function ToolsPage({
 }: {
   params: Promise<{ locale: string }>;
 }) {
-  const { t } = await pageLocale(params);
-  const grouped = toolsByCategory();
+  const { locale, t } = await pageLocale(params);
+  const grouped = toolsByGroup(locale);
 
   const pricingLabel: Record<string, string> = {
     free: t.tools.free,
@@ -42,11 +46,11 @@ export default async function ToolsPage({
       </p>
 
       <div className="mt-12 space-y-10">
-        {Object.entries(grouped).map(([cat, tools]) => (
-          <div key={cat}>
+        {grouped.map(([group, tools]) => (
+          <div key={group}>
             <Reveal>
               <h2 className="font-mono text-[11px] uppercase tracking-[0.13em] text-faint">
-                {cat}
+                {t.tools.groups[group]}
               </h2>
             </Reveal>
             <div className="mt-4 grid gap-3 sm:grid-cols-2 lg:grid-cols-3">

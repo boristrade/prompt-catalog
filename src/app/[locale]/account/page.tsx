@@ -60,7 +60,7 @@ export default async function AccountPage({
     иначе кабинет падал бы из-за старой строки в базе.
   */
   const favorites = [...(account?.favorites ?? [])]
-    .map(getPromptById)
+    .map((id) => getPromptById(id, locale))
     .filter((p): p is NonNullable<typeof p> => Boolean(p));
 
   return (

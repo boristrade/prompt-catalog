@@ -3,7 +3,7 @@ import { Check, Lock, Minus } from "lucide-react";
 import { PROMPTS } from "@/lib/prompts";
 import { getAccount } from "@/lib/account";
 import { PERIODS, YEARLY_PER_MONTH, YEARLY_SAVING } from "@/lib/billing";
-import { pageLocale } from "@/lib/i18n";
+import { localeAlternates, pageLocale } from "@/lib/i18n";
 import Reveal from "@/components/Reveal";
 
 /*
@@ -21,8 +21,12 @@ export async function generateMetadata({
 }: {
   params: Promise<{ locale: string }>;
 }) {
-  const { t } = await pageLocale(params);
-  return { title: t.pricing.eyebrow };
+  const { locale, t } = await pageLocale(params);
+  return {
+    title: t.pricing.eyebrow,
+    description: `${freeCount} ${t.pricing.subtitle1} ${PROMPTS.length} ${t.pricing.subtitle2}`,
+    alternates: localeAlternates(locale, "/pricing"),
+  };
 }
 
 export default async function PricingPage({

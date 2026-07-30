@@ -2,7 +2,7 @@ import { notFound } from "next/navigation";
 import { getCategory } from "@/lib/categories";
 import { getPromptsByCategory, isLocked, veil } from "@/lib/prompts";
 import { getAccount } from "@/lib/account";
-import { pageLocale } from "@/lib/i18n";
+import { localeAlternates, pageLocale } from "@/lib/i18n";
 import PromptCard from "@/components/PromptCard";
 import Reveal from "@/components/Reveal";
 
@@ -18,10 +18,16 @@ export async function generateMetadata({
 }: {
   params: Promise<{ locale: string; category: string }>;
 }) {
-  const { category, locale } = await params;
-  const { t } = await pageLocale(Promise.resolve({ locale }));
+  const { category, locale: rawLocale } = await params;
+  const { locale, t } = await pageLocale(Promise.resolve({ locale: rawLocale }));
   const cat = getCategory(category);
-  return { title: cat ? t.categories[cat.slug].title : t.catalog.title };
+  if (!cat) return { title: t.catalog.title };
+
+  return {
+    title: t.categories[cat.slug].title,
+    description: t.categories[cat.slug].description,
+    alternates: localeAlternates(locale, `/prompts/${cat.slug}`),
+  };
 }
 
 export default async function CategoryPage({
@@ -35,7 +41,7 @@ export default async function CategoryPage({
   const cat = getCategory(category);
   if (!cat) notFound();
 
-  const prompts = getPromptsByCategory(cat.slug);
+  const prompts = getPromptsByCategory(cat.slug, locale);
   const freeCount = prompts.filter((p) => p.tier === "free").length;
 
   // Гость — тот же бесплатный тариф, только ещё и без избранного.

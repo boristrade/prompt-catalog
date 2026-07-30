@@ -1,5 +1,10 @@
 // Категории каталога — совпадают с enum prompt_category в БД (Фаза 2)
-export type CategorySlug = "designers" | "marketers" | "ugc" | "marketplaces";
+export type CategorySlug =
+  | "designers"
+  | "marketers"
+  | "ugc"
+  | "marketplaces"
+  | "saas";
 
 export interface Category {
   slug: CategorySlug;
@@ -32,6 +37,13 @@ export const CATEGORIES: Category[] = [
     title: "Промты для маркетплейсов",
     nav: "Для маркетплейсов",
     description: "Карточки товаров, инфографика, SEO-описания для WB и Ozon.",
+  },
+  {
+    slug: "saas",
+    title: "Промты для SaaS-проектов",
+    nav: "Для SaaS",
+    description:
+      "Проверка идеи, границы MVP, онбординг, тарифы и метрики роста.",
   },
 ];
 
