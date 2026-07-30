@@ -180,7 +180,7 @@ export default async function AccountPage({
         </Reveal>
       )}
 
-      <div className="mt-14 flex items-center gap-2.5">
+      <div id="favorites" className="mt-14 flex scroll-mt-20 items-center gap-2.5">
         <Heart size={15} className="text-accent" />
         <h2 className="text-[19px] font-semibold tracking-[-0.015em] text-ink">
           {t.account.favorites}
