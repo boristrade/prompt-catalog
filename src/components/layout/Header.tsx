@@ -11,6 +11,7 @@ import ThemeToggle from "@/components/ThemeToggle";
 import LanguageSwitcher from "@/components/LanguageSwitcher";
 import UserMenu, { type SessionUser } from "@/components/layout/UserMenu";
 import Logo from "@/components/layout/Logo";
+import NavMenu from "@/components/layout/NavMenu";
 
 export default function Header({
   user,
@@ -25,18 +26,30 @@ export default function Header({
   const pathname = usePathname();
 
   /*
-    В шапке нужны короткие подписи: «Для дизайнеров» и т.п. переносят
-    строку. Полные названия остаются в выпадающем меню, где место есть.
+    Пять направлений плюс инструменты и тарифы флажками в ряд не
+    помещались — своим чередом собираем их в «Каталог» и «Поддержку»,
+    как в подвале. В мобильном меню, где место есть, оставляем всё
+    плоским списком: там разворачивать вложенное меню внутри меню неудобно.
   */
-  const nav = [
-    { href: `/${locale}`, label: t.nav.home, full: t.nav.home },
+  const catalogItems = [
     ...CATEGORIES.map((c) => ({
       href: `/${locale}/prompts/${c.slug}`,
-      label: t.nav[c.slug],
-      full: t.categories[c.slug].nav,
+      label: t.categories[c.slug].nav,
     })),
-    { href: `/${locale}/tools`, label: t.nav.tools, full: t.nav.tools },
-    { href: `/${locale}/pricing`, label: t.nav.pricing, full: t.nav.pricing },
+    { href: `/${locale}/tools`, label: t.nav.tools },
+  ];
+
+  const supportItems = [
+    { href: `/${locale}/pricing`, label: t.footer.pricing },
+    { href: `/${locale}/account`, label: t.footer.account },
+    { href: `/${locale}/tools`, label: t.footer.faq },
+    { href: "mailto:support@example.com", label: t.footer.feedback },
+  ];
+
+  const nav = [
+    { href: `/${locale}`, label: t.nav.home, full: t.nav.home },
+    ...catalogItems.map((item) => ({ ...item, full: item.label })),
+    ...supportItems.map((item) => ({ ...item, full: item.label })),
   ];
 
   return (
@@ -45,19 +58,16 @@ export default function Header({
         <Logo locale={locale} />
 
         <nav className="hidden items-center gap-1 lg:flex">
-          {nav.map((item) => (
-            <Link
-              key={item.href}
-              href={item.href}
-              className={`whitespace-nowrap rounded-chip px-2.5 py-1.5 text-[13.5px] transition-colors duration-200 ${
-                pathname === item.href
-                  ? "text-ink"
-                  : "text-muted hover:text-ink"
-              }`}
-            >
-              {item.label}
-            </Link>
-          ))}
+          <Link
+            href={`/${locale}`}
+            className={`whitespace-nowrap rounded-chip px-2.5 py-1.5 text-[13.5px] transition-colors duration-200 ${
+              pathname === `/${locale}` ? "text-ink" : "text-muted hover:text-ink"
+            }`}
+          >
+            {t.nav.home}
+          </Link>
+          <NavMenu label={t.footer.catalog} items={catalogItems} />
+          <NavMenu label={t.footer.support} items={supportItems} />
         </nav>
 
         <div className="hidden items-center gap-2 lg:flex">
@@ -100,9 +110,9 @@ export default function Header({
 
       {open && (
         <nav className="slide-down border-t border-line bg-canvas px-5 pb-5 pt-2 lg:hidden">
-          {nav.map((item) => (
+          {nav.map((item, i) => (
             <Link
-              key={item.href}
+              key={`${item.href}-${i}`}
               href={item.href}
               onClick={() => setOpen(false)}
               className={`block border-b border-line py-3 text-[14.5px] last:border-0 ${
