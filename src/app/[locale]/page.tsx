@@ -6,6 +6,7 @@ import {
   Layers,
   Megaphone,
   Palette,
+  Rocket,
   ShoppingBag,
   Sparkles,
   Video,
@@ -54,6 +55,7 @@ const CATEGORY_STYLE: Record<
   marketers: { Icon: Megaphone, from: "#ec4899", to: "#f472b6" },
   ugc: { Icon: Video, from: "#06b6d4", to: "#22d3ee" },
   marketplaces: { Icon: ShoppingBag, from: "#3b82f6", to: "#60a5fa" },
+  saas: { Icon: Rocket, from: "#10b981", to: "#34d399" },
 };
 
 export default async function HomePage({
@@ -177,7 +179,7 @@ export default async function HomePage({
           </div>
         </Reveal>
 
-        <div className="mt-7 grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+        <div className="mt-7 grid gap-3 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5">
           {CATEGORIES.map((c, i) => {
             const { Icon, from, to } = CATEGORY_STYLE[c.slug];
             return (

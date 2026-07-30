@@ -1095,4 +1095,338 @@ Break it down:
     example: `Reason "wrong size" (41%) — the listing's fault: no size chart and no photo with a hand for scale.
 Fix: add a slide with a ruler plus the line "if you're between sizes, take the larger". Estimate: −12–15% returns.`,
   },
+
+  // ─────────────────────────── SaaS ───────────────────────────
+  "saas-idea-validation": {
+    title: "Validate the idea before the first line of code",
+    summary:
+      "Your idea broken down into risks plus a one-week test plan — before you spend months.",
+    bestFor: "Claude / ChatGPT",
+    tags: ["idea", "validation", "market"],
+    prompt: `You are a product strategist who has seen plenty of projects die. Assess my SaaS idea honestly, without cheering me on.
+
+Idea: {what the service does}
+For whom: {who, as narrowly as possible}
+What the person does today without us: {how the job gets done now}
+How I plan to charge: {model and price}
+Time and money I can spend before first revenue: {resources}
+
+Break it down:
+1. The problem: does it hurt regularly, or is it a one-off inconvenience? Answer plainly.
+2. Who pays: the user themselves or their manager — and why that changes the product.
+3. The three main risks: why this could fail. For each — the cheapest way to test it.
+4. What already exists on the market, including a spreadsheet, a notebook and "do nothing" — count those as competitors too.
+5. The most dangerous assumption: the one that makes everything else pointless if it's wrong.
+6. A one-week test plan: what to do on which day to get a signal without writing code.
+7. The kill criterion: what result means the idea should be dropped.
+
+If the idea is weak, say so in the first paragraph.`,
+    example: `Most dangerous assumption: that the bookkeeper is allowed to change tools. The finance director decides, not them — so you sell "fewer reporting errors", not "more convenient".
+Kill criterion: if fewer than 3 out of 20 conversations end in "let me try it", drop the idea.`,
+  },
+  "saas-mvp-scope": {
+    title: "MVP scope: what's in, what's out",
+    summary:
+      "The smallest set of features you can already sell, plus what's deferred and why.",
+    bestFor: "Claude / ChatGPT",
+    tags: ["mvp", "priorities", "launch"],
+    prompt: `Help me draw the boundary of an MVP that can actually be shipped and sold.
+
+Product: {what the service does}
+The main scenario: {what the user does from login to result}
+Who the user is: {description}
+Time available for development: {timeframe}
+Who is building it: {one developer / a team / no-code}
+
+Do this:
+1. One user path from sign-up to first value — step by step, no branches.
+2. The features without which that path doesn't work. Each with a reason why it can't be dropped.
+3. Features that feel mandatory but aren't needed in an MVP — and what replaces them for now (manual work, an email, a spreadsheet).
+4. What to cut entirely, and why it won't stop you selling.
+5. The boundaries: what the product does NOT do. Wordings for the site so nobody expects otherwise.
+6. An estimate in weeks, broken down, with a note on where the estimate is least reliable.
+7. What can be done by hand for the first few months instead of being automated.
+
+Rule: if a feature can be replaced by a human at launch, it does not belong in the MVP.`,
+    example: `Do it by hand: PDF export is done by support on request for the first months. Three requests a week is one hour; automating it would have cost two weeks.
+Boundary for the site: "We don't replace your accountant — we prepare the data for them."`,
+  },
+  "saas-user-stories": {
+    title: "Stories and acceptance criteria",
+    summary:
+      "A feature turned into tasks with testable criteria — including errors and empty states.",
+    bestFor: "ChatGPT / Claude",
+    tags: ["requirements", "tickets", "spec"],
+    prompt: `Turn a feature description into a set of user stories with acceptance criteria.
+
+Feature: {what needs building}
+User roles: {who, with which permissions}
+What already exists in the product: {context}
+Constraints: {technical or product}
+
+For each story give:
+— The statement: as a {role}, I want {action}, so that {outcome}
+— Acceptance criteria as "given / when / then" — testable, with no "convenient" or "fast"
+— The empty state: what the person sees when there is no data yet
+— Errors: what we show on network failure, missing permissions, invalid input
+— What is NOT part of this story
+
+Separately:
+1. The order of implementation and what depends on what.
+2. The edge cases usually forgotten in exactly this kind of feature.
+3. Questions that need answering before work starts.
+
+Do not invent requirements that aren't in the input: if something is missing, put it in the questions.`,
+    example: `Criterion: given a project has no members; when the owner opens "Team"; then an explanation and a single "Invite" button are shown, and the table is not rendered at all.
+Forgotten case: an invitee accepts after their role has been changed.`,
+  },
+  "saas-db-schema": {
+    title: "Database schema for your product",
+    summary:
+      "Tables, relations and indexes derived from your scenarios — plus where the schema will strain.",
+    bestFor: "ChatGPT / Claude",
+    tags: ["database", "schema", "architecture"],
+    prompt: `Design the database schema for my service.
+
+What the product does: {description}
+Main scenarios: {list of what users do}
+Who the users are and how access is separated: {roles, teams, organisations}
+Expected volumes: {how many records and queries}
+Database: {PostgreSQL / MySQL / other}
+
+Deliver:
+1. Tables with fields and types, primary and foreign keys, nullability.
+2. Relations and their kind, with the reasoning wherever there was a real choice.
+3. Indexes — and the specific query each one serves.
+4. How different customers' data is separated and what prevents seeing someone else's.
+5. What to do about deletion: soft or real, and why that choice for this data.
+6. Three places where the schema will start to hurt as you grow, and what to change then.
+7. The SQL to create the tables.
+
+Don't over-engineer ahead of time: if one table solves it, say so.`,
+    example: `Customer separation: organization_id on every table, row policies keyed on it. One forgotten filter in a query and a customer sees another's data — so it's enforced in the database, not the code.
+Will strain: events in the same table as business data — move them out, partitioned by month.`,
+  },
+  "saas-tech-stack": {
+    title: "Choosing a stack, with the reasoning",
+    summary:
+      "What to pick for your timeline and skills — and what each choice will cost you later.",
+    bestFor: "ChatGPT / Claude",
+    tags: ["stack", "choice", "development"],
+    prompt: `Help me choose the technologies for a project and explain the price of each decision.
+
+What the product is: {description}
+What I can do: {languages and tools, honestly}
+Time to launch: {timeframe}
+Who will maintain it: {just me / a team / a contractor}
+Special requirements: {payments, files, real time, offline, integrations}
+Monthly infrastructure budget: {amount}
+
+Break it down:
+1. The recommended set: frontend, backend, database, hosting, auth, payments, email.
+2. For each — why this one in my situation, and a sensible alternative.
+3. The price of the choice: what becomes awkward within a year.
+4. What I shouldn't build myself but buy as a service, and what it costs.
+5. What to avoid specifically in my case, and why.
+6. An estimate of the infrastructure bill at 100, 1,000 and 10,000 users.
+7. Which choice will be hardest to reverse later — and how to reduce that lock-in.
+
+Account for my skills: an unfamiliar technology on a short deadline is a risk, not an advantage.`,
+    example: `Auth: a ready service, not your own. Your own means emails, password resets, sessions and leaks — two weeks of work and permanent responsibility.
+Hardest to replace: the database. Keep queries in one layer so a migration doesn't spread through the whole codebase.`,
+  },
+  "saas-landing-hero": {
+    title: "The hero section of a SaaS landing page",
+    summary:
+      "A headline, subheading and button that make it clear what this is and why — in five seconds.",
+    bestFor: "Claude / ChatGPT",
+    tags: ["landing page", "hero", "copy"],
+    prompt: `Write the hero section of a landing page for a SaaS product.
+
+Product: {what it does}
+For whom: {a narrow audience}
+What work it replaces: {what the person does today}
+The main benefit in numbers: {time, money or errors saved}
+Model: {free tier / trial / paid only}
+How it differs from the nearest competitor: {a fact}
+
+Give me:
+1. Five headline options: clear rather than clever. No metaphors and no use of the word "platform".
+2. A subheading for each: who it's for and what happens after signing up.
+3. Button copy — three options, at different levels of commitment.
+4. A line under the button that removes fear: card, cancellation, setup time.
+5. Three pieces of proof to sit beside the hero that you can show without an existing customer base.
+6. What to remove: the standard phrases that say nothing.
+7. A test: read the headline aloud and say whether someone hearing about the product for the first time would understand it.
+
+Write it so the headline makes the product's job clear even without the image.`,
+    example: `Headline: "Client invoices straight from your spreadsheets — in a minute, without an accountant"
+Under the button: "No card. Five-minute setup. Cancel in one click."
+Remove: "an innovative platform for optimising business processes" — it says nothing.`,
+  },
+  "saas-pricing-tiers": {
+    title: "Pricing tiers and where the lines fall",
+    summary:
+      "How many plans, what goes in each and which metric the price grows with — checked for fairness.",
+    bestFor: "ChatGPT / Claude",
+    tags: ["pricing", "plans", "monetisation"],
+    prompt: `Build the pricing for my service.
+
+Product: {what it does}
+Who pays: {individuals / small business / companies}
+Cost to serve one user per month: {amount or "almost nothing"}
+What they perceive as the value: {the features they thank you for}
+What grows together with the value: {users, projects, volume, requests}
+Competitors and their prices: {list}
+
+Do this:
+1. Which metric to charge on and why that one — it must grow with the customer's value, not with our costs.
+2. Three plans: name, price, limits, what's included.
+3. What belongs in the free tier or trial so a person reaches value but still wants to pay.
+4. Features that must never move behind the paywall: without them the product doesn't work, and gating them reads as extortion.
+5. Annual billing: what discount is justified and how to present it.
+6. What happens when moving between plans: exceeding a limit, downgrading, refunds.
+7. Three objections about price and how to answer them.
+
+Don't build five plans: the wider the choice, the more often people choose nothing.`,
+    example: `Metric: the number of active projects, not users. Inviting colleagues must be free — otherwise the product never spreads inside a company.
+Never behind the paywall: exporting your own data. Locking up someone else's data is a bad long-term trade.`,
+  },
+  "saas-onboarding-flow": {
+    title: "Onboarding up to first value",
+    summary:
+      "The path from sign-up to «it works», step by step, with the places people leave.",
+    bestFor: "ChatGPT / Claude",
+    tags: ["onboarding", "retention", "ux"],
+    prompt: `Design onboarding so the person sees value as fast as possible.
+
+Product: {what it does}
+What counts as first value: {the specific event after which the person gets it}
+What is needed from the user: {data, integrations, settings}
+How many reach first value today: {percentage or "no idea"}
+Where they sign up: {the site, a colleague's invite, from an integration}
+
+Do this:
+1. Describe the path step by step: screen by screen from sign-up to first value.
+2. For each step: what the person does, what we show, what happens on the server.
+3. Remove everything that can be asked later. Justify every question you keep.
+4. The empty product: what a person sees when there is no data yet, and how that doesn't look broken.
+5. How to show value before everything is configured: demo data, an example, a ready template.
+6. Three places where people will leave, and what to do at each.
+7. The first days' emails: how many, when and about what — useful only, no "we're delighted to have you".
+8. What to measure to see exactly where you lose people.
+
+Rule: every screen before first value must either deliver value or be unavoidable.`,
+    example: `Ask later: company name and industry. They change nothing before first value, and two fields at the door cost you people.
+Value before setup: show the report on demo data with a "connect your own" button — the person sees the result before doing the work.`,
+  },
+  "saas-api-design": {
+    title: "API design",
+    summary:
+      "Resources, methods, errors and pagination — set up so you don't have to break compatibility later.",
+    bestFor: "ChatGPT / Claude",
+    tags: ["api", "integrations", "architecture"],
+    prompt: `Design an HTTP API for my product.
+
+What the product does: {description}
+Who will call the API: {our frontend / customers / partners}
+The main actions: {list of what it must be able to do}
+Authorisation: {tokens, keys, OAuth}
+Expected load: {requests per minute}
+
+Deliver:
+1. The list of resources and paths with methods; one line on the purpose of each.
+2. Example JSON request and response for the three main methods.
+3. The error format: one for the whole API, with a code, a machine-readable field and human text.
+4. Pagination, filters and sorting — one approach for every list.
+5. Idempotency wherever a repeated request must not create a second object.
+6. Rate limiting: what we return when exceeded and in which headers.
+7. Versioning: how to change the API without breaking those already connected.
+8. Three decisions that are hard to change later — and how to choose now without regret.
+
+Separately: what not to do in this API, and why.`,
+    example: `Idempotency: POST /payments accepts an Idempotency-Key. Without it, a resubmitted form on a bad connection creates a second payment.
+Hard to change: the shape of your identifiers. Sequential numbers reveal how many customers you have — use non-sequential ones.`,
+  },
+  "saas-churn-analysis": {
+    title: "Churn teardown",
+    summary:
+      "Why people leave and what to fix first — from the cancellation reasons, not from guesses.",
+    bestFor: "ChatGPT / Claude",
+    tags: ["churn", "retention", "analytics"],
+    prompt: `Help me work out why users cancel, and what to do about it.
+
+Product and price: {what and how much}
+Monthly churn: {percentage}
+Reasons given at cancellation: {list with counts, if you have them}
+How long they last before cancelling: {distribution or average}
+What they did before cancelling: {last actions, if known}
+Who churns most: {segments}
+
+Break it down:
+1. Split the reasons into three groups: the wrong customer arrived, they never reached value, the value ran out. The group decides what to fix.
+2. Mark which churn is cured by the product and which by marketing.
+3. Early signals: which actions in the first days predict someone leaving a month later.
+4. What to change in the product: three fixes ordered by effect against effort.
+5. What to change in acquisition so people who will leave anyway stop arriving.
+6. The cancellation screen: how to ask the reason without irritating, and what to offer instead — no traps, no holding people against their will.
+7. Which data is missing and what to start recording today.
+
+Do not propose making cancellation harder: that changes the number, not the reason.`,
+    example: `Early signal: no project created in the first week — 8 out of 10 of those leave. So fix onboarding, not the day-25 email.
+Cancellation: ask one reason from a list and offer a cheaper plan — but "Cancel" stays the first, active button.`,
+  },
+  "saas-changelog-release": {
+    title: "Release notes and the email to users",
+    summary:
+      "A list of commits becomes a readable changelog and an email people finish reading.",
+    bestFor: "ChatGPT / Claude",
+    tags: ["release", "changelog", "email"],
+    prompt: `Turn a list of changes into release notes and an email to users.
+
+Changes: {paste a list of commits, tickets or your own notes}
+Product: {what it does}
+Who reads it: {technical users / general users}
+Any breaking changes: {yes, which / no}
+What the user must do: {nothing / update settings / migrate}
+
+Do this:
+1. Release notes grouped into "new", "improved", "fixed". Every item in the language of benefit, not of code.
+2. Breaking changes as a separate block at the top, with the exact date and instructions.
+3. The email: subject, first line, three paragraphs, one button. About the single biggest change; the rest as a link.
+4. A short social post about the most noticeable item.
+5. What on the list users don't need to hear about at all — and why.
+6. A tone check: cut "we've been working hard" and "we're excited to announce", keep what people can now do.
+
+Rule: never write "fixed bugs" without saying which — be specific or don't mention it.`,
+    example: `Improved: the annual report builds in 4 seconds instead of 40 — on large projects it used to time out entirely.
+Don't mention: dependency upgrades and the logging migration. They give the user nothing and dilute the email.`,
+  },
+  "saas-metrics-dashboard": {
+    title: "The metrics actually worth watching",
+    summary:
+      "A short set of numbers for your stage — and why the rest are only a distraction for now.",
+    bestFor: "Claude / ChatGPT",
+    tags: ["metrics", "analytics", "growth"],
+    prompt: `Pick the metrics for my product at its current stage.
+
+Product and model: {what it is and how people pay}
+Stage: {no users / first customers / steady sales}
+Paying customers now: {number}
+What I already track: {list}
+The main question I need answered: {e.g. "is it worth spending on ads"}
+
+Do this:
+1. Five to seven metrics, no more. For each: what it shows, how it's calculated, how often to look.
+2. Why the other popular metrics are only a distraction at my stage.
+3. The single number that shows whether the product is healthy — and how to calculate it for my case specifically.
+4. Benchmarks: which value counts as bad, normal and good for my model.
+5. How each metric can be accidentally gamed, and what to watch alongside it so that doesn't happen.
+6. What to start recording in the product now so there is something to analyse in six months.
+7. For each metric: what decision I'll make if it turns bad.
+
+If a metric leads to no decision, leave it out.`,
+    example: `The number that matters at your stage: the share reaching first value within 7 days. Revenue at 30 customers is noise — one payment swings it.
+How it's gamed: retention rises if you stop acquiring. Watch new sign-ups alongside it.`,
+  },
 };

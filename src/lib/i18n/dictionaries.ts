@@ -18,6 +18,7 @@ const ru = {
     marketplaces: "маркетплейсов",
     tools: "Инструменты",
     pricing: "Тарифы",
+    saas: "SaaS",
   },
   header: {
     signIn: "Войти",
@@ -55,6 +56,12 @@ const ru = {
       title: "Промты для маркетплейсов",
       nav: "Для маркетплейсов",
       description: "Карточки товаров, инфографика, SEO-описания для WB и Ozon.",
+    },
+    saas: {
+      title: "Промты для SaaS-проектов",
+      nav: "Для SaaS",
+      description:
+        "Проверка идеи, границы MVP, онбординг, тарифы и метрики роста.",
     },
   },
   home: {
@@ -253,6 +260,7 @@ const en: Dictionary = {
     marketplaces: "marketplaces",
     tools: "Tools",
     pricing: "Pricing",
+    saas: "SaaS",
   },
   header: {
     signIn: "Sign in",
@@ -290,6 +298,12 @@ const en: Dictionary = {
       nav: "For marketplaces",
       description:
         "Product listings, infographics, SEO descriptions for online stores.",
+    },
+    saas: {
+      title: "Prompts for SaaS projects",
+      nav: "For SaaS",
+      description:
+        "Idea validation, MVP scope, onboarding, pricing and growth metrics.",
     },
   },
   home: {
@@ -484,6 +498,7 @@ const fr: Dictionary = {
     marketplaces: "marketplaces",
     tools: "Outils",
     pricing: "Tarifs",
+    saas: "SaaS",
   },
   header: {
     signIn: "Se connecter",
@@ -523,6 +538,12 @@ const fr: Dictionary = {
       nav: "Pour marketplaces",
       description:
         "Fiches produit, infographies, descriptions SEO pour boutiques en ligne.",
+    },
+    saas: {
+      title: "Prompts pour projets SaaS",
+      nav: "Pour le SaaS",
+      description:
+        "Validation de l'idée, périmètre du MVP, onboarding, tarifs et métriques de croissance.",
     },
   },
   home: {
@@ -724,6 +745,7 @@ const uk: Dictionary = {
     marketplaces: "маркетплейсів",
     tools: "Інструменти",
     pricing: "Тарифи",
+    saas: "SaaS",
   },
   header: {
     signIn: "Увійти",
@@ -762,6 +784,12 @@ const uk: Dictionary = {
       nav: "Для маркетплейсів",
       description:
         "Картки товарів, інфографіка, SEO-описи для інтернет-магазинів.",
+    },
+    saas: {
+      title: "Промти для SaaS-проєктів",
+      nav: "Для SaaS",
+      description:
+        "Перевірка ідеї, межі MVP, онбординг, тарифи та метрики зростання.",
     },
   },
   home: {
@@ -958,6 +986,7 @@ const de: Dictionary = {
     marketplaces: "Marktplätze",
     tools: "Tools",
     pricing: "Preise",
+    saas: "SaaS",
   },
   header: {
     signIn: "Anmelden",
@@ -996,6 +1025,12 @@ const de: Dictionary = {
       nav: "Für Marktplätze",
       description:
         "Produktkarten, Infografiken, SEO-Beschreibungen für Onlineshops.",
+    },
+    saas: {
+      title: "Prompts für SaaS-Projekte",
+      nav: "Für SaaS",
+      description:
+        "Ideenvalidierung, MVP-Umfang, Onboarding, Preise und Wachstumsmetriken.",
     },
   },
   home: {
@@ -1197,6 +1232,7 @@ const pl: Dictionary = {
     marketplaces: "marketplace'ów",
     tools: "Narzędzia",
     pricing: "Cennik",
+    saas: "SaaS",
   },
   header: {
     signIn: "Zaloguj się",
@@ -1235,6 +1271,12 @@ const pl: Dictionary = {
       nav: "Dla marketplace'ów",
       description:
         "Karty produktów, infografiki, opisy SEO dla sklepów internetowych.",
+    },
+    saas: {
+      title: "Prompty do projektów SaaS",
+      nav: "Dla SaaS",
+      description:
+        "Walidacja pomysłu, zakres MVP, onboarding, ceny i metryki wzrostu.",
     },
   },
   home: {
