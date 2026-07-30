@@ -175,11 +175,6 @@ export default async function HomePage({
                         sizes="(min-width: 1280px) 20vw, (min-width: 1024px) 33vw, (min-width: 640px) 50vw, 100vw"
                         className="object-cover transition-transform duration-300 ease-out group-hover:scale-[1.04]"
                       />
-                      {/* Затемнение сверху — иначе белая подпись потеряется на светлом кадре. */}
-                      <span className="absolute inset-x-0 top-0 h-2/5 bg-gradient-to-b from-black/55 to-transparent" />
-                      <span className="absolute left-4 top-3.5 text-[13.5px] font-semibold uppercase tracking-[0.04em] text-white drop-shadow-[0_1px_3px_rgba(0,0,0,0.5)]">
-                        {t.categories[c.slug].nav}
-                      </span>
                     </div>
                   )}
 
