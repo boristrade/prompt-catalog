@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { Instagram, Send, Youtube } from "lucide-react";
 import { CATEGORIES } from "@/lib/categories";
+import { LogoMark, LogoWord } from "@/components/layout/Logo";
 import type { Locale } from "@/lib/i18n/config";
 import type { Dictionary } from "@/lib/i18n/dictionaries";
 
@@ -36,13 +37,9 @@ export default function Footer({
         <div className="grid grid-cols-2 gap-10 md:grid-cols-3 lg:grid-cols-5">
           {/* Бренд */}
           <div className="col-span-2 md:col-span-1">
-            <div className="flex items-center gap-2.5">
-              <span className="grad-fill flex h-7 w-7 items-center justify-center rounded-[7px] text-[14px] font-bold">
-                P
-              </span>
-              <span className="text-[17px] font-bold tracking-[-0.02em] text-ink">
-                PrompTom
-              </span>
+            <div className="flex items-center gap-2">
+              <LogoMark className="h-8 w-8 shrink-0" />
+              <LogoWord className="text-[17px]" />
             </div>
             <p className="mt-3.5 max-w-[32ch] text-[13.5px] leading-relaxed text-muted">
               {t.footer.tagline}

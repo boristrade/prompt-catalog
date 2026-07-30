@@ -10,19 +10,7 @@ import type { Dictionary } from "@/lib/i18n/dictionaries";
 import ThemeToggle from "@/components/ThemeToggle";
 import LanguageSwitcher from "@/components/LanguageSwitcher";
 import UserMenu, { type SessionUser } from "@/components/layout/UserMenu";
-
-function Logo({ locale }: { locale: Locale }) {
-  return (
-    <Link href={`/${locale}`} className="flex items-center gap-2.5">
-      <span className="grad-fill flex h-7 w-7 items-center justify-center rounded-[7px] text-[14px] font-bold">
-        P
-      </span>
-      <span className="text-[17px] font-bold tracking-[-0.02em] text-ink">
-        PrompTom
-      </span>
-    </Link>
-  );
-}
+import Logo from "@/components/layout/Logo";
 
 export default function Header({
   user,
