@@ -4,7 +4,6 @@ import { useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { Menu, X } from "lucide-react";
-import { CATEGORIES } from "@/lib/categories";
 import type { Locale } from "@/lib/i18n/config";
 import type { Dictionary } from "@/lib/i18n/dictionaries";
 import ThemeToggle from "@/components/ThemeToggle";
@@ -25,20 +24,6 @@ export default function Header({
   const [open, setOpen] = useState(false);
   const pathname = usePathname();
 
-  /*
-    Пять направлений плюс инструменты и тарифы флажками в ряд не
-    помещались — своим чередом собираем их в «Каталог» и «Поддержку»,
-    как в подвале. В мобильном меню, где место есть, оставляем всё
-    плоским списком: там разворачивать вложенное меню внутри меню неудобно.
-  */
-  const catalogItems = [
-    ...CATEGORIES.map((c) => ({
-      href: `/${locale}/prompts/${c.slug}`,
-      label: t.categories[c.slug].nav,
-    })),
-    { href: `/${locale}/tools`, label: t.nav.tools },
-  ];
-
   const supportItems = [
     { href: `/${locale}/pricing`, label: t.footer.pricing },
     { href: `/${locale}/account`, label: t.footer.account },
@@ -48,7 +33,6 @@ export default function Header({
 
   const nav = [
     { href: `/${locale}`, label: t.nav.home, full: t.nav.home },
-    ...catalogItems.map((item) => ({ ...item, full: item.label })),
     ...supportItems.map((item) => ({ ...item, full: item.label })),
   ];
 
@@ -66,7 +50,6 @@ export default function Header({
           >
             {t.nav.home}
           </Link>
-          <NavMenu label={t.footer.catalog} items={catalogItems} />
           <NavMenu label={t.footer.support} items={supportItems} />
         </nav>
 
