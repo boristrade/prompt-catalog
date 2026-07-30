@@ -297,7 +297,7 @@ const en: Dictionary = {
       title: "Prompts for marketplaces",
       nav: "For marketplaces",
       description:
-        "Product listings, infographics, SEO descriptions for online stores.",
+        "Product listings, infographics, SEO descriptions for Amazon and Etsy.",
     },
     saas: {
       title: "Prompts for SaaS projects",
@@ -537,7 +537,7 @@ const fr: Dictionary = {
       title: "Prompts pour marketplaces",
       nav: "Pour marketplaces",
       description:
-        "Fiches produit, infographies, descriptions SEO pour boutiques en ligne.",
+        "Fiches produit, infographies, descriptions SEO pour Amazon et Etsy.",
     },
     saas: {
       title: "Prompts pour projets SaaS",
@@ -783,7 +783,7 @@ const uk: Dictionary = {
       title: "Промти для маркетплейсів",
       nav: "Для маркетплейсів",
       description:
-        "Картки товарів, інфографіка, SEO-описи для інтернет-магазинів.",
+        "Картки товарів, інфографіка, SEO-описи для Amazon і Etsy.",
     },
     saas: {
       title: "Промти для SaaS-проєктів",
@@ -1024,7 +1024,7 @@ const de: Dictionary = {
       title: "Prompts für Marktplätze",
       nav: "Für Marktplätze",
       description:
-        "Produktkarten, Infografiken, SEO-Beschreibungen für Onlineshops.",
+        "Produktkarten, Infografiken, SEO-Beschreibungen für Amazon und Etsy.",
     },
     saas: {
       title: "Prompts für SaaS-Projekte",
@@ -1270,7 +1270,7 @@ const pl: Dictionary = {
       title: "Prompty dla marketplace'ów",
       nav: "Dla marketplace'ów",
       description:
-        "Karty produktów, infografiki, opisy SEO dla sklepów internetowych.",
+        "Karty produktów, infografiki, opisy SEO dla Amazon i Etsy.",
     },
     saas: {
       title: "Prompty do projektów SaaS",
