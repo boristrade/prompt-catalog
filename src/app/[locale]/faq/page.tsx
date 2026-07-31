@@ -3,7 +3,8 @@ import { ChevronDown, Mail } from "lucide-react";
 import { faqFor } from "@/lib/faq";
 import { SUPPORT_EMAIL } from "@/lib/contact";
 import { LOCALES } from "@/lib/i18n/config";
-import { localeAlternates, pageLocale } from "@/lib/i18n";
+import { pageLocale } from "@/lib/i18n";
+import { pageMeta } from "@/lib/seo";
 import Reveal from "@/components/Reveal";
 
 export function generateStaticParams() {
@@ -17,12 +18,13 @@ export async function generateMetadata({
 }) {
   const { locale, t } = await pageLocale(params);
   const items = faqFor(locale);
-  return {
+  return pageMeta({
+    locale,
+    path: "/faq",
     title: t.footer.faq,
     // Первый вопрос как описание: он же и самый частый.
-    description: items[0]?.q,
-    alternates: localeAlternates(locale, "/faq"),
-  };
+    description: items[0]?.q ?? "",
+  });
 }
 
 export default async function FaqPage({

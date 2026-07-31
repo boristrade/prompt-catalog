@@ -1,7 +1,8 @@
 import { ArrowUpRight } from "lucide-react";
 import { toolsByGroup, TOOLS } from "@/lib/tools";
 import { LOCALES } from "@/lib/i18n/config";
-import { localeAlternates, pageLocale } from "@/lib/i18n";
+import { pageLocale } from "@/lib/i18n";
+import { pageMeta } from "@/lib/seo";
 import Reveal from "@/components/Reveal";
 
 export function generateStaticParams() {
@@ -14,11 +15,12 @@ export async function generateMetadata({
   params: Promise<{ locale: string }>;
 }) {
   const { locale, t } = await pageLocale(params);
-  return {
+  return pageMeta({
+    locale,
+    path: "/tools",
     title: t.tools.title,
     description: `${TOOLS.length} ${t.tools.subtitle1} ${t.tools.subtitle2}`,
-    alternates: localeAlternates(locale, "/tools"),
-  };
+  });
 }
 
 export default async function ToolsPage({

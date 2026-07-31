@@ -60,7 +60,8 @@ const RU: Record<LegalDoc, Document> = {
           "Supabase — хранение базы и вход в аккаунт.",
           "Vercel — размещение сайта.",
           "NOWPayments — приём оплаты. Туда уходит только сумма и код платежа, почта не передаётся.",
-          "Больше никому. Рекламных сетей и внешней аналитики на сайте нет.",
+          "Vercel Analytics — счётчик посещений. Считает просмотры страниц без cookie и без профилей: кто именно зашёл, он не знает и знать не может.",
+          "Больше никому. Рекламных сетей на сайте нет.",
         ],
       },
       {
@@ -205,7 +206,8 @@ const EN: Record<LegalDoc, Document> = {
           "Supabase — database hosting and sign-in.",
           "Vercel — website hosting.",
           "NOWPayments — payment processing. Only the amount and the payment code go there; your email does not.",
-          "Nobody else. There are no ad networks and no third-party analytics on this site.",
+          "Vercel Analytics — visit counting. It counts page views without cookies and without profiles: it cannot know who visited.",
+          "Nobody else. There are no ad networks on this site.",
         ],
       },
       {

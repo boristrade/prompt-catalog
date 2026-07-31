@@ -2,7 +2,8 @@ import { notFound } from "next/navigation";
 import { getCategory } from "@/lib/categories";
 import { getPromptsByCategory, isLocked, veil } from "@/lib/prompts";
 import { getAccount } from "@/lib/account";
-import { localeAlternates, pageLocale } from "@/lib/i18n";
+import { pageLocale } from "@/lib/i18n";
+import { categoryOgImage, pageMeta } from "@/lib/seo";
 import PromptCard from "@/components/PromptCard";
 import Reveal from "@/components/Reveal";
 
@@ -23,11 +24,14 @@ export async function generateMetadata({
   const cat = getCategory(category);
   if (!cat) return { title: t.catalog.title };
 
-  return {
+  return pageMeta({
+    locale,
+    path: `/prompts/${cat.slug}`,
     title: t.categories[cat.slug].title,
     description: t.categories[cat.slug].description,
-    alternates: localeAlternates(locale, `/prompts/${cat.slug}`),
-  };
+    // У раздела своя карточка — с его обложкой, а не общая фирменная.
+    image: categoryOgImage(cat.slug),
+  });
 }
 
 export default async function CategoryPage({

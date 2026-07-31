@@ -2,7 +2,8 @@ import Link from "next/link";
 import { ArrowRight, Mail } from "lucide-react";
 import { SUPPORT_EMAIL, SUPPORT_MAILTO, contactCopy } from "@/lib/contact";
 import { LOCALES } from "@/lib/i18n/config";
-import { localeAlternates, pageLocale } from "@/lib/i18n";
+import { pageLocale } from "@/lib/i18n";
+import { pageMeta } from "@/lib/seo";
 import CopyEmail from "@/components/CopyEmail";
 import Reveal from "@/components/Reveal";
 
@@ -17,11 +18,12 @@ export async function generateMetadata({
 }) {
   const { locale } = await pageLocale(params);
   const c = contactCopy(locale);
-  return {
+  return pageMeta({
+    locale,
+    path: "/contact",
     title: c.title,
     description: `${c.intro} ${SUPPORT_EMAIL}`,
-    alternates: localeAlternates(locale, "/contact"),
-  };
+  });
 }
 
 export default async function ContactPage({
