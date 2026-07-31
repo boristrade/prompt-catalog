@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { LOCALES, type Locale } from "@/lib/i18n/config";
-import { localeAlternates, siteBase } from "@/lib/i18n";
+import { localeAlternates } from "@/lib/i18n";
+import { siteUrl } from "@/lib/site";
 
 /*
   Разметка страницы одним вызовом: заголовок, описание, переводы и
@@ -53,7 +54,7 @@ export function pageMeta({
   socialTitle,
   noIndex = false,
 }: Options): Metadata {
-  const url = `${siteBase()}${`/${locale}${path}`}`;
+  const url = `${siteUrl()}${`/${locale}${path}`}`;
   const heading = socialTitle ?? `${title} — PrompTom`;
 
   return {

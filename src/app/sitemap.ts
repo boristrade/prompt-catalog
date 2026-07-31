@@ -3,7 +3,7 @@ import { CATEGORIES } from "@/lib/categories";
 import { PROMPTS } from "@/lib/prompts";
 import { LEGAL_DOCS } from "@/lib/legal";
 import { LOCALES, DEFAULT_LOCALE } from "@/lib/i18n/config";
-import { siteBase } from "@/lib/i18n";
+import { siteUrl } from "@/lib/site";
 
 /*
   Карта сайта.
@@ -51,7 +51,7 @@ const PATHS: { path: string; priority: number; changeFrequency: Change }[] = [
 type Change = "weekly" | "monthly" | "yearly";
 
 export default function sitemap(): MetadataRoute.Sitemap {
-  const base = siteBase();
+  const base = siteUrl();
   const lastModified = new Date();
 
   return PATHS.flatMap(({ path, priority, changeFrequency }) => {

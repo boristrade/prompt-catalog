@@ -1,6 +1,7 @@
 import { NextResponse, type NextRequest } from "next/server";
 import { createClient, getCurrentUser } from "@/lib/supabase/server";
-import { isSupabaseConfigured, siteUrl } from "@/lib/supabase/config";
+import { isSupabaseConfigured } from "@/lib/supabase/config";
+import { siteUrl } from "@/lib/site";
 import { PERIODS, buildOrderId, isPeriodId } from "@/lib/billing";
 import { createInvoice } from "@/lib/nowpayments";
 
