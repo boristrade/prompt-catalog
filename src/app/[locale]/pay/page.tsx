@@ -4,6 +4,7 @@ import { Bitcoin, Clock, Info } from "lucide-react";
 import { getAccount } from "@/lib/account";
 import { PERIODS, isPeriodId } from "@/lib/billing";
 import { pageLocale } from "@/lib/i18n";
+import { SUPPORT_EMAIL, SUPPORT_MAILTO } from "@/lib/contact";
 import PayButton from "@/components/PayButton";
 
 export const dynamic = "force-dynamic";
@@ -98,10 +99,10 @@ export default async function PayPage({
           <p className="text-[12.5px] leading-relaxed text-muted">
             {t.pay.supportPre}{" "}
             <a
-              href="mailto:support@example.com"
+              href={SUPPORT_MAILTO}
               className="text-accent transition-opacity duration-200 hover:opacity-80"
             >
-              support@example.com
+              {SUPPORT_EMAIL}
             </a>{" "}
             {t.pay.supportPost}{" "}
             <span className="font-mono text-ink">{account.paymentCode}</span>,{" "}
