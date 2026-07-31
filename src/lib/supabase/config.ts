@@ -47,13 +47,3 @@ export function isEmailAuthEnabled(): boolean {
   return flag(process.env.NEXT_PUBLIC_EMAIL_AUTH) !== false;
 }
 
-/** Базовый адрес сайта — нужен для redirect после входа. */
-export function siteUrl(): string {
-  const explicit = process.env.NEXT_PUBLIC_SITE_URL;
-  if (explicit) return explicit.replace(/\/$/, "");
-  // На Vercel адрес деплоя приходит в переменной окружения автоматически.
-  if (process.env.NEXT_PUBLIC_VERCEL_URL) {
-    return `https://${process.env.NEXT_PUBLIC_VERCEL_URL}`;
-  }
-  return "http://localhost:3000";
-}

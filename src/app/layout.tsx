@@ -7,7 +7,7 @@ import { isAdminEmail } from "@/lib/admin";
 import type { SessionUser } from "@/components/layout/UserMenu";
 import { DEFAULT_LOCALE, isLocale } from "@/lib/i18n/config";
 import { getDictionary } from "@/lib/i18n/dictionaries";
-import { siteBase } from "@/lib/i18n";
+import { siteUrl } from "@/lib/site";
 import { Analytics } from "@vercel/analytics/next";
 import { SpeedInsights } from "@vercel/speed-insights/next";
 import { LOCALE_HEADER } from "@/middleware";
@@ -19,7 +19,7 @@ export const metadata: Metadata = {
     превратились в абсолютные: робот мессенджера тянет og:image со своей
     стороны, и «/og/default.jpg» ему ни о чём не говорит.
   */
-  metadataBase: new URL(siteBase()),
+  metadataBase: new URL(siteUrl()),
   title: {
     default: "PrompTom — AI prompt catalogue",
     template: "%s — PrompTom",

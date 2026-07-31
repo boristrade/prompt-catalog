@@ -1,5 +1,5 @@
 import type { MetadataRoute } from "next";
-import { siteBase } from "@/lib/i18n";
+import { siteUrl } from "@/lib/site";
 
 /*
   Что можно обходить и где лежит карта сайта.
@@ -16,7 +16,7 @@ export default function robots(): MetadataRoute.Robots {
       allow: "/",
       disallow: ["/api/", "/auth/", "/*/account", "/*/admin", "/*/pay", "/*/login"],
     },
-    sitemap: `${siteBase()}/sitemap.xml`,
-    host: siteBase(),
+    sitemap: `${siteUrl()}/sitemap.xml`,
+    host: siteUrl(),
   };
 }
