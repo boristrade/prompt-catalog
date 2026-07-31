@@ -1,5 +1,6 @@
 import type { MetadataRoute } from "next";
 import { CATEGORIES } from "@/lib/categories";
+import { PROMPTS } from "@/lib/prompts";
 import { LEGAL_DOCS } from "@/lib/legal";
 import { LOCALES, DEFAULT_LOCALE } from "@/lib/i18n/config";
 import { siteBase } from "@/lib/i18n";
@@ -25,6 +26,16 @@ const PATHS: { path: string; priority: number; changeFrequency: Change }[] = [
     path: `/prompts/${c.slug}`,
     priority: 0.9,
     changeFrequency: "weekly" as Change,
+  })),
+  /*
+    Каждый промт отдельным адресом. Это большая часть карты — и ровно то,
+    ради чего она заводилась: страницы промтов с главной за один переход
+    не достижимы, а именно на них приходят из поиска.
+  */
+  ...PROMPTS.map((p) => ({
+    path: `/prompts/${p.category}/${p.id}`,
+    priority: 0.7,
+    changeFrequency: "monthly" as Change,
   })),
   { path: "/pricing", priority: 0.8, changeFrequency: "monthly" },
   { path: "/tools", priority: 0.7, changeFrequency: "monthly" },

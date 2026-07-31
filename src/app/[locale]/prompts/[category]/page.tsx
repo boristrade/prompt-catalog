@@ -1,9 +1,16 @@
 import { notFound } from "next/navigation";
 import { getCategory } from "@/lib/categories";
-import { getPromptsByCategory, isLocked, veil } from "@/lib/prompts";
+import {
+  getPromptsByCategory,
+  isLocked,
+  toolsInCategory,
+  usesTool,
+  veil,
+} from "@/lib/prompts";
 import { getAccount } from "@/lib/account";
 import { pageLocale } from "@/lib/i18n";
 import { categoryOgImage, pageMeta } from "@/lib/seo";
+import CatalogFilters, { type Tier } from "@/components/CatalogFilters";
 import PromptCard from "@/components/PromptCard";
 import Reveal from "@/components/Reveal";
 
@@ -36,8 +43,10 @@ export async function generateMetadata({
 
 export default async function CategoryPage({
   params,
+  searchParams,
 }: {
   params: Promise<{ locale: string; category: string }>;
+  searchParams: Promise<{ tier?: string; tool?: string }>;
 }) {
   const { category, locale: rawLocale } = await params;
   const { locale, t } = await pageLocale(Promise.resolve({ locale: rawLocale }));
@@ -45,8 +54,25 @@ export default async function CategoryPage({
   const cat = getCategory(category);
   if (!cat) notFound();
 
-  const prompts = getPromptsByCategory(cat.slug, locale);
-  const freeCount = prompts.filter((p) => p.tier === "free").length;
+  const all = getPromptsByCategory(cat.slug, locale);
+  const freeCount = all.filter((p) => p.tier === "free").length;
+
+  /*
+    Фильтры живут в адресе. Неизвестное значение считаем отсутствующим:
+    ?tier=что-угодно не должно приводить к пустому списку, из которого
+    непонятно, сломался сайт или промтов правда нет.
+  */
+  const sp = await searchParams;
+  const tier: Tier =
+    sp.tier === "free" || sp.tier === "pro" ? sp.tier : "all";
+
+  const tools = toolsInCategory(cat.slug, locale);
+  const tool =
+    sp.tool && tools.some((name) => name === sp.tool) ? sp.tool : null;
+
+  const prompts = all
+    .filter((p) => (tier === "all" ? true : p.tier === tier))
+    .filter((p) => (tool ? usesTool(p, tool) : true));
 
   // Гость — тот же бесплатный тариф, только ещё и без избранного.
   const account = await getAccount();
@@ -63,8 +89,11 @@ export default async function CategoryPage({
       </p>
 
       <div className="rise rise-3 mt-5 flex flex-wrap items-center gap-x-4 gap-y-2 font-mono text-[11.5px] text-faint">
+        {/* Числа описывают раздел целиком, а не текущий фильтр: рядом
+            стоит «столько-то бесплатно», и одно отфильтрованное число
+            рядом с другим нефильтрованным читалось бы как ошибка. */}
         <span>
-          <span className="text-ink">{prompts.length}</span> {t.catalog.prompts}
+          <span className="text-ink">{all.length}</span> {t.catalog.prompts}
         </span>
         <span className="text-line-strong">·</span>
         <span>
@@ -74,8 +103,16 @@ export default async function CategoryPage({
         <span>{t.catalog.oneClick}</span>
       </div>
 
+      <CatalogFilters
+        base={`/${locale}/prompts/${cat.slug}`}
+        tools={tools}
+        tier={tier}
+        tool={tool}
+        t={t}
+      />
+
       {prompts.length > 0 ? (
-        <div className="mt-10 grid items-start gap-3 lg:grid-cols-2">
+        <div className="mt-8 grid items-start gap-3 lg:grid-cols-2">
           {prompts.map((p, i) => {
             const locked = isLocked(p, plan);
             return (
@@ -95,8 +132,9 @@ export default async function CategoryPage({
           })}
         </div>
       ) : (
-        <div className="mt-10 rounded-card border border-line bg-surface p-10 text-center text-[13.5px] text-muted">
-          {t.catalog.empty}
+        <div className="mt-8 rounded-card border border-dashed border-line-strong bg-surface p-10 text-center text-[13.5px] text-muted">
+          {/* «Ничего не нашлось» и «раздел пуст» — разные новости. */}
+          {all.length === 0 ? t.catalog.empty : t.filters.nothing}
         </div>
       )}
     </section>
