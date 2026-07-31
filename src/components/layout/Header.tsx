@@ -10,7 +10,6 @@ import ThemeToggle from "@/components/ThemeToggle";
 import LanguageSwitcher from "@/components/LanguageSwitcher";
 import UserMenu, { type SessionUser } from "@/components/layout/UserMenu";
 import Logo from "@/components/layout/Logo";
-import { SUPPORT_MAILTO } from "@/lib/contact";
 
 export default function Header({
   user,
@@ -29,7 +28,9 @@ export default function Header({
     { href: `/${locale}/account`, label: t.footer.account },
     { href: `/${locale}/account#favorites`, label: t.account.favorites },
     { href: `/${locale}/faq`, label: t.footer.faq },
-    { href: SUPPORT_MAILTO, label: t.footer.feedback },
+    // Страница, а не mailto: в меню ссылка должна открывать что-то
+    // видимое. mailto молчит, если почтового клиента по умолчанию нет.
+    { href: `/${locale}/contact`, label: t.footer.feedback },
   ];
 
   const nav = [
