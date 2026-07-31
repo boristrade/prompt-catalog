@@ -3,6 +3,7 @@ import type { Metadata } from "next";
 import Header from "@/components/layout/Header";
 import Footer from "@/components/layout/Footer";
 import { getCurrentUser } from "@/lib/supabase/server";
+import { isAdminEmail } from "@/lib/admin";
 import type { SessionUser } from "@/components/layout/UserMenu";
 import { DEFAULT_LOCALE, isLocale } from "@/lib/i18n/config";
 import { getDictionary } from "@/lib/i18n/dictionaries";
@@ -47,6 +48,7 @@ export default async function RootLayout({
           "",
         avatarUrl:
           (account.user_metadata?.avatar_url as string | undefined) ?? null,
+        isAdmin: isAdminEmail(account.email),
       }
     : null;
 
