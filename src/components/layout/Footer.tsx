@@ -2,6 +2,7 @@ import Link from "next/link";
 import { Instagram, Send, Youtube } from "lucide-react";
 import { CATEGORIES } from "@/lib/categories";
 import { LogoMark, LogoWord } from "@/components/layout/Logo";
+import { SUPPORT_MAILTO } from "@/lib/contact";
 import type { Locale } from "@/lib/i18n/config";
 import type { Dictionary } from "@/lib/i18n/dictionaries";
 
@@ -21,14 +22,14 @@ export default function Footer({
   const support = [
     { label: t.footer.pricing, href: `/${locale}/pricing` },
     { label: t.footer.account, href: `/${locale}/account` },
-    { label: t.footer.faq, href: `/${locale}/tools` },
-    { label: t.footer.feedback, href: "mailto:support@example.com" },
+    { label: t.footer.faq, href: `/${locale}/faq` },
+    { label: t.footer.feedback, href: SUPPORT_MAILTO },
   ];
 
   const legal = [
-    { label: t.footer.privacy, href: `/${locale}/login` },
-    { label: t.footer.terms, href: `/${locale}/login` },
-    { label: t.footer.agreement, href: `/${locale}/login` },
+    { label: t.footer.privacy, href: `/${locale}/legal/privacy` },
+    { label: t.footer.terms, href: `/${locale}/legal/terms` },
+    { label: t.footer.agreement, href: `/${locale}/legal/agreement` },
   ];
 
   return (

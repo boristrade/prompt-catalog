@@ -10,6 +10,7 @@ import ThemeToggle from "@/components/ThemeToggle";
 import LanguageSwitcher from "@/components/LanguageSwitcher";
 import UserMenu, { type SessionUser } from "@/components/layout/UserMenu";
 import Logo from "@/components/layout/Logo";
+import { SUPPORT_MAILTO } from "@/lib/contact";
 
 export default function Header({
   user,
@@ -27,8 +28,8 @@ export default function Header({
     { href: `/${locale}/pricing`, label: t.footer.pricing },
     { href: `/${locale}/account`, label: t.footer.account },
     { href: `/${locale}/account#favorites`, label: t.account.favorites },
-    { href: `/${locale}/tools`, label: t.footer.faq },
-    { href: "mailto:support@example.com", label: t.footer.feedback },
+    { href: `/${locale}/faq`, label: t.footer.faq },
+    { href: SUPPORT_MAILTO, label: t.footer.feedback },
   ];
 
   const nav = [
