@@ -101,7 +101,12 @@ export const config = {
     /*
       Пропускаем статику и картинки. api и auth — тоже: их зовут машины
       и внешние сервисы, языковой префикс им только помешал бы.
+
+      robots.txt и sitemap.xml — по той же причине, но забыть их особенно
+      обидно: поисковик просит их по единственному адресу в корне, а мы
+      уводили его на /en/robots.txt, то есть на 404. Карта сайта была бы
+      написана и никем не прочитана.
     */
-    "/((?!api|auth|_next/static|_next/image|favicon.ico|.*\\.(?:svg|png|jpg|jpeg|gif|webp)$).*)",
+    "/((?!api|auth|robots\\.txt|sitemap\\.xml|_next/static|_next/image|favicon.ico|.*\\.(?:svg|png|jpg|jpeg|gif|webp)$).*)",
   ],
 };

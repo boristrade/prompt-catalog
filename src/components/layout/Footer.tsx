@@ -2,14 +2,16 @@ import Link from "next/link";
 import { Instagram, Send, Youtube } from "lucide-react";
 import { CATEGORIES } from "@/lib/categories";
 import { LogoMark, LogoWord } from "@/components/layout/Logo";
+import { activeSocials, type SocialKey } from "@/lib/contact";
 import type { Locale } from "@/lib/i18n/config";
 import type { Dictionary } from "@/lib/i18n/dictionaries";
 
-const SOCIALS = [
-  { href: "https://t.me", label: "Telegram", Icon: Send },
-  { href: "https://youtube.com", label: "YouTube", Icon: Youtube },
-  { href: "https://instagram.com", label: "Instagram", Icon: Instagram },
-];
+/* Значок и подпись для каждой сети. Сами адреса — в lib/contact.ts. */
+const SOCIAL_ICONS: Record<SocialKey, { label: string; Icon: typeof Send }> = {
+  telegram: { label: "Telegram", Icon: Send },
+  youtube: { label: "YouTube", Icon: Youtube },
+  instagram: { label: "Instagram", Icon: Instagram },
+};
 
 export default function Footer({
   locale,
@@ -25,6 +27,8 @@ export default function Footer({
     { label: t.footer.feedback, href: `/${locale}/contact` },
   ];
 
+  const socials = activeSocials();
+
   const legal = [
     { label: t.footer.privacy, href: `/${locale}/legal/privacy` },
     { label: t.footer.terms, href: `/${locale}/legal/terms` },
@@ -34,7 +38,7 @@ export default function Footer({
   return (
     <footer className="mt-24 border-t border-line bg-sunken">
       <div className="mx-auto max-w-[1120px] px-5 py-14 md:px-8">
-        <div className="grid grid-cols-2 gap-10 md:grid-cols-3 lg:grid-cols-5">
+        <div className="grid grid-cols-2 gap-10 md:grid-cols-3 lg:grid-cols-4">
           {/* Бренд */}
           <div className="col-span-2 md:col-span-1">
             <div className="flex items-center gap-2">
@@ -103,26 +107,31 @@ export default function Footer({
             </ul>
           </div>
 
-          {/* Соцсети */}
-          <div>
-            <div className="text-[13px] font-semibold text-ink">
-              {t.footer.follow}
+          {/* Соцсети. Ни одного адреса не задано — колонки нет вовсе. */}
+          {socials.length > 0 && (
+            <div>
+              <div className="text-[13px] font-semibold text-ink">
+                {t.footer.follow}
+              </div>
+              <div className="mt-4 flex items-center gap-2.5">
+                {socials.map(({ key, href }) => {
+                  const { label, Icon } = SOCIAL_ICONS[key];
+                  return (
+                    <a
+                      key={key}
+                      href={href}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      aria-label={label}
+                      className="flex h-9 w-9 items-center justify-center rounded-chip border border-line bg-surface text-muted transition-[color,border-color,transform] duration-200 hover:-translate-y-0.5 hover:border-violet hover:text-accent"
+                    >
+                      <Icon size={15} />
+                    </a>
+                  );
+                })}
+              </div>
             </div>
-            <div className="mt-4 flex items-center gap-2.5">
-              {SOCIALS.map(({ href, label, Icon }) => (
-                <a
-                  key={label}
-                  href={href}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  aria-label={label}
-                  className="flex h-9 w-9 items-center justify-center rounded-chip border border-line bg-surface text-muted transition-[color,border-color,transform] duration-200 hover:-translate-y-0.5 hover:border-violet hover:text-accent"
-                >
-                  <Icon size={15} />
-                </a>
-              ))}
-            </div>
-          </div>
+          )}
         </div>
 
         <div className="mt-12 border-t border-line pt-6 text-center text-[12.5px] text-faint">

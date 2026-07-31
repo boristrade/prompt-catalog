@@ -1,7 +1,8 @@
 import { notFound } from "next/navigation";
 import { LEGAL_DOCS, isLegalDoc, legalDoc } from "@/lib/legal";
 import { LOCALES } from "@/lib/i18n/config";
-import { localeAlternates, pageLocale } from "@/lib/i18n";
+import { pageLocale } from "@/lib/i18n";
+import { pageMeta } from "@/lib/seo";
 import Reveal from "@/components/Reveal";
 
 /*
@@ -24,11 +25,12 @@ export async function generateMetadata({
   if (!isLegalDoc(doc)) return {};
 
   const document = legalDoc(locale, doc);
-  return {
+  return pageMeta({
+    locale,
+    path: `/legal/${doc}`,
     title: document.title,
     description: document.intro,
-    alternates: localeAlternates(locale, `/legal/${doc}`),
-  };
+  });
 }
 
 export default async function LegalPage({

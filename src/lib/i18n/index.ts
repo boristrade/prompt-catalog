@@ -25,7 +25,7 @@ export async function pageLocale(
   переживает деплои; свой домен задаётся NEXT_PUBLIC_SITE_URL и имеет
   приоритет.
 */
-function siteBase(): string {
+export function siteBase(): string {
   const explicit = process.env.NEXT_PUBLIC_SITE_URL;
   if (explicit) return explicit.replace(/\/$/, "");
   const production = process.env.VERCEL_PROJECT_PRODUCTION_URL;

@@ -114,6 +114,22 @@ const ru = {
     lockedTitle: "Промт входит в PRO-подборку",
     lockedCta: "Открыть доступ",
   },
+  detail: {
+    promptTitle: "Текст промта",
+    exampleTitle: "Пример результата",
+    bestForLabel: "Лучше всего работает в",
+    related: "Похожие промты",
+    variables: "В фигурных скобках — то, что нужно заменить на своё.",
+  },
+  filters: {
+    access: "Доступ",
+    tool: "Нейросеть",
+    all: "Все",
+    freeOnly: "Бесплатные",
+    proOnly: "PRO",
+    nothing: "Под эти условия ничего не подошло.",
+    reset: "Сбросить фильтры",
+  },
   login: {
     title: "Вход",
     subtitle:
@@ -355,6 +371,22 @@ const en: Dictionary = {
     removeFavorite: "Remove from favourites",
     lockedTitle: "This prompt is part of the PRO collection",
     lockedCta: "Unlock access",
+  },
+  detail: {
+    promptTitle: "The prompt",
+    exampleTitle: "Example output",
+    bestForLabel: "Works best in",
+    related: "Related prompts",
+    variables: "Anything in curly braces is yours to replace.",
+  },
+  filters: {
+    access: "Access",
+    tool: "AI model",
+    all: "All",
+    freeOnly: "Free",
+    proOnly: "PRO",
+    nothing: "Nothing matches these filters.",
+    reset: "Reset filters",
   },
   login: {
     title: "Sign in",
@@ -599,6 +631,22 @@ const fr: Dictionary = {
     lockedTitle: "Ce prompt fait partie de la sélection PRO",
     lockedCta: "Débloquer l'accès",
   },
+  detail: {
+    promptTitle: "Le prompt",
+    exampleTitle: "Exemple de résultat",
+    bestForLabel: "Fonctionne mieux avec",
+    related: "Prompts similaires",
+    variables: "Ce qui est entre accolades est à remplacer par vos données.",
+  },
+  filters: {
+    access: "Accès",
+    tool: "Modèle IA",
+    all: "Tous",
+    freeOnly: "Gratuits",
+    proOnly: "PRO",
+    nothing: "Aucun prompt ne correspond à ces filtres.",
+    reset: "Réinitialiser les filtres",
+  },
   login: {
     title: "Connexion",
     subtitle:
@@ -840,6 +888,22 @@ const uk: Dictionary = {
     removeFavorite: "Прибрати з обраного",
     lockedTitle: "Промт входить до PRO-добірки",
     lockedCta: "Відкрити доступ",
+  },
+  detail: {
+    promptTitle: "Текст промта",
+    exampleTitle: "Приклад результату",
+    bestForLabel: "Найкраще працює в",
+    related: "Схожі промти",
+    variables: "У фігурних дужках — те, що треба замінити на своє.",
+  },
+  filters: {
+    access: "Доступ",
+    tool: "Нейромережа",
+    all: "Усі",
+    freeOnly: "Безкоштовні",
+    proOnly: "PRO",
+    nothing: "Під ці умови нічого не підійшло.",
+    reset: "Скинути фільтри",
   },
   login: {
     title: "Вхід",
@@ -1087,6 +1151,22 @@ const de: Dictionary = {
     lockedTitle: "Dieser Prompt gehört zur PRO-Auswahl",
     lockedCta: "Zugang freischalten",
   },
+  detail: {
+    promptTitle: "Der Prompt",
+    exampleTitle: "Beispielergebnis",
+    bestForLabel: "Funktioniert am besten mit",
+    related: "Ähnliche Prompts",
+    variables: "Alles in geschweiften Klammern ersetzen Sie durch Ihre Angaben.",
+  },
+  filters: {
+    access: "Zugang",
+    tool: "KI-Modell",
+    all: "Alle",
+    freeOnly: "Kostenlos",
+    proOnly: "PRO",
+    nothing: "Zu diesen Filtern passt nichts.",
+    reset: "Filter zurücksetzen",
+  },
   login: {
     title: "Anmelden",
     subtitle:
@@ -1328,6 +1408,22 @@ const pl: Dictionary = {
     removeFavorite: "Usuń z ulubionych",
     lockedTitle: "Ten prompt należy do zestawu PRO",
     lockedCta: "Odblokuj dostęp",
+  },
+  detail: {
+    promptTitle: "Treść promptu",
+    exampleTitle: "Przykładowy wynik",
+    bestForLabel: "Najlepiej działa w",
+    related: "Podobne prompty",
+    variables: "To, co w nawiasach klamrowych, zamieniasz na swoje.",
+  },
+  filters: {
+    access: "Dostęp",
+    tool: "Model AI",
+    all: "Wszystkie",
+    freeOnly: "Bezpłatne",
+    proOnly: "PRO",
+    nothing: "Nic nie pasuje do tych filtrów.",
+    reset: "Wyczyść filtry",
   },
   login: {
     title: "Logowanie",

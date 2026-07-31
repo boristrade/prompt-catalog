@@ -7,10 +7,19 @@ import { isAdminEmail } from "@/lib/admin";
 import type { SessionUser } from "@/components/layout/UserMenu";
 import { DEFAULT_LOCALE, isLocale } from "@/lib/i18n/config";
 import { getDictionary } from "@/lib/i18n/dictionaries";
+import { siteBase } from "@/lib/i18n";
+import { Analytics } from "@vercel/analytics/next";
+import { SpeedInsights } from "@vercel/speed-insights/next";
 import { LOCALE_HEADER } from "@/middleware";
 import "./globals.css";
 
 export const metadata: Metadata = {
+  /*
+    Базовый адрес нужен, чтобы относительные пути картинок в метаданных
+    превратились в абсолютные: робот мессенджера тянет og:image со своей
+    стороны, и «/og/default.jpg» ему ни о чём не говорит.
+  */
+  metadataBase: new URL(siteBase()),
   title: {
     default: "PrompTom — AI prompt catalogue",
     template: "%s — PrompTom",
@@ -75,6 +84,18 @@ export default async function RootLayout({
           {children}
         </main>
         <Footer locale={locale} t={t} />
+
+        {/*
+          Счётчик посещений и замеры скорости от Vercel. Без cookie и без
+          профилей: считает просмотры, но не знает, кто их сделал, — поэтому
+          не нужен баннер согласия.
+
+          Нужен, чтобы перестать гадать: какие разделы смотрят, доходит ли
+          кто-то до оплаты и на каком шаге уходит. Политику конфиденциальности
+          пришлось поправить: там было написано, что внешней аналитики нет.
+        */}
+        <Analytics />
+        <SpeedInsights />
       </body>
     </html>
   );

@@ -7,42 +7,7 @@ import type { Prompt } from "@/lib/prompts";
 import type { Locale } from "@/lib/i18n/config";
 import type { Dictionary } from "@/lib/i18n/dictionaries";
 import FavoriteButton from "@/components/FavoriteButton";
-
-/*
-  Подсвечиваем {переменные} акцентом: сразу видно, что заменять на своё,
-  ещё до чтения текста.
-*/
-function highlightVars(text: string) {
-  return text.split(/(\{[^{}]*\})/g).map((part, i) =>
-    part.startsWith("{") && part.endsWith("}") ? (
-      <span key={i} className="text-accent">
-        {part}
-      </span>
-    ) : (
-      <span key={i}>{part}</span>
-    ),
-  );
-}
-
-/*
-  Заглушка под замком. Настоящий текст закрытого промта на клиент не
-  уходит вовсе — размытие это лишь картинка, и через инструменты
-  разработчика его читали бы как обычный текст.
-*/
-const VEIL = `Role: {specialist}, {years} years in {niche}.
-Task: prepare {deliverable} for {audience}.
-
-Context:
-— channel: {channel}
-— goal: {goal}
-— constraints: {constraints}
-
-Answer format:
-1. {first block}
-2. {second block}
-3. {third block}
-
-Tone: {tone}. Length: {length}.`;
+import { VEIL, highlightVars } from "@/components/promptText";
 
 interface Props {
   prompt: Prompt;
@@ -80,8 +45,18 @@ export default function PromptCard({
       className="flex flex-col rounded-card border border-line bg-surface p-5 transition-[border-color,transform] duration-200 ease-out hover:-translate-y-0.5 hover:border-line-strong"
     >
       <div className="flex items-start justify-between gap-3">
+        {/*
+          Заголовок — ссылка на собственную страницу промта. Ссылкой сделан
+          именно он, а не вся карточка: внутри есть кнопки копирования и
+          избранного, и обёрнутая целиком карточка перехватывала бы их.
+        */}
         <h3 className="text-[15.5px] font-semibold leading-snug tracking-[-0.015em] text-ink">
-          {prompt.title}
+          <Link
+            href={`/${locale}/prompts/${prompt.category}/${prompt.id}`}
+            className="transition-colors duration-200 hover:text-accent"
+          >
+            {prompt.title}
+          </Link>
         </h3>
         <div className="flex shrink-0 items-center gap-1.5">
           <FavoriteButton

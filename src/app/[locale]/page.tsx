@@ -6,7 +6,8 @@ import { PROMPTS, countByCategory } from "@/lib/prompts";
 import { TOOLS } from "@/lib/tools";
 import { coverFor } from "@/lib/covers";
 import { LOCALES } from "@/lib/i18n/config";
-import { localeAlternates, pageLocale } from "@/lib/i18n";
+import { pageLocale } from "@/lib/i18n";
+import { pageMeta } from "@/lib/seo";
 import Reveal from "@/components/Reveal";
 import HeroVisual from "@/components/HeroVisual";
 
@@ -25,13 +26,15 @@ export async function generateMetadata({
   params: Promise<{ locale: string }>;
 }) {
   const { locale, t } = await pageLocale(params);
-  return {
+  return pageMeta({
+    locale,
     // Без второй половины заголовка: к ней шаблон добавит «— PrompTom»,
     // и в выдаче строка обрежется на середине.
     title: t.home.titleMain,
     description: t.home.subtitle,
-    alternates: localeAlternates(locale),
-  };
+    // В превью, наоборот, обе половины: там строка длиннее и обрезать нечего.
+    socialTitle: `${t.home.titleMain} ${t.home.titleAccent}`,
+  });
 }
 
 const freeCount = PROMPTS.filter((p) => p.tier === "free").length;

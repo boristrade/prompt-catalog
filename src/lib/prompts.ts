@@ -1693,6 +1693,33 @@ export function veil(prompt: Prompt): Prompt {
   return { ...prompt, prompt: "", example: "" };
 }
 
+/*
+  Нейросети, встречающиеся в разделе.
+
+  В bestFor лежит человеческая строка вроде «ChatGPT / Claude» — под
+  фильтр её надо разобрать на отдельные названия, иначе «Claude» не нашёлся
+  бы ни разу, хотя стоит у десятка промтов.
+*/
+export function toolsInCategory(
+  category: CategorySlug,
+  locale: Locale,
+): string[] {
+  const tools = new Set<string>();
+  for (const prompt of getPromptsByCategory(category, locale)) {
+    for (const part of prompt.bestFor.split("/")) {
+      const name = part.trim();
+      if (name) tools.add(name);
+    }
+  }
+  return [...tools].sort((a, b) => a.localeCompare(b));
+}
+
+export function usesTool(prompt: Prompt, tool: string): boolean {
+  return prompt.bestFor
+    .split("/")
+    .some((part) => part.trim().toLowerCase() === tool.toLowerCase());
+}
+
 /** Закрыт ли промт для пользователя с таким тарифом. */
 export function isLocked(prompt: Prompt, plan: "free" | "pro"): boolean {
   return prompt.tier === "pro" && plan !== "pro";

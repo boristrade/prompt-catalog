@@ -5,6 +5,31 @@
 */
 export const SUPPORT_EMAIL = "aixten092@gmail.com";
 
+/*
+  Соцсети в подвале.
+
+  Пустая строка — значок не рисуется вовсе. Так и задумано: раньше здесь
+  стояли «https://t.me» и «https://instagram.com», то есть главные
+  страницы самих сервисов. Человек нажимал «наш телеграм» и попадал на
+  сайт телеграма — хуже, чем если бы значка не было: выглядит как сайт,
+  которым не занимаются.
+
+  Появится настоящий канал — впишите адрес сюда, значок появится сам.
+*/
+export const SOCIALS = {
+  telegram: "",
+  youtube: "",
+  instagram: "",
+} as const;
+
+export type SocialKey = keyof typeof SOCIALS;
+
+export function activeSocials(): { key: SocialKey; href: string }[] {
+  return (Object.keys(SOCIALS) as SocialKey[])
+    .filter((key) => SOCIALS[key].trim() !== "")
+    .map((key) => ({ key, href: SOCIALS[key] }));
+}
+
 /** Ссылка «написать письмо». Тема заполняется сама. */
 export const SUPPORT_MAILTO = `mailto:${SUPPORT_EMAIL}?subject=${encodeURIComponent(
   "PrompTom — вопрос",
