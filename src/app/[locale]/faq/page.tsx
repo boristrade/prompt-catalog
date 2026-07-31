@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { ChevronDown, Mail } from "lucide-react";
 import { faqFor } from "@/lib/faq";
-import { SUPPORT_EMAIL, SUPPORT_MAILTO } from "@/lib/contact";
+import { SUPPORT_EMAIL } from "@/lib/contact";
 import { LOCALES } from "@/lib/i18n/config";
 import { localeAlternates, pageLocale } from "@/lib/i18n";
 import Reveal from "@/components/Reveal";
@@ -77,7 +77,7 @@ export default async function FaqPage({
             </p>
           </div>
           <Link
-            href={SUPPORT_MAILTO}
+            href={`/${locale}/contact`}
             className="grad-fill shrink-0 rounded-chip px-4 py-2.5 text-[13px] font-semibold shadow-[0_6px_20px_-8px_var(--glow)] transition-[opacity,transform] duration-200 hover:opacity-90 active:scale-[0.97]"
           >
             {t.footer.feedback}
