@@ -76,11 +76,44 @@ export async function createInvoice(params: {
  * Проверяет подпись уведомления. Возвращает разобранное тело или null.
  * На вход сырая строка: разбирать до проверки подписи нельзя.
  */
+/*
+  PHP и Python по умолчанию экранируют не-ASCII в \uXXXX (json_encode без
+  JSON_UNESCAPED_UNICODE, json.dumps с ensure_ascii=True), а JSON.stringify
+  оставляет символы как есть. Байты разные — HMAC разный.
+
+  Пока в описании заказа была одна латиница, разницы не было. С русским
+  названием тарифа подпись перестала сходиться: у нас «PRO на месяц», у
+  них «PRO на месяц».
+
+  Суррогатные пары экранируются по одной кодовой единице UTF-16 — ровно
+  так же делают PHP и Python, поэтому посимвольный обход подходит.
+*/
+function escapeNonAscii(json: string): string {
+  return json.replace(/[-￿]/g, (char) =>
+    `\\u${char.charCodeAt(0).toString(16).padStart(4, "0")}`,
+  );
+}
+
+function matches(expected: string, signature: string): boolean {
+  const a = Buffer.from(expected);
+  const b = Buffer.from(signature);
+  // Разная длина — сразу мимо, иначе timingSafeEqual бросит исключение.
+  if (a.length !== b.length) return false;
+  return timingSafeEqual(a, b);
+}
+
+/**
+ * Проверяет подпись уведомления. Возвращает разобранное тело или null.
+ * На вход сырая строка: разбирать до проверки подписи нельзя.
+ */
 export function verifyIpn(
   raw: string,
   signature: string | null,
 ): Record<string, unknown> | null {
-  const secret = process.env.NOWPAYMENTS_IPN_SECRET;
+  // trim: их же пример подписи делает trim($notification_key). Лишний
+  // перевод строки, прилипший при вставке ключа в форму, ломал бы всё
+  // молча.
+  const secret = process.env.NOWPAYMENTS_IPN_SECRET?.trim();
   if (!secret || !signature) return null;
 
   let data: Record<string, unknown>;
@@ -94,21 +127,22 @@ export function verifyIpn(
     Подписываем пересобранный объект, а не присланную строку, — так
     описано у NOWPayments и так делают их примеры.
 
-    Одно место остаётся хрупким: после JSON.parse число 59.0 неотличимо
-    от 59, и если бы подпись считалась от сырого текста с дробной частью,
-    она бы не сошлась. Проверено — на всех остальных формах, включая
-    вложенные объекты и перемешанные ключи, подпись совпадает. Если
-    настоящий платёж однажды не пройдёт проверку, причину покажет лог
-    ниже, а не молчание.
-  */
-  const expected = createHmac("sha512", secret)
-    .update(JSON.stringify(sortDeep(data)))
-    .digest("hex");
+    Форм две, потому что на той стороне не JavaScript: сверяем и с
+    экранированием не-ASCII, и без него. Обе считаются от одних данных
+    одним ключом, поэтому проверка от этого не слабеет — вопрос
+    по-прежнему один: знает ли отправитель секрет.
 
-  const a = Buffer.from(expected);
-  const b = Buffer.from(signature);
-  // Разная длина — сразу мимо, иначе timingSafeEqual бросит исключение.
-  if (a.length !== b.length || !timingSafeEqual(a, b)) {
+    Одно место остаётся хрупким: после JSON.parse число 59.0 неотличимо
+    от 59. Если настоящий платёж однажды не пройдёт проверку, причину
+    покажет лог ниже, а не молчание.
+  */
+  const canonical = JSON.stringify(sortDeep(data));
+
+  const ok = [canonical, escapeNonAscii(canonical)].some((variant) =>
+    matches(createHmac("sha512", secret).update(variant).digest("hex"), signature),
+  );
+
+  if (!ok) {
     // Ни секрета, ни ожидаемой подписи в лог не пишем: по ним подбирают
     // ключ. Идентификатора заказа достаточно, чтобы найти платёж.
     console.error("nowpayments: подпись не сошлась", {
