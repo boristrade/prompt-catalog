@@ -2,7 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
-import { CreditCard, LogOut, User } from "lucide-react";
+import { CreditCard, LogOut, ShieldCheck, User } from "lucide-react";
 import type { Locale } from "@/lib/i18n/config";
 import type { Dictionary } from "@/lib/i18n/dictionaries";
 
@@ -10,6 +10,8 @@ export interface SessionUser {
   email: string;
   name: string;
   avatarUrl: string | null;
+  /** Показывать ли ссылку на админку. Считается на сервере. */
+  isAdmin: boolean;
 }
 
 /** Аватар с выпадающим меню и выходом. */
@@ -113,6 +115,23 @@ export default function UserMenu({
             <CreditCard size={14} />
             {t.header.pricing}
           </Link>
+
+          {/*
+            Ссылка видна только владельцу. Она же и единственная подсказка,
+            что админка существует: сама страница посторонним отвечает
+            «не найдено».
+          */}
+          {user.isAdmin && (
+            <Link
+              href={`/${locale}/admin`}
+              role="menuitem"
+              onClick={() => setOpen(false)}
+              className="flex w-full items-center gap-2 border-b border-line px-4 py-3 text-left text-[13px] text-accent transition-colors duration-200 hover:bg-sunken"
+            >
+              <ShieldCheck size={14} />
+              Админка
+            </Link>
+          )}
 
           <form action="/auth/signout" method="post">
             <button
