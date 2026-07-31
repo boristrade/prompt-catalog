@@ -106,7 +106,14 @@ export const config = {
       обидно: поисковик просит их по единственному адресу в корне, а мы
       уводили его на /en/robots.txt, то есть на 404. Карта сайта была бы
       написана и никем не прочитана.
+
+      .html в том же списке — из-за файлов подтверждения прав в поисковых
+      панелях. Google просит положить googleXXXX.html в корень и забирает
+      его строго по этому адресу: увели бы на /en/googleXXXX.html — и
+      подтверждение не прошло бы, причём без внятной причины. Своих
+      страниц с расширением .html у нас нет, так что список ничего не
+      перехватывает.
     */
-    "/((?!api|auth|robots\\.txt|sitemap\\.xml|_next/static|_next/image|favicon.ico|.*\\.(?:svg|png|jpg|jpeg|gif|webp)$).*)",
+    "/((?!api|auth|robots\\.txt|sitemap\\.xml|_next/static|_next/image|favicon.ico|.*\\.(?:svg|png|jpg|jpeg|gif|webp|html)$).*)",
   ],
 };
