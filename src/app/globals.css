@@ -272,6 +272,94 @@ html.theme-switching *::after {
   color: #fff;
 }
 
+/* ═══ Неоновая обводка по курсору ════════════════════════════════════
+   Светится не вся карточка, а её рамка — и только та часть, что рядом
+   с указателем. Координаты кладёт PointerGlow одним слушателем на
+   страницу; здесь они только читаются.
+   ═══════════════════════════════════════════════════════════════════ */
+
+:root {
+  /* Далеко за экраном: до первого движения мыши свечения быть не должно. */
+  --gx: -9999;
+  --gy: -9999;
+  --gxp: 0.5;
+}
+
+/*
+  Обёртка вокруг карточки, а не сама карточка: у карточки overflow-hidden
+  (он скругляет обложку), и он же срезал бы свечение вместе с рамкой.
+*/
+.spotlight {
+  position: relative;
+  border-radius: var(--radius-card);
+}
+
+/* Общее для чёткой рамки и мягкого ореола */
+.spotlight::before,
+.spotlight::after {
+  content: "";
+  position: absolute;
+  border-radius: inherit;
+  /*
+    fixed привязывает градиент к окну, а не к карточке. Только так одна
+    пара координат подходит всем карточкам сразу: иначе каждой пришлось
+    бы считать своё положение на странице при каждом движении мыши.
+  */
+  background-attachment: fixed;
+  opacity: 0;
+  transition: opacity 0.28s ease;
+  pointer-events: none;
+}
+
+/* Чёткая рамка — ровно поверх собственной границы карточки */
+.spotlight::before {
+  inset: 0;
+  padding: 1px;
+  background-image: radial-gradient(
+    240px 240px at calc(var(--gx) * 1px) calc(var(--gy) * 1px),
+    hsl(calc(258 + (var(--gxp) - 0.5) * 44) 95% 74%) 0%,
+    hsl(calc(258 + (var(--gxp) - 0.5) * 44) 92% 64% / 0.5) 40%,
+    transparent 70%
+  );
+  /*
+    Вырезаем середину: остаётся кольцо толщиной padding. Заливать
+    карточку целиком нельзя — под ней фотография обложки.
+  */
+  -webkit-mask:
+    linear-gradient(#000 0 0) content-box,
+    linear-gradient(#000 0 0);
+  -webkit-mask-composite: xor;
+  mask:
+    linear-gradient(#000 0 0) content-box,
+    linear-gradient(#000 0 0);
+  mask-composite: exclude;
+  z-index: 2;
+}
+
+/* Мягкий ореол наружу — то, что и делает свет неоновым, а не нарисованным */
+.spotlight::after {
+  inset: -5px;
+  background-image: radial-gradient(
+    220px 220px at calc(var(--gx) * 1px) calc(var(--gy) * 1px),
+    hsl(calc(258 + (var(--gxp) - 0.5) * 44) 95% 66% / 0.55) 0%,
+    transparent 68%
+  );
+  filter: blur(11px);
+  z-index: 0;
+}
+
+/*
+  Показываем только на той карточке, над которой курсор. Светились бы
+  все сразу — получилась бы гирлянда, а не подсветка под указателем.
+
+  data-glow ставит PointerGlow: без него (нет мыши, выключен JS, человек
+  просил меньше движения) правило не срабатывает вовсе.
+*/
+html[data-glow="on"] .spotlight:hover::before,
+html[data-glow="on"] .spotlight:hover::after {
+  opacity: 1;
+}
+
 /* Кому движение мешает — отдаём статику. */
 @media (prefers-reduced-motion: reduce) {
   html {
