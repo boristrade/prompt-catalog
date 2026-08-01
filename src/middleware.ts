@@ -19,6 +19,9 @@ export const LOCALE_HEADER = "x-locale";
   язык, а не на угаданный по заголовкам браузера.
 */
 const COOKIE = "locale";
+
+/** Код партнёра из реферальной ссылки. */
+export const REF_COOKIE = "ref";
 const COOKIE_OPTIONS = {
   path: "/",
   maxAge: 60 * 60 * 24 * 365,
@@ -60,6 +63,25 @@ export async function middleware(request: NextRequest) {
 
   let response = NextResponse.next({ request: { headers } });
   response.cookies.set(COOKIE, current, COOKIE_OPTIONS);
+
+  /*
+    Код партнёра из ссылки вида /ru?ref=ABC12345 кладём в cookie и
+    забываем про адрес: человек почти никогда не покупает на первом же
+    экране — уйдёт читать каталог, вернётся завтра. Держим 30 дней, как
+    принято в партнёрских программах.
+
+    Перезаписываем на каждой новой ссылке, но привязка к аккаунту всё
+    равно случится один раз и навсегда — за это отвечает attach_referrer
+    в базе, а не cookie, которую человек волен менять как угодно.
+  */
+  const ref = request.nextUrl.searchParams.get("ref");
+  if (ref && /^[A-Za-z0-9]{4,16}$/.test(ref)) {
+    response.cookies.set(REF_COOKIE, ref.toUpperCase(), {
+      path: "/",
+      maxAge: 60 * 60 * 24 * 30,
+      sameSite: "lax",
+    });
+  }
 
   if (!isSupabaseConfigured()) return response;
 

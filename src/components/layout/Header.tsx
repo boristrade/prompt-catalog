@@ -27,6 +27,7 @@ export default function Header({
     { href: `/${locale}/pricing`, label: t.footer.pricing },
     { href: `/${locale}/account`, label: t.footer.account },
     { href: `/${locale}/account#favorites`, label: t.account.favorites },
+    { href: `/${locale}/partner`, label: t.partner.nav },
     { href: `/${locale}/faq`, label: t.footer.faq },
     // Страница, а не mailto: в меню ссылка должна открывать что-то
     // видимое. mailto молчит, если почтового клиента по умолчанию нет.

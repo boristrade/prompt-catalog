@@ -35,6 +35,23 @@ export const PERIODS: Record<PeriodId, Period> = {
   },
 };
 
+/*
+  Доля партнёра с каждой приведённой оплаты.
+
+  Здесь же, рядом с ценами: страница программы, начисление в базе и
+  тексты обещают одно и то же число, и разъехаться им негде. Ставка,
+  названная на сайте и посчитанная в базе по-разному, — это спор о
+  деньгах, который вы проиграете.
+*/
+export const COMMISSION_RATE = 0.3;
+
+export const COMMISSION_PERCENT = Math.round(COMMISSION_RATE * 100);
+
+/** Вознаграждение партнёра с суммы, округлённое до цента. */
+export function commissionOf(amount: number): number {
+  return Math.round(amount * COMMISSION_RATE * 100) / 100;
+}
+
 /** Экономия годового тарифа против двенадцати месячных, в процентах. */
 export const YEARLY_SAVING = Math.round(
   ((PERIODS.monthly.price * 12 - PERIODS.yearly.price) /

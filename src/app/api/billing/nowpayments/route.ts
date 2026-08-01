@@ -1,7 +1,7 @@
 import { NextResponse, type NextRequest } from "next/server";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { isSupabaseConfigured } from "@/lib/supabase/config";
-import { PERIODS, parseOrderId } from "@/lib/billing";
+import { PERIODS, commissionOf, parseOrderId } from "@/lib/billing";
 import { isPaid, verifyIpn } from "@/lib/nowpayments";
 
 export const dynamic = "force-dynamic";
@@ -64,6 +64,13 @@ export async function POST(request: NextRequest) {
         p_order_id: orderId,
         p_code: parsed.paymentCode,
         p_days: PERIODS[parsed.period].days,
+        /*
+          Сумму берём из своего справочника тарифов, а не из тела
+          уведомления: там она пришла бы снаружи, и завышенное число
+          обернулось бы завышенной выплатой партнёру.
+        */
+        p_amount: PERIODS[parsed.period].price,
+        p_commission: commissionOf(PERIODS[parsed.period].price),
       },
     );
 
