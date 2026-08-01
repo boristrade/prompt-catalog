@@ -30,10 +30,19 @@ function readTarget(form: FormData): Target {
   const locale = String(form.get("locale") ?? DEFAULT_LOCALE);
   const query = String(form.get("query") ?? "");
 
+  /*
+    Разделов в админке теперь два, и вернуть человека надо туда, откуда
+    он нажал. Принимаем только известные значения: сюда приходит поле
+    формы, и подставлять его в адрес редиректа как есть — это открытый
+    редирект на чужой сайт.
+  */
+  const section = String(form.get("section") ?? "");
+  const path = section === "partners" ? "/admin/partners" : "/admin";
+
   return {
     id: String(form.get("id") ?? ""),
     paymentCode: String(form.get("code") ?? ""),
-    back: `/${locale}/admin${query ? `?${query}` : ""}`,
+    back: `/${locale}${path}${query ? `?${query}` : ""}`,
   };
 }
 
@@ -154,6 +163,49 @@ export async function revokeAccess(form: FormData) {
       console.info("admin: закрыл доступ", {
         by: admin.email,
         user: target.id,
+      });
+    }
+  } catch (e) {
+    message = `Ошибка: ${e instanceof Error ? e.message : "неизвестно"}`;
+  }
+
+  finish(target.back, message);
+}
+
+/*
+  Отметить вознаграждение партнёра выплаченным.
+
+  Отмечаем только строки, которые сейчас не выплачены: если между
+  открытием страницы и нажатием кнопки успела прийти новая продажа, она
+  тоже попадёт под отметку — и партнёр не получит за неё денег, а в
+  отчёте будет написано, что получил. Условие paid_out = false закрывает
+  окно между тем, что admin увидел, и тем, что нажал.
+*/
+export async function markPaidOut(form: FormData) {
+  const admin = await currentAdmin();
+  if (!admin) redirect("/");
+
+  const target = readTarget(form);
+  if (!target.id) finish(target.back, "Не указан партнёр");
+
+  let message: string;
+  try {
+    const supabase = createAdminClient();
+    const { data, error } = await supabase
+      .from("referrals")
+      .update({ paid_out: true })
+      .eq("partner_id", target.id)
+      .eq("paid_out", false)
+      .select("order_id");
+
+    if (error) message = `Ошибка: ${error.message}`;
+    else if (!data || data.length === 0) message = "Нечего отмечать";
+    else {
+      message = `Отмечено выплаченным: ${data.length} начислений`;
+      console.info("admin: отметил выплату партнёру", {
+        by: admin.email,
+        partner: target.id,
+        rows: data.length,
       });
     }
   } catch (e) {

@@ -2,6 +2,7 @@ import { NextResponse, type NextRequest } from "next/server";
 import type { EmailOtpType } from "@supabase/supabase-js";
 import { createClient } from "@/lib/supabase/server";
 import { isSupabaseConfigured } from "@/lib/supabase/config";
+import { REF_COOKIE } from "@/middleware";
 
 /*
   Общая точка возврата для обоих способов входа.
@@ -39,6 +40,25 @@ export async function GET(request: NextRequest) {
 
   if (error) {
     return NextResponse.redirect(`${origin}/login?error=exchange`);
+  }
+
+  /*
+    Привязываем партнёра, чью ссылку человек открыл до регистрации.
+    Момент выбран не случайно: здесь мы впервые знаем, кто это, и делаем
+    это ровно один раз за вход, а не на каждой странице.
+
+    Проверки «не привязывать себя к себе» и «не перебивать уже
+    привязанного» живут в attach_referrer: cookie в браузере человек
+    правит как хочет, а функция в базе — нет.
+  */
+  const ref = request.cookies.get(REF_COOKIE)?.value;
+  if (ref) {
+    try {
+      await supabase.rpc("attach_referrer", { p_code: ref });
+    } catch {
+      // Партнёрская привязка не должна ломать вход: не вышло — человек
+      // всё равно попадает на сайт, просто продажа никому не засчитается.
+    }
   }
 
   return NextResponse.redirect(`${origin}${next}`);

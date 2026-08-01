@@ -23,6 +23,7 @@ export default function Footer({
   const support = [
     { label: t.footer.pricing, href: `/${locale}/pricing` },
     { label: t.footer.account, href: `/${locale}/account` },
+    { label: t.partner.nav, href: `/${locale}/partner` },
     { label: t.footer.faq, href: `/${locale}/faq` },
     { label: t.footer.feedback, href: `/${locale}/contact` },
   ];

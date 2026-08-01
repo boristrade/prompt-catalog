@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { notFound } from "next/navigation";
 import {
   CalendarClock,
@@ -6,6 +7,7 @@ import {
   Search,
   ShieldCheck,
   Users,
+  Wallet,
 } from "lucide-react";
 import { currentAdmin } from "@/lib/admin";
 import { filterUsers, hasPro, listUsers, statsOf, type AdminUser } from "@/lib/admin-data";
@@ -104,6 +106,14 @@ export default async function AdminPage({
       <p className="rise rise-2 mt-3 text-[13.5px] text-muted">
         Вход: {admin.email}
       </p>
+
+      <Link
+        href={`/${locale}/admin/partners`}
+        className="rise rise-3 mt-4 inline-flex items-center gap-2 rounded-chip border border-line-strong px-4 py-2 text-[13px] font-medium text-ink transition-[background-color,transform] duration-200 hover:bg-sunken active:scale-[0.97]"
+      >
+        <Wallet size={14} className="text-accent" />
+        Партнёры и выплаты
+      </Link>
 
       {sp.msg && (
         <div className="mt-6 rounded-card border border-violet/40 bg-surface px-5 py-3.5 text-[13.5px] text-ink">

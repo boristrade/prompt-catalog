@@ -76,10 +76,17 @@ describe("POST /api/billing/nowpayments — идемпотентность", () 
     const res = await POST(request(payload) as never);
     const json = await res.json();
 
+    /*
+      Сумма и вознаграждение уходят из своего справочника тарифов, а не
+      из тела уведомления: там они пришли бы снаружи, и завышенное число
+      обернулось бы завышенной выплатой партнёру.
+    */
     expect(rpcMock).toHaveBeenCalledWith("record_payment_and_extend", {
       p_order_id: payload.order_id,
       p_code: "18A588A6",
       p_days: 30,
+      p_amount: 7.99,
+      p_commission: 2.4,
     });
     expect(res.status).toBe(200);
     expect(json).toEqual({ ok: true, proUntil: "2026-08-30T00:00:00.000Z" });

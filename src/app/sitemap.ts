@@ -39,6 +39,7 @@ const PATHS: { path: string; priority: number; changeFrequency: Change }[] = [
   })),
   { path: "/pricing", priority: 0.8, changeFrequency: "monthly" },
   { path: "/tools", priority: 0.7, changeFrequency: "monthly" },
+  { path: "/partner", priority: 0.6, changeFrequency: "monthly" },
   { path: "/faq", priority: 0.6, changeFrequency: "monthly" },
   { path: "/contact", priority: 0.4, changeFrequency: "yearly" },
   ...LEGAL_DOCS.map((doc) => ({
