@@ -130,6 +130,16 @@ const ru = {
     nothing: "Под эти условия ничего не подошло.",
     reset: "Сбросить фильтры",
   },
+  templates: {
+    eyebrow: "Шаблоны",
+    title: "Готовые шаблоны с результатом",
+    subtitle:
+      "Видно, что получается, — и промт забирается одной кнопкой. Подставьте своё в фигурных скобках.",
+    copy: "Скопировать промт",
+    copied: "Промт скопирован",
+    soon: "Пример скоро",
+    hint: "Наведите, чтобы остановить",
+  },
   login: {
     title: "Вход",
     subtitle:
@@ -387,6 +397,16 @@ const en: Dictionary = {
     proOnly: "PRO",
     nothing: "Nothing matches these filters.",
     reset: "Reset filters",
+  },
+  templates: {
+    eyebrow: "Templates",
+    title: "Ready-made templates with results",
+    subtitle:
+      "See what comes out, then take the prompt with one tap. Replace whatever is in curly braces.",
+    copy: "Copy prompt",
+    copied: "Prompt copied",
+    soon: "Example coming soon",
+    hint: "Hover to pause",
   },
   login: {
     title: "Sign in",
@@ -647,6 +667,16 @@ const fr: Dictionary = {
     nothing: "Aucun prompt ne correspond à ces filtres.",
     reset: "Réinitialiser les filtres",
   },
+  templates: {
+    eyebrow: "Modèles",
+    title: "Modèles prêts à l'emploi avec résultat",
+    subtitle:
+      "Vous voyez le résultat, puis vous copiez le prompt en un clic. Remplacez ce qui est entre accolades.",
+    copy: "Copier le prompt",
+    copied: "Prompt copié",
+    soon: "Exemple bientôt disponible",
+    hint: "Survolez pour mettre en pause",
+  },
   login: {
     title: "Connexion",
     subtitle:
@@ -904,6 +934,16 @@ const uk: Dictionary = {
     proOnly: "PRO",
     nothing: "Під ці умови нічого не підійшло.",
     reset: "Скинути фільтри",
+  },
+  templates: {
+    eyebrow: "Шаблони",
+    title: "Готові шаблони з результатом",
+    subtitle:
+      "Видно, що виходить, — і промт забирається однією кнопкою. Підставте своє у фігурних дужках.",
+    copy: "Скопіювати промт",
+    copied: "Промт скопійовано",
+    soon: "Приклад незабаром",
+    hint: "Наведіть, щоб зупинити",
   },
   login: {
     title: "Вхід",
@@ -1167,6 +1207,16 @@ const de: Dictionary = {
     nothing: "Zu diesen Filtern passt nichts.",
     reset: "Filter zurücksetzen",
   },
+  templates: {
+    eyebrow: "Vorlagen",
+    title: "Fertige Vorlagen mit Ergebnis",
+    subtitle:
+      "Sie sehen das Ergebnis und holen sich den Prompt mit einem Klick. Ersetzen Sie, was in geschweiften Klammern steht.",
+    copy: "Prompt kopieren",
+    copied: "Prompt kopiert",
+    soon: "Beispiel folgt in Kürze",
+    hint: "Zum Anhalten mit der Maus darüberfahren",
+  },
   login: {
     title: "Anmelden",
     subtitle:
@@ -1424,6 +1474,16 @@ const pl: Dictionary = {
     proOnly: "PRO",
     nothing: "Nic nie pasuje do tych filtrów.",
     reset: "Wyczyść filtry",
+  },
+  templates: {
+    eyebrow: "Szablony",
+    title: "Gotowe szablony z wynikiem",
+    subtitle:
+      "Widzisz, co wychodzi, a prompt kopiujesz jednym kliknięciem. Podmień to, co w nawiasach klamrowych.",
+    copy: "Kopiuj prompt",
+    copied: "Prompt skopiowany",
+    soon: "Przykład wkrótce",
+    hint: "Najedź, aby zatrzymać",
   },
   login: {
     title: "Logowanie",

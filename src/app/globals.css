@@ -360,6 +360,55 @@ html[data-glow="on"] .spotlight:hover::after {
   opacity: 1;
 }
 
+/* ═══ Бегущая лента шаблонов ═════════════════════════════════════════
+   Дорожка содержит список дважды и уезжает ровно на половину своей
+   ширины — в этот момент вторая копия стоит там же, где начиналась
+   первая, и склейка не видна.
+   ═══════════════════════════════════════════════════════════════════ */
+
+@keyframes marquee {
+  from {
+    transform: translateX(0);
+  }
+  to {
+    transform: translateX(-50%);
+  }
+}
+
+.marquee {
+  overflow: hidden;
+}
+
+.marquee-track {
+  display: flex;
+  width: max-content;
+  animation: marquee 60s linear infinite;
+}
+
+/* Останавливаем под курсором: по движущейся карточке не попасть кнопкой. */
+.marquee:hover .marquee-track,
+.marquee:focus-within .marquee-track {
+  animation-play-state: paused;
+}
+
+/*
+  Нет мыши — нет и способа остановить ленту, поэтому на тач-устройствах
+  она не едет, а листается пальцем. Движущаяся карточка, по которой
+  нельзя попасть, — это не украшение, а препятствие.
+*/
+@media (hover: none), (prefers-reduced-motion: reduce) {
+  .marquee {
+    overflow-x: auto;
+    scrollbar-width: none;
+  }
+  .marquee::-webkit-scrollbar {
+    display: none;
+  }
+  .marquee-track {
+    animation: none;
+  }
+}
+
 /* Кому движение мешает — отдаём статику. */
 @media (prefers-reduced-motion: reduce) {
   html {
