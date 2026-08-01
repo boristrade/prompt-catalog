@@ -132,3 +132,88 @@ export function statsOf(users: AdminUser[]): AdminStats {
     favorites: users.reduce((sum, u) => sum + u.favorites, 0),
   };
 }
+
+/*
+  Партнёры и их вознаграждение.
+
+  Сервисным ключом, в обход RLS: владельцу нужно видеть всех, а политика
+  на referrals показывает только свои строки. Здесь это оправдано — файл
+  и так серверный, и попасть в него из браузера нельзя.
+*/
+export interface Partner {
+  id: string;
+  email: string;
+  code: string;
+  sales: number;
+  earned: number;
+  pending: number;
+}
+
+export async function listPartners(): Promise<Partner[]> {
+  const supabase = createAdminClient();
+
+  const { data: rows, error } = await supabase
+    .from("referrals")
+    .select("partner_id, commission, paid_out");
+  if (error) throw new Error(error.message);
+  if (!rows || rows.length === 0) return [];
+
+  /*
+    Суммируем в центах и делим один раз в конце: складывать дробные
+    доллары по одному — верный способ получить 23.999999999999996 в
+    отчёте о деньгах.
+  */
+  const cents = (value: number) => Math.round(Number(value) * 100);
+  const totals = new Map<string, { sales: number; earned: number; pending: number }>();
+
+  for (const row of rows) {
+    const id = row.partner_id as string;
+    const value = cents(row.commission as number);
+    const current = totals.get(id) ?? { sales: 0, earned: 0, pending: 0 };
+
+    current.sales += 1;
+    current.earned += value;
+    if (!row.paid_out) current.pending += value;
+    totals.set(id, current);
+  }
+
+  const ids = [...totals.keys()];
+
+  const { data: profiles } = await supabase
+    .from("profiles")
+    .select("id, referral_code")
+    .in("id", ids);
+  const codeById = new Map(
+    (profiles ?? []).map((p) => [p.id as string, p.referral_code as string]),
+  );
+
+  /*
+    Почты лежат в auth.users и одним запросом по списку id не берутся:
+    служебная схема Supabase из обычного select недоступна. Читаем
+    страницу пользователей и сопоставляем — партнёров в разы меньше, чем
+    пользователей, так что одной страницы хватает надолго.
+  */
+  const { data: authData } = await supabase.auth.admin.listUsers({
+    page: 1,
+    perPage: 1000,
+  });
+  const emailById = new Map(
+    (authData?.users ?? []).map((u) => [u.id, u.email ?? ""]),
+  );
+
+  const partners = ids.map((id): Partner => {
+    const total = totals.get(id)!;
+    return {
+      id,
+      email: emailById.get(id) ?? "",
+      code: codeById.get(id) ?? "",
+      sales: total.sales,
+      earned: total.earned / 100,
+      pending: total.pending / 100,
+    };
+  });
+
+  // Сверху те, кому больше должны: с них и начинается разбор выплат.
+  partners.sort((a, b) => b.pending - a.pending || b.earned - a.earned);
+  return partners;
+}
