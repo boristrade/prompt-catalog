@@ -7,8 +7,10 @@ import { TOOLS } from "@/lib/tools";
 import { coverFor } from "@/lib/covers";
 import { LOCALES } from "@/lib/i18n/config";
 import { pageLocale } from "@/lib/i18n";
+import { templatesFor } from "@/lib/templates";
 import { pageMeta } from "@/lib/seo";
 import Reveal from "@/components/Reveal";
+import TemplateMarquee from "@/components/TemplateMarquee";
 import HeroVisual from "@/components/HeroVisual";
 
 export function generateStaticParams() {
@@ -204,6 +206,31 @@ export default async function HomePage({
               </Reveal>
             );
           })}
+        </div>
+      </section>
+
+      {/* Шаблоны с результатом */}
+      <section className="pb-20">
+        <Reveal>
+          <div className="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
+            <div>
+              <p className="eyebrow">{t.templates.eyebrow}</p>
+              <h2 className="font-display mt-3 text-[27px] text-ink md:text-[32px]">
+                {t.templates.title}
+              </h2>
+              <p className="mt-3 max-w-xl text-[14.5px] leading-relaxed text-muted">
+                {t.templates.subtitle}
+              </p>
+            </div>
+            {/* Подсказка про паузу — только там, где есть чем наводить. */}
+            <span className="hidden shrink-0 font-mono text-[11px] text-faint lg:block">
+              {t.templates.hint}
+            </span>
+          </div>
+        </Reveal>
+
+        <div className="mt-8">
+          <TemplateMarquee templates={templatesFor(locale)} t={t} />
         </div>
       </section>
 
