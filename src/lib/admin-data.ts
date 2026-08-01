@@ -36,13 +36,24 @@ export async function listUsers(page = 1, perPage = 100): Promise<{
 
   const ids = authData.users.map((u) => u.id);
 
-  const [{ data: profiles }, { data: favorites }] = await Promise.all([
-    supabase
-      .from("profiles")
-      .select("id, pro_until, payment_code")
-      .in("id", ids),
-    supabase.from("favorites").select("user_id").in("user_id", ids),
-  ]);
+  /*
+    Страница за пределами реального списка (например, ?page=99 у
+    четырёх пользователей) — не ошибка, а пустой результат: authData.users
+    тогда пуст, и .in("id", []) отправлять незачем. Полагаться на то, как
+    PostgREST разберёт пустой список, не стоит — это деталь конкретной
+    версии клиента, а не документированное поведение, на которое стоит
+    рассчитывать.
+  */
+  const [{ data: profiles }, { data: favorites }] =
+    ids.length === 0
+      ? [{ data: [] }, { data: [] }]
+      : await Promise.all([
+          supabase
+            .from("profiles")
+            .select("id, pro_until, payment_code")
+            .in("id", ids),
+          supabase.from("favorites").select("user_id").in("user_id", ids),
+        ]);
 
   const byId = new Map(
     (profiles ?? []).map((p) => [p.id as string, p]),
