@@ -5,6 +5,7 @@ import { revalidatePath } from "next/cache";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { currentAdmin } from "@/lib/admin";
 import { PERIODS, type PeriodId } from "@/lib/billing";
+import { DEFAULT_LOCALE } from "@/lib/i18n/config";
 
 /*
   Действия админки. Каждое открывает или закрывает платный доступ, то
@@ -24,7 +25,9 @@ interface Target {
 }
 
 function readTarget(form: FormData): Target {
-  const locale = String(form.get("locale") ?? "ru");
+  // DEFAULT_LOCALE, а не случайный язык: страница всегда шлёт своё
+  // значение, запасной вариант нужен только если поле вдруг потерялось.
+  const locale = String(form.get("locale") ?? DEFAULT_LOCALE);
   const query = String(form.get("query") ?? "");
 
   return {
@@ -92,15 +95,27 @@ export async function grantEndless(form: FormData) {
   let message: string;
   try {
     const supabase = createAdminClient();
-    // 'infinity' — то же значение, что ставит миграция вручную выданным
-    // доступам. Заводить второй способ «навсегда» незачем.
-    const { error } = await supabase
+    /*
+      .select() после update — не украшение: без него Supabase не
+      сообщает об ошибке и на несуществующий id, обновляя ноль строк.
+      Без проверки длины результата кнопка отчиталась бы «Выдан
+      бессрочный доступ», даже если в базе ничего не изменилось —
+      например, если пользователя тем временем удалили или id в форме
+      был подделан.
+
+      'infinity' — то же значение, что ставит миграция вручную выданным
+      доступам. Заводить второй способ «навсегда» незачем.
+    */
+    const { data, error } = await supabase
       .from("profiles")
       .update({ pro_until: "infinity" })
-      .eq("id", target.id);
+      .eq("id", target.id)
+      .select("id");
 
-    message = error ? `Ошибка: ${error.message}` : "Выдан бессрочный доступ";
-    if (!error) {
+    if (error) message = `Ошибка: ${error.message}`;
+    else if (!data || data.length === 0) message = "Пользователь не найден";
+    else {
+      message = "Выдан бессрочный доступ";
       console.info("admin: выдал бессрочный доступ", {
         by: admin.email,
         user: target.id,
@@ -124,13 +139,18 @@ export async function revokeAccess(form: FormData) {
   let message: string;
   try {
     const supabase = createAdminClient();
-    const { error } = await supabase
+    // .select() — по той же причине, что и в grantEndless: без него
+    // обновление нуля строк выглядело бы как успех.
+    const { data, error } = await supabase
       .from("profiles")
       .update({ pro_until: null })
-      .eq("id", target.id);
+      .eq("id", target.id)
+      .select("id");
 
-    message = error ? `Ошибка: ${error.message}` : "Доступ закрыт";
-    if (!error) {
+    if (error) message = `Ошибка: ${error.message}`;
+    else if (!data || data.length === 0) message = "Пользователь не найден";
+    else {
+      message = "Доступ закрыт";
       console.info("admin: закрыл доступ", {
         by: admin.email,
         user: target.id,

@@ -43,23 +43,47 @@ export async function POST(request: NextRequest) {
 
   try {
     const supabase = createAdminClient();
-    const { data: until, error } = await supabase.rpc("extend_access", {
-      code: parsed.paymentCode,
-      days: PERIODS[parsed.period].days,
-    });
+
+    /*
+      Один платёж проходит confirmed и finished отдельными уведомлениями,
+      и оба уже попали сюда как «оплачено» — иначе доступ ждал бы лишних
+      минут до полного зачисления. Без защиты от повтора extend_access
+      выполнялся бы на каждое уведомление, и доступ продлевался бы дважды
+      за одну оплату.
+
+      Отметка «обработан» и продление — одним вызовом record_payment_and_extend,
+      а не двумя отдельными запросами: порознь они не атомарны. Если бы
+      extend_access упал уже после успешной вставки в processed_payments,
+      платёж навсегда остался бы помеченным обработанным, а доступ так и
+      не открылся бы — и повторное уведомление, которое должно было это
+      починить, было бы молча проигнорировано как дубль.
+    */
+    const { data: result, error } = await supabase.rpc(
+      "record_payment_and_extend",
+      {
+        p_order_id: orderId,
+        p_code: parsed.paymentCode,
+        p_days: PERIODS[parsed.period].days,
+      },
+    );
 
     if (error) {
       // 500 — чтобы NOWPayments повторил попытку: деньги уже получены,
       // и терять оплату из-за минутной недоступности базы нельзя.
-      console.error("nowpayments: extend_access", error.message);
+      console.error("nowpayments: record_payment_and_extend", error.message);
       return NextResponse.json({ error: "db" }, { status: 500 });
     }
-    if (!until) {
+
+    const payload = result as { duplicate: boolean; pro_until: string | null };
+    if (payload.duplicate) {
+      return NextResponse.json({ ok: true, duplicate: true });
+    }
+    if (!payload.pro_until) {
       console.error("nowpayments: код не найден", parsed.paymentCode);
       return NextResponse.json({ error: "код не найден" }, { status: 404 });
     }
 
-    return NextResponse.json({ ok: true, proUntil: until });
+    return NextResponse.json({ ok: true, proUntil: payload.pro_until });
   } catch (e) {
     console.error("nowpayments: сбой", e);
     return NextResponse.json({ error: "internal" }, { status: 500 });
