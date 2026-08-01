@@ -165,9 +165,12 @@ export default async function HomePage({
             const cover = coverFor(c.slug);
             return (
               <Reveal key={c.slug} delay={i * 70}>
+                {/* Обёртка нужна ради подсветки: свечение рисуется на ней,
+                    потому что overflow-hidden самой карточки его срезал бы. */}
+                <div className="spotlight h-full">
                 <Link
                   href={`/${locale}/prompts/${c.slug}`}
-                  className="group flex h-full flex-col overflow-hidden rounded-card border border-line bg-surface transition-[border-color,transform] duration-200 ease-out hover:-translate-y-1 hover:border-line-strong"
+                  className="group relative z-[1] flex h-full flex-col overflow-hidden rounded-card border border-line bg-surface transition-[border-color,transform] duration-200 ease-out hover:-translate-y-1 hover:border-line-strong"
                 >
                   {cover && (
                     <div className="relative aspect-[16/10] w-full overflow-hidden bg-sunken">
@@ -197,6 +200,7 @@ export default async function HomePage({
                     </span>
                   </div>
                 </Link>
+                </div>
               </Reveal>
             );
           })}

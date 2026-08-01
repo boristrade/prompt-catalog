@@ -8,6 +8,7 @@ import type { SessionUser } from "@/components/layout/UserMenu";
 import { DEFAULT_LOCALE, isLocale } from "@/lib/i18n/config";
 import { getDictionary } from "@/lib/i18n/dictionaries";
 import { siteUrl } from "@/lib/site";
+import PointerGlow from "@/components/PointerGlow";
 import { Analytics } from "@vercel/analytics/next";
 import { SpeedInsights } from "@vercel/speed-insights/next";
 import { LOCALE_HEADER } from "@/middleware";
@@ -84,6 +85,9 @@ export default async function RootLayout({
           {children}
         </main>
         <Footer locale={locale} t={t} />
+
+        {/* Координаты курсора для подсветки карточек. Ничего не рисует. */}
+        <PointerGlow />
 
         {/*
           Счётчик посещений и замеры скорости от Vercel. Без cookie и без
