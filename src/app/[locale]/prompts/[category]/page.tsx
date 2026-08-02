@@ -3,6 +3,7 @@ import { getCategory } from "@/lib/categories";
 import {
   getPromptsByCategory,
   isLocked,
+  searchPrompts,
   toolsInCategory,
   usesTool,
   veil,
@@ -13,6 +14,7 @@ import { categoryOgImage, pageMeta } from "@/lib/seo";
 import CatalogFilters, { type Tier } from "@/components/CatalogFilters";
 import PromptCard from "@/components/PromptCard";
 import Reveal from "@/components/Reveal";
+import SearchBox from "@/components/SearchBox";
 
 /*
   Страница зависит от вошедшего пользователя: избранное, тариф и замки на
@@ -46,7 +48,7 @@ export default async function CategoryPage({
   searchParams,
 }: {
   params: Promise<{ locale: string; category: string }>;
-  searchParams: Promise<{ tier?: string; tool?: string }>;
+  searchParams: Promise<{ tier?: string; tool?: string; q?: string }>;
 }) {
   const { category, locale: rawLocale } = await params;
   const { locale, t } = await pageLocale(Promise.resolve({ locale: rawLocale }));
@@ -69,8 +71,9 @@ export default async function CategoryPage({
   const tools = toolsInCategory(cat.slug, locale);
   const tool =
     sp.tool && tools.some((name) => name === sp.tool) ? sp.tool : null;
+  const query = (sp.q ?? "").trim();
 
-  const prompts = all
+  const prompts = searchPrompts(all, query)
     .filter((p) => (tier === "all" ? true : p.tier === tier))
     .filter((p) => (tool ? usesTool(p, tool) : true));
 
@@ -103,12 +106,26 @@ export default async function CategoryPage({
         <span>{t.catalog.oneClick}</span>
       </div>
 
+      <div className="rise rise-3 mt-6">
+        <SearchBox
+          action={`/${locale}/prompts/${cat.slug}`}
+          query={query}
+          placeholder={t.catalog.searchPlaceholder}
+          button={t.catalog.searchButton}
+          hidden={{
+            ...(tier !== "all" ? { tier } : {}),
+            ...(tool ? { tool } : {}),
+          }}
+        />
+      </div>
+
       <CatalogFilters
         base={`/${locale}/prompts/${cat.slug}`}
         tools={tools}
         tier={tier}
         tool={tool}
         t={t}
+        persist={query ? { q: query } : {}}
       />
 
       {prompts.length > 0 ? (

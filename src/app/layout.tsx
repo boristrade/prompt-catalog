@@ -12,6 +12,7 @@ import PointerGlow from "@/components/PointerGlow";
 import { Analytics } from "@vercel/analytics/next";
 import { SpeedInsights } from "@vercel/speed-insights/next";
 import { LOCALE_HEADER } from "@/middleware";
+import { jsonLd, websiteSchema } from "@/lib/schema";
 import "./globals.css";
 
 export const metadata: Metadata = {
@@ -77,6 +78,15 @@ export default async function RootLayout({
         <link
           href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap"
           rel="stylesheet"
+        />
+        {/*
+          WebSite целиком — на каждой странице одинаковый, поэтому здесь,
+          а не на одной. Даёт Google основание показать под ссылкой в
+          выдаче строку поиска сайта, а не только заголовок с описанием.
+        */}
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: jsonLd(websiteSchema(locale)) }}
         />
       </head>
       <body className="min-h-screen flex flex-col antialiased">

@@ -95,18 +95,17 @@ export default async function HomePage({
               </Link>
             </div>
 
+            {/*
+              Раньше здесь стояли четыре цветных кружка с инициалами —
+              «наши пользователи». Сайт новый, покупателей с настоящими
+              отзывами пока нет, а придуманные лица читаются как обман,
+              стоит приглядеться. Цифра ниже настоящая и проверяется:
+              её можно пересчитать прямо в каталоге.
+            */}
             <div className="rise rise-4 mt-8 flex items-center gap-3">
-              <div className="flex -space-x-2">
-                {["#7c3aed", "#a855f7", "#6366f1", "#c084fc"].map((c, i) => (
-                  <span
-                    key={c}
-                    className="flex h-8 w-8 items-center justify-center rounded-full border-2 border-canvas text-[11px] font-semibold text-white"
-                    style={{ background: c }}
-                  >
-                    {["A", "M", "K", "D"][i]}
-                  </span>
-                ))}
-              </div>
+              <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-accent-soft text-accent">
+                <Layers size={18} />
+              </span>
               <div className="text-[13px] leading-tight">
                 <div className="font-semibold text-ink">
                   {PROMPTS.length} {t.catalog.prompts}
@@ -153,12 +152,20 @@ export default async function HomePage({
             <h2 className="font-display text-[27px] text-ink md:text-[32px]">
               {t.home.categoriesTitle}
             </h2>
-            <Link
-              href={`/${locale}/tools`}
-              className="rounded-chip border border-line-strong px-4 py-2 text-[13px] font-medium text-ink transition-colors duration-200 hover:bg-surface"
-            >
-              {t.home.toolsLink}
-            </Link>
+            <div className="flex flex-wrap gap-2">
+              <Link
+                href={`/${locale}/prompts`}
+                className="rounded-chip border border-line-strong px-4 py-2 text-[13px] font-medium text-ink transition-colors duration-200 hover:bg-surface"
+              >
+                {t.allPrompts.navLink}
+              </Link>
+              <Link
+                href={`/${locale}/tools`}
+                className="rounded-chip border border-line-strong px-4 py-2 text-[13px] font-medium text-ink transition-colors duration-200 hover:bg-surface"
+              >
+                {t.home.toolsLink}
+              </Link>
+            </div>
           </div>
         </Reveal>
 

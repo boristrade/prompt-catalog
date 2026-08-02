@@ -1,8 +1,8 @@
 import Link from "next/link";
 import { redirect } from "next/navigation";
-import { CalendarClock, Heart, LogOut, Sparkles } from "lucide-react";
+import { CalendarClock, Heart, LogOut, Receipt, Sparkles } from "lucide-react";
 import { getCurrentUser } from "@/lib/supabase/server";
-import { getAccount } from "@/lib/account";
+import { getAccount, getPaymentHistory } from "@/lib/account";
 import { getPromptById, isLocked, veil } from "@/lib/prompts";
 import { CATEGORIES } from "@/lib/categories";
 import { pageLocale } from "@/lib/i18n";
@@ -37,7 +37,10 @@ export default async function AccountPage({
     redirect(`/${locale}/login?next=${encodeURIComponent(`/${locale}/account`)}`);
   }
 
-  const account = await getAccount();
+  const [account, payments] = await Promise.all([
+    getAccount(),
+    getPaymentHistory(),
+  ]);
   const plan = account?.plan ?? "free";
 
   // Бессрочный доступ, выданный руками, показывать датой незачем.
@@ -179,6 +182,57 @@ export default async function AccountPage({
           </div>
         </Reveal>
       )}
+
+      <Reveal delay={90}>
+        <div className="mt-12">
+          <div className="flex items-center gap-2.5">
+            <Receipt size={15} className="text-accent" />
+            <h2 className="text-[19px] font-semibold tracking-[-0.015em] text-ink">
+              {t.account.historyTitle}
+            </h2>
+          </div>
+
+          {payments.length > 0 ? (
+            /*
+              Список, а не таблица: на 360px таблица с четырьмя колонками
+              либо ужимается до нечитаемого, либо едет вбок — а на
+              нескольких платежах в год разница со списком незаметна.
+            */
+            <ul className="mt-5 divide-y divide-line overflow-hidden rounded-card border border-line bg-surface">
+              {payments.map((payment) => (
+                <li
+                  key={payment.orderId}
+                  className="flex flex-col gap-1 px-5 py-3.5 sm:flex-row sm:items-center sm:justify-between"
+                >
+                  <div className="min-w-0">
+                    <div className="text-[13.5px] text-ink">
+                      {payment.processedAt.toLocaleDateString(locale, {
+                        day: "numeric",
+                        month: "long",
+                        year: "numeric",
+                      })}
+                    </div>
+                    {payment.days !== null && (
+                      <div className="mt-0.5 text-[12px] text-faint">
+                        +{payment.days} {t.account.historyDays}
+                      </div>
+                    )}
+                  </div>
+                  <div className="font-mono text-[13.5px] text-ink">
+                    {payment.amount !== null
+                      ? `$${payment.amount.toFixed(2)}`
+                      : "—"}
+                  </div>
+                </li>
+              ))}
+            </ul>
+          ) : (
+            <div className="mt-5 rounded-card border border-dashed border-line-strong bg-surface p-6 text-center text-[13px] text-muted">
+              {t.account.historyEmpty}
+            </div>
+          )}
+        </div>
+      </Reveal>
 
       <div id="favorites" className="mt-14 flex scroll-mt-20 items-center gap-2.5">
         <Heart size={15} className="text-accent" />

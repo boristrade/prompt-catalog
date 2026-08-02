@@ -103,6 +103,16 @@ const ru = {
     oneClick: "копируются в один клик",
     empty: "Промты для этого раздела скоро появятся.",
     title: "Каталог",
+    searchPlaceholder: "Название, задача или тег",
+    searchButton: "Найти",
+  },
+  allPrompts: {
+    eyebrow: "Все промты",
+    title: "Весь каталог целиком",
+    subtitle: "Все промты сайта в одном списке — ищите, не угадывая раздел.",
+    navLink: "Все промты",
+    categoryAll: "Все разделы",
+    section: "Раздел",
   },
   card: {
     copy: "Скопировать промт",
@@ -236,6 +246,9 @@ const ru = {
     favorites: "Избранное",
     empty:
       "Пока пусто. Нажмите на сердечко у любого промта в каталоге — он появится здесь.",
+    historyTitle: "История платежей",
+    historyEmpty: "Платежей пока не было.",
+    historyDays: "дней",
   },
   pricing: {
     eyebrow: "Тарифы",
@@ -421,6 +434,16 @@ const en: Dictionary = {
     oneClick: "copied in one click",
     empty: "Prompts for this section are coming soon.",
     title: "Catalogue",
+    searchPlaceholder: "Title, task, or tag",
+    searchButton: "Search",
+  },
+  allPrompts: {
+    eyebrow: "All prompts",
+    title: "The whole catalogue",
+    subtitle: "Every prompt on the site in one list — search instead of guessing the section.",
+    navLink: "All prompts",
+    categoryAll: "All sections",
+    section: "Section",
   },
   card: {
     copy: "Copy prompt",
@@ -553,6 +576,9 @@ const en: Dictionary = {
     favorites: "Favourites",
     empty:
       "Nothing here yet. Tap the heart on any prompt in the catalogue and it will show up here.",
+    historyTitle: "Payment history",
+    historyEmpty: "No payments yet.",
+    historyDays: "days",
   },
   pricing: {
     eyebrow: "Pricing",
@@ -740,6 +766,16 @@ const fr: Dictionary = {
     oneClick: "copiés en un clic",
     empty: "Les prompts de cette section arrivent bientôt.",
     title: "Catalogue",
+    searchPlaceholder: "Titre, tâche ou tag",
+    searchButton: "Rechercher",
+  },
+  allPrompts: {
+    eyebrow: "Tous les prompts",
+    title: "Le catalogue en entier",
+    subtitle: "Tous les prompts du site dans une seule liste — cherchez au lieu de deviner la section.",
+    navLink: "Tous les prompts",
+    categoryAll: "Toutes les sections",
+    section: "Section",
   },
   card: {
     copy: "Copier le prompt",
@@ -874,6 +910,9 @@ const fr: Dictionary = {
     favorites: "Favoris",
     empty:
       "Encore vide. Touchez le cœur sur n'importe quel prompt du catalogue et il apparaîtra ici.",
+    historyTitle: "Historique des paiements",
+    historyEmpty: "Aucun paiement pour l'instant.",
+    historyDays: "jours",
   },
   pricing: {
     eyebrow: "Tarifs",
@@ -1058,6 +1097,16 @@ const uk: Dictionary = {
     oneClick: "копіюються в один клік",
     empty: "Промти для цього розділу скоро з'являться.",
     title: "Каталог",
+    searchPlaceholder: "Назва, задача або тег",
+    searchButton: "Знайти",
+  },
+  allPrompts: {
+    eyebrow: "Усі промти",
+    title: "Увесь каталог цілком",
+    subtitle: "Усі промти сайту в одному списку — шукайте, не вгадуючи розділ.",
+    navLink: "Усі промти",
+    categoryAll: "Усі розділи",
+    section: "Розділ",
   },
   card: {
     copy: "Скопіювати промт",
@@ -1191,6 +1240,9 @@ const uk: Dictionary = {
     favorites: "Обране",
     empty:
       "Поки порожньо. Натисніть на сердечко біля будь-якого промта в каталозі — він з'явиться тут.",
+    historyTitle: "Історія платежів",
+    historyEmpty: "Платежів поки не було.",
+    historyDays: "днів",
   },
   pricing: {
     eyebrow: "Тарифи",
@@ -1380,6 +1432,16 @@ const de: Dictionary = {
     oneClick: "mit einem Klick kopiert",
     empty: "Prompts für diesen Bereich folgen in Kürze.",
     title: "Katalog",
+    searchPlaceholder: "Titel, Aufgabe oder Tag",
+    searchButton: "Suchen",
+  },
+  allPrompts: {
+    eyebrow: "Alle Prompts",
+    title: "Der ganze Katalog",
+    subtitle: "Alle Prompts der Seite in einer Liste — suchen statt raten, in welchem Bereich.",
+    navLink: "Alle Prompts",
+    categoryAll: "Alle Bereiche",
+    section: "Bereich",
   },
   card: {
     copy: "Prompt kopieren",
@@ -1513,6 +1575,9 @@ const de: Dictionary = {
     favorites: "Favoriten",
     empty:
       "Noch leer. Tippen Sie auf das Herz bei einem beliebigen Prompt — er erscheint dann hier.",
+    historyTitle: "Zahlungsverlauf",
+    historyEmpty: "Noch keine Zahlungen.",
+    historyDays: "Tage",
   },
   pricing: {
     eyebrow: "Preise",
@@ -1698,6 +1763,16 @@ const pl: Dictionary = {
     oneClick: "kopiowane jednym kliknięciem",
     empty: "Prompty dla tej sekcji pojawią się wkrótce.",
     title: "Katalog",
+    searchPlaceholder: "Tytuł, zadanie lub tag",
+    searchButton: "Szukaj",
+  },
+  allPrompts: {
+    eyebrow: "Wszystkie prompty",
+    title: "Cały katalog",
+    subtitle: "Wszystkie prompty serwisu w jednej liście — szukaj, zamiast zgadywać sekcję.",
+    navLink: "Wszystkie prompty",
+    categoryAll: "Wszystkie sekcje",
+    section: "Sekcja",
   },
   card: {
     copy: "Skopiuj prompt",
@@ -1831,6 +1906,9 @@ const pl: Dictionary = {
     favorites: "Ulubione",
     empty:
       "Na razie pusto. Kliknij serduszko przy dowolnym prompcie w katalogu, a pojawi się tutaj.",
+    historyTitle: "Historia płatności",
+    historyEmpty: "Jeszcze nie było płatności.",
+    historyDays: "dni",
   },
   pricing: {
     eyebrow: "Cennik",

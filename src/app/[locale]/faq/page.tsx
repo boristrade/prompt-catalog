@@ -5,6 +5,7 @@ import { SUPPORT_EMAIL } from "@/lib/contact";
 import { LOCALES } from "@/lib/i18n/config";
 import { pageLocale } from "@/lib/i18n";
 import { pageMeta } from "@/lib/seo";
+import { faqSchema, jsonLd } from "@/lib/schema";
 import Reveal from "@/components/Reveal";
 
 export function generateStaticParams() {
@@ -37,6 +38,11 @@ export default async function FaqPage({
 
   return (
     <section className="pt-16 pb-20 md:pt-20">
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: jsonLd(faqSchema(items)) }}
+      />
+
       <p className="eyebrow rise">{t.footer.support}</p>
       <h1 className="font-display rise rise-1 mt-4 text-[30px] text-ink md:text-[44px]">
         {t.footer.faq}

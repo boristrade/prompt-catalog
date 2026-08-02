@@ -11,6 +11,7 @@ import {
 import { getAccount } from "@/lib/account";
 import { pageLocale } from "@/lib/i18n";
 import { categoryOgImage, pageMeta } from "@/lib/seo";
+import { jsonLd, promptSchema } from "@/lib/schema";
 import PromptBody from "@/components/PromptBody";
 import PromptCard from "@/components/PromptCard";
 import FavoriteButton from "@/components/FavoriteButton";
@@ -81,6 +82,23 @@ export default async function PromptPage({
 
   return (
     <article className="pt-10 pb-20 md:pt-14">
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{
+          __html: jsonLd(
+            promptSchema({
+              locale,
+              category: cat.slug,
+              id: prompt.id,
+              title: prompt.title,
+              summary: prompt.summary,
+              tags: prompt.tags,
+              free: prompt.tier === "free",
+            }),
+          ),
+        }}
+      />
+
       <Link
         href={`/${locale}/prompts/${cat.slug}`}
         className="inline-flex items-center gap-2 text-[13px] text-muted transition-colors duration-200 hover:text-ink"

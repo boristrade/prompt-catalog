@@ -1684,13 +1684,33 @@ export function getPromptById(id: string, locale: Locale): Prompt | undefined {
 }
 
 /*
+  Сколько символов текста промта видно без оплаты. Не больше половины
+  самого текста — иначе на коротких промтах предпросмотр раскрывал бы
+  почти всё, — и не больше этого числа абсолютно, даже у самых длинных.
+  160 подобраны по самому короткому PRO-промту в каталоге (332 символа):
+  меньше половины даже у него.
+*/
+const PREVIEW_CHARS = 160;
+
+/*
   Готовит промт к отправке в браузер для того, у кого нет доступа.
-  Размытие в карточке — только оформление: текст, попавший в разметку,
-  прочитали бы через инструменты разработчика. Поэтому вырезаем его здесь,
-  на сервере, а карточка под замком рисует собственную заглушку.
+
+  Раньше вырезался весь текст без остатка, а вместо него страница
+  показывала один и тот же вымышленный шаблон (VEIL в promptText.tsx) —
+  то есть человек, ещё не решивший, платить ли, не видел ни строки из
+  того, за что его просят заплатить. Теперь первые символы настоящие:
+  видно, что текст специфичный и длинный, а не отговорка. Дальше текст
+  обрывается — оставшееся так и не покидает сервер, а не просто скрыто
+  стилями: то, что попало в разметку, читается через инструменты
+  разработчика, а то, чего там нет, — нет.
+
+  example (превью результата) по-прежнему вырезается целиком: это то,
+  ради чего платят, и один взгляд на промт уже доказывает, что каталог
+  настоящий.
 */
 export function veil(prompt: Prompt): Prompt {
-  return { ...prompt, prompt: "", example: "" };
+  const cut = Math.min(PREVIEW_CHARS, Math.floor(prompt.prompt.length / 2));
+  return { ...prompt, prompt: prompt.prompt.slice(0, cut), example: "" };
 }
 
 /*
@@ -1700,18 +1720,23 @@ export function veil(prompt: Prompt): Prompt {
   фильтр её надо разобрать на отдельные названия, иначе «Claude» не нашёлся
   бы ни разу, хотя стоит у десятка промтов.
 */
-export function toolsInCategory(
-  category: CategorySlug,
-  locale: Locale,
-): string[] {
+/** Уникальные имена нейросетей среди переданных промтов, по алфавиту. */
+export function toolsAmong(prompts: Prompt[]): string[] {
   const tools = new Set<string>();
-  for (const prompt of getPromptsByCategory(category, locale)) {
+  for (const prompt of prompts) {
     for (const part of prompt.bestFor.split("/")) {
       const name = part.trim();
       if (name) tools.add(name);
     }
   }
   return [...tools].sort((a, b) => a.localeCompare(b));
+}
+
+export function toolsInCategory(
+  category: CategorySlug,
+  locale: Locale,
+): string[] {
+  return toolsAmong(getPromptsByCategory(category, locale));
 }
 
 export function usesTool(prompt: Prompt, tool: string): boolean {
@@ -1723,4 +1748,26 @@ export function usesTool(prompt: Prompt, tool: string): boolean {
 /** Закрыт ли промт для пользователя с таким тарифом. */
 export function isLocked(prompt: Prompt, plan: "free" | "pro"): boolean {
   return prompt.tier === "pro" && plan !== "pro";
+}
+
+/*
+  Поиск по каталогу. Ищем в заголовке, описании и тегах — не в тексте
+  самого промта: он у закрытых промтов на сервере уже вырезан (veil), и
+  поиск по нему нашёл бы PRO-промт для одних посетителей и не нашёл бы
+  для других, в зависимости от того, оплачен ли у них доступ. Заголовок и
+  описание видны всем одинаково, так что результат поиска не зависит от
+  того, кто ищет.
+
+  Без учёта регистра: с телефона легче набрать в один регистр, чем
+  прицельно попасть в заглавную.
+*/
+export function searchPrompts(prompts: Prompt[], query: string): Prompt[] {
+  const needle = query.trim().toLowerCase();
+  if (!needle) return prompts;
+
+  return prompts.filter((p) =>
+    [p.title, p.summary, p.bestFor, ...p.tags].some((field) =>
+      field.toLowerCase().includes(needle),
+    ),
+  );
 }
