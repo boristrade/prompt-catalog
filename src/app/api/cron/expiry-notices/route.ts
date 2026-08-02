@@ -14,10 +14,22 @@ export const dynamic = "force-dynamic";
   задачу вручную хоть каждую секунду: claim_expiry_notices один запуск
   переживёт спокойно, но смысла в этом нет, а рассылка чужому по чужому
   расписанию — это уже не мелочь.
+
+  Нет ключа — не работаем вовсе. Раньше здесь было наоборот: при пустом
+  CRON_SECRET проверка пропускалась, и адрес оставался открытым. Так и
+  вышло на боевом сайте — переменную забыли задать, и рассылку мог
+  запустить кто угодно, а снаружи это выглядело как исправно работающая
+  задача. Молчаливо открытая дверь хуже явно закрытой: 503 видно в логах
+  и в ответе, а открытый адрес не виден никак. То же правило, что у
+  isAdminEmail: пустой список — значит никого, а не всех.
 */
 export async function GET(request: NextRequest) {
   const secret = process.env.CRON_SECRET?.trim();
-  if (secret && request.headers.get("authorization") !== `Bearer ${secret}`) {
+  if (!secret) {
+    console.error("expiry-notices: CRON_SECRET не задан — рассылка выключена");
+    return NextResponse.json({ error: "not configured" }, { status: 503 });
+  }
+  if (request.headers.get("authorization") !== `Bearer ${secret}`) {
     return NextResponse.json({ error: "unauthorized" }, { status: 401 });
   }
 
