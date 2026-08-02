@@ -1,8 +1,10 @@
 import { NextResponse, type NextRequest } from "next/server";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { isSupabaseConfigured } from "@/lib/supabase/config";
+import { DEFAULT_LOCALE } from "@/lib/i18n/config";
 import { PERIODS, commissionOf, parseOrderId } from "@/lib/billing";
 import { isPaid, verifyIpn } from "@/lib/nowpayments";
+import { sendCommissionNotice, sendPaymentReceipt } from "@/lib/email";
 
 export const dynamic = "force-dynamic";
 
@@ -81,7 +83,13 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: "db" }, { status: 500 });
     }
 
-    const payload = result as { duplicate: boolean; pro_until: string | null };
+    const payload = result as {
+      duplicate: boolean;
+      pro_until: string | null;
+      buyer_email: string | null;
+      partner_email: string | null;
+      commission: number;
+    };
     if (payload.duplicate) {
       return NextResponse.json({ ok: true, duplicate: true });
     }
@@ -89,6 +97,35 @@ export async function POST(request: NextRequest) {
       console.error("nowpayments: код не найден", parsed.paymentCode);
       return NextResponse.json({ error: "код не найден" }, { status: 404 });
     }
+
+    /*
+      Письма шлём после того, как доступ уже открыт, и ждём их здесь же:
+      после ответа serverless-функция может быть заморожена в любой
+      момент, и незавершённая отправка оборвалась бы вместе с ней.
+      sendPaymentReceipt и sendCommissionNotice сами глотают свои ошибки
+      (см. email.ts) — упавшее письмо не превратится в 500 и не заставит
+      NOWPayments повторить уведомление о том, что доступ уже открыт.
+      Локали покупателя мы не знаем — IPN её не несёт, — поэтому пишем на
+      языке сайта по умолчанию.
+    */
+    await Promise.all([
+      payload.buyer_email
+        ? sendPaymentReceipt({
+            to: payload.buyer_email,
+            locale: DEFAULT_LOCALE,
+            amount: PERIODS[parsed.period].price,
+            periodLabel: PERIODS[parsed.period].name,
+            proUntil: payload.pro_until,
+          })
+        : Promise.resolve(),
+      payload.partner_email && payload.commission > 0
+        ? sendCommissionNotice({
+            to: payload.partner_email,
+            locale: DEFAULT_LOCALE,
+            commission: payload.commission,
+          })
+        : Promise.resolve(),
+    ]);
 
     return NextResponse.json({ ok: true, proUntil: payload.pro_until });
   } catch (e) {

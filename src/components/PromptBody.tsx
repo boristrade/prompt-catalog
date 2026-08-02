@@ -6,7 +6,7 @@ import { Check, Copy, Lock } from "lucide-react";
 import type { Prompt } from "@/lib/prompts";
 import type { Locale } from "@/lib/i18n/config";
 import type { Dictionary } from "@/lib/i18n/dictionaries";
-import { VEIL, highlightVars } from "@/components/promptText";
+import { highlightVars } from "@/components/promptText";
 
 /*
   Текст промта на отдельной странице.
@@ -40,17 +40,31 @@ export default function PromptBody({
   }
 
   if (locked) {
+    /*
+      prompt.prompt здесь уже не пустой: сервер (veil в lib/prompts.ts)
+      оставил настоящее начало текста, а не вырезал его целиком. Раньше
+      на этом месте стоял один и тот же вымышленный шаблон под сплошным
+      размытием — человек, ещё не решивший, платить ли, не видел ни
+      строки из того, за что его просят заплатить. Теперь видно начало
+      настоящего текста, а обрыв — там, где он действительно обрывается
+      на сервере, а не нарисован полупрозрачной плашкой поверх текста.
+    */
     return (
       <div className="relative">
-        <pre
-          aria-hidden
-          className="pointer-events-none max-h-80 select-none overflow-hidden whitespace-pre-wrap rounded-card border border-line bg-sunken p-5 font-mono text-[12.5px] leading-[1.7] text-muted blur-[5px]"
-        >
-          {VEIL}
+        <pre className="max-h-64 overflow-hidden whitespace-pre-wrap rounded-card border border-line bg-sunken p-5 font-mono text-[12.5px] leading-[1.7] text-muted">
+          {highlightVars(prompt.prompt)}
+          <span aria-hidden>…</span>
         </pre>
 
-        <div className="absolute inset-0 flex flex-col items-center justify-center gap-4 rounded-card bg-surface/60 px-6 text-center">
-          <span className="flex h-12 w-12 items-center justify-center rounded-full border border-line-strong bg-surface text-accent">
+        {/* Плавный переход к замку — иначе обрыв текста выглядел бы как
+            обрезанная картинка, а не как «дальше только по подписке». */}
+        <div
+          aria-hidden
+          className="pointer-events-none absolute inset-x-0 bottom-0 h-32 rounded-b-card bg-gradient-to-t from-surface via-surface/95 to-transparent"
+        />
+
+        <div className="relative mt-3 flex flex-col items-center gap-4 rounded-card border border-line bg-surface px-6 py-8 text-center">
+          <span className="flex h-12 w-12 items-center justify-center rounded-full border border-line-strong bg-sunken text-accent">
             <Lock size={18} />
           </span>
           <p className="max-w-sm text-[13.5px] leading-relaxed text-muted">

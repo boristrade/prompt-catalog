@@ -22,6 +22,7 @@ import { siteUrl } from "@/lib/site";
 /** Пути без языкового префикса и то, насколько они важны. */
 const PATHS: { path: string; priority: number; changeFrequency: Change }[] = [
   { path: "", priority: 1, changeFrequency: "weekly" },
+  { path: "/prompts", priority: 0.9, changeFrequency: "weekly" },
   ...CATEGORIES.map((c) => ({
     path: `/prompts/${c.slug}`,
     priority: 0.9,

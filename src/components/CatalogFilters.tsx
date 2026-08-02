@@ -14,7 +14,12 @@ import type { Dictionary } from "@/lib/i18n/dictionaries";
 
 export type Tier = "all" | "free" | "pro";
 
-function chipClass(active: boolean): string {
+/*
+  Общий стиль чипа-фильтра. Экспортируем, а не дублируем: страница «Все
+  промты» добавляет ещё одно измерение фильтра — раздел, — и чипы под
+  него должны выглядеть так же, а не почти так же.
+*/
+export function chipClass(active: boolean): string {
   return `rounded-chip border px-3.5 py-2 text-[12.5px] transition-[color,border-color] duration-200 ${
     active
       ? "border-violet/50 bg-accent-soft text-accent"
@@ -28,6 +33,7 @@ export default function CatalogFilters({
   tier,
   tool,
   t,
+  persist = {},
 }: {
   /** Адрес раздела без параметров. */
   base: string;
@@ -35,13 +41,20 @@ export default function CatalogFilters({
   tier: Tier;
   tool: string | null;
   t: Dictionary;
+  /*
+    Параметры, которые фильтры не знают, но обязаны сохранить при клике:
+    строку поиска и, на странице «Все промты», выбранный раздел. Без
+    этого переключение «только бесплатные» стирало бы то, что человек
+    только что искал.
+  */
+  persist?: Record<string, string>;
 }) {
-  // Ссылка, меняющая один параметр и сохраняющая второй.
+  // Ссылка, меняющая один параметр и сохраняющая остальные.
   function href(next: { tier?: Tier; tool?: string | null }): string {
     const tierValue = next.tier ?? tier;
     const toolValue = next.tool === undefined ? tool : next.tool;
 
-    const query = new URLSearchParams();
+    const query = new URLSearchParams(persist);
     if (tierValue !== "all") query.set("tier", tierValue);
     if (toolValue) query.set("tool", toolValue);
 
@@ -103,7 +116,7 @@ export default function CatalogFilters({
 
       {filtered && (
         <Link
-          href={base}
+          href={href({ tier: "all", tool: null })}
           scroll={false}
           className="inline-flex items-center gap-1.5 text-[12.5px] text-muted transition-colors duration-200 hover:text-ink"
         >

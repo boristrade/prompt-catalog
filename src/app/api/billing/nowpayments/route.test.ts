@@ -42,6 +42,8 @@ function request(payload: Record<string, unknown>): Request {
 }
 
 const rpcMock = vi.fn();
+const receiptMock = vi.fn().mockResolvedValue(undefined);
+const commissionMock = vi.fn().mockResolvedValue(undefined);
 
 vi.mock("@/lib/supabase/config", () => ({
   isSupabaseConfigured: () => true,
@@ -51,10 +53,17 @@ vi.mock("@/lib/supabase/admin", () => ({
   createAdminClient: () => ({ rpc: rpcMock }),
 }));
 
+vi.mock("@/lib/email", () => ({
+  sendPaymentReceipt: (...args: unknown[]) => receiptMock(...args),
+  sendCommissionNotice: (...args: unknown[]) => commissionMock(...args),
+}));
+
 describe("POST /api/billing/nowpayments — идемпотентность", () => {
   beforeEach(() => {
     process.env.NOWPAYMENTS_IPN_SECRET = SECRET;
     rpcMock.mockReset();
+    receiptMock.mockClear();
+    commissionMock.mockClear();
   });
   afterEach(() => {
     delete process.env.NOWPAYMENTS_IPN_SECRET;
@@ -90,6 +99,47 @@ describe("POST /api/billing/nowpayments — идемпотентность", () 
     });
     expect(res.status).toBe(200);
     expect(json).toEqual({ ok: true, proUntil: "2026-08-30T00:00:00.000Z" });
+  });
+
+  it("оплата с известным покупателем и партнёром — письма уходят обоим", async () => {
+    rpcMock.mockResolvedValueOnce({
+      data: {
+        duplicate: false,
+        pro_until: "2026-08-30T00:00:00.000Z",
+        buyer_email: "buyer@example.com",
+        partner_email: "partner@example.com",
+        commission: 2.4,
+      },
+      error: null,
+    });
+
+    const { POST } = await import("./route");
+    const res = await POST(request(payload) as never);
+    await res.json();
+
+    expect(receiptMock).toHaveBeenCalledTimes(1);
+    expect(receiptMock.mock.calls[0][0]).toMatchObject({
+      to: "buyer@example.com",
+      amount: 7.99,
+    });
+    expect(commissionMock).toHaveBeenCalledTimes(1);
+    expect(commissionMock.mock.calls[0][0]).toMatchObject({
+      to: "partner@example.com",
+      commission: 2.4,
+    });
+  });
+
+  it("повтор того же order_id — писем не шлём: продления и вознаграждения не было", async () => {
+    rpcMock.mockResolvedValueOnce({
+      data: { duplicate: true, pro_until: null },
+      error: null,
+    });
+
+    const { POST } = await import("./route");
+    await POST(request(payload) as never);
+
+    expect(receiptMock).not.toHaveBeenCalled();
+    expect(commissionMock).not.toHaveBeenCalled();
   });
 
   it("повтор того же order_id (confirmed после finished) не продлевает второй раз", async () => {

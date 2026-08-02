@@ -74,3 +74,47 @@ export async function getAccount(): Promise<Account | null> {
     return null;
   }
 }
+
+export interface PaymentRecord {
+  orderId: string;
+  amount: number | null;
+  days: number | null;
+  proUntil: Date | null;
+  processedAt: Date;
+}
+
+/*
+  История платежей для кабинета. Читаем от имени самого пользователя —
+  политика на processed_payments (миграция 0006) пускает только к своим
+  строкам, так же как referrals пускает партнёра только к своим.
+
+  Платежи, записанные до миграции 0006, попадут сюда с пустыми amount и
+  days: тогда user_id у них тоже не проставлен (это старые строки без
+  привязки к покупателю), и такая строка просто не найдётся по
+  auth.uid() — значит в списке её и не будет. Никаких «платёж без
+  подробностей» показывать не придётся.
+*/
+export async function getPaymentHistory(): Promise<PaymentRecord[]> {
+  if (!isSupabaseConfigured()) return [];
+
+  const user = await getCurrentUser();
+  if (!user) return [];
+
+  try {
+    const supabase = await createClient();
+    const { data } = await supabase
+      .from("processed_payments")
+      .select("order_id, amount, days, pro_until, processed_at")
+      .order("processed_at", { ascending: false });
+
+    return (data ?? []).map((row) => ({
+      orderId: row.order_id as string,
+      amount: row.amount as number | null,
+      days: row.days as number | null,
+      proUntil: row.pro_until ? new Date(row.pro_until as string) : null,
+      processedAt: new Date(row.processed_at as string),
+    }));
+  } catch {
+    return [];
+  }
+}

@@ -3,24 +3,39 @@ import {
   PROMPTS,
   isLocked,
   veil,
+  toolsAmong,
   toolsInCategory,
   usesTool,
   getPromptById,
   getPromptsByCategory,
+  searchPrompts,
   type Prompt,
 } from "./prompts";
 
 describe("veil", () => {
-  it("вырезает текст промта и пример, остальное оставляет", () => {
-    const prompt = PROMPTS[0];
+  it("оставляет начало текста промта коротким превью, пример вырезает целиком", () => {
+    const prompt = PROMPTS.find((p) => p.tier === "pro")!;
     const veiled = veil(prompt);
 
-    expect(veiled.prompt).toBe("");
     expect(veiled.example).toBe("");
+    expect(veiled.prompt.length).toBeGreaterThan(0);
+    expect(veiled.prompt.length).toBeLessThan(prompt.prompt.length);
+    // Превью — это именно начало текста, а не что-то вырезанное из середины.
+    expect(prompt.prompt.startsWith(veiled.prompt)).toBe(true);
     expect(veiled.title).toBe(prompt.title);
     expect(veiled.summary).toBe(prompt.summary);
     expect(veiled.tags).toEqual(prompt.tags);
     expect(veiled.bestFor).toBe(prompt.bestFor);
+  });
+
+  it("превью не длиннее половины текста даже у самых коротких промтов", () => {
+    for (const prompt of PROMPTS) {
+      const veiled = veil(prompt);
+      expect(veiled.prompt.length).toBeLessThanOrEqual(
+        Math.ceil(prompt.prompt.length / 2),
+      );
+      expect(veiled.prompt.length).toBeLessThanOrEqual(160);
+    }
   });
 
   it("не трогает исходный объект", () => {
@@ -61,6 +76,14 @@ describe("toolsInCategory / usesTool", () => {
     expect(new Set(tools).size).toBe(tools.length);
     expect(tools.length).toBeGreaterThan(0);
   });
+
+  it("toolsAmong считает по переданному списку, а не по всему каталогу", () => {
+    const subset: Prompt[] = [
+      { ...PROMPTS[0], bestFor: "Midjourney / DALL-E" },
+      { ...PROMPTS[0], bestFor: "Midjourney" },
+    ];
+    expect(toolsAmong(subset)).toEqual(["DALL-E", "Midjourney"]);
+  });
 });
 
 describe("getPromptById / getPromptsByCategory — согласованность языков", () => {
@@ -79,5 +102,41 @@ describe("getPromptById / getPromptsByCategory — согласованност�
     const prompts = getPromptsByCategory("designers", "ru");
     expect(prompts.length).toBeGreaterThan(0);
     expect(prompts.every((p) => p.category === "designers")).toBe(true);
+  });
+});
+
+describe("searchPrompts", () => {
+  it("пустой запрос возвращает всё без изменений", () => {
+    expect(searchPrompts(PROMPTS, "")).toBe(PROMPTS);
+    expect(searchPrompts(PROMPTS, "   ")).toBe(PROMPTS);
+  });
+
+  it("находит по заголовку без учёта регистра", () => {
+    const prompt = PROMPTS[0];
+    const needle = prompt.title.slice(0, 5).toUpperCase();
+    const found = searchPrompts(PROMPTS, needle);
+    expect(found.some((p) => p.id === prompt.id)).toBe(true);
+  });
+
+  it("находит по тегу", () => {
+    const prompt = PROMPTS.find((p) => p.tags.length > 0)!;
+    const found = searchPrompts(PROMPTS, prompt.tags[0]);
+    expect(found.some((p) => p.id === prompt.id)).toBe(true);
+  });
+
+  it("не находит текст самого промта — он не в области поиска", () => {
+    // Слово из середины промта, которого точно нет в заголовке/описании/
+    // тегах любого другого промта, не должно давать ложных совпадений
+    // через прямой поиск по prompt.prompt.
+    const prompt = PROMPTS.find((p) => p.prompt.includes("Role:"));
+    if (!prompt) return;
+    const inTitle = prompt.title.toLowerCase().includes("role:");
+    const inSummary = prompt.summary.toLowerCase().includes("role:");
+    expect(inTitle || inSummary).toBe(false);
+    expect(searchPrompts([prompt], "Role:")).toEqual([]);
+  });
+
+  it("несуществующий запрос — пустой список", () => {
+    expect(searchPrompts(PROMPTS, "нет такого промта вообще никогда")).toEqual([]);
   });
 });

@@ -7,7 +7,7 @@ import type { Prompt } from "@/lib/prompts";
 import type { Locale } from "@/lib/i18n/config";
 import type { Dictionary } from "@/lib/i18n/dictionaries";
 import FavoriteButton from "@/components/FavoriteButton";
-import { VEIL, highlightVars } from "@/components/promptText";
+import { highlightVars } from "@/components/promptText";
 
 interface Props {
   prompt: Prompt;
@@ -17,6 +17,13 @@ interface Props {
   signedIn?: boolean;
   locale: Locale;
   t: Dictionary;
+  /*
+    Название раздела над заголовком. На странице категории раздел и так
+    ясен из заголовка страницы — пропускаем. На «Все промты» карточки
+    вперемешку из всех разделов, и без подписи непонятно, куда ведёт
+    заголовок, пока не наведёшь курсор.
+  */
+  categoryLabel?: string;
 }
 
 export default function PromptCard({
@@ -26,6 +33,7 @@ export default function PromptCard({
   signedIn = false,
   locale,
   t,
+  categoryLabel,
 }: Props) {
   const [copied, setCopied] = useState(false);
 
@@ -50,14 +58,21 @@ export default function PromptCard({
           именно он, а не вся карточка: внутри есть кнопки копирования и
           избранного, и обёрнутая целиком карточка перехватывала бы их.
         */}
-        <h3 className="text-[15.5px] font-semibold leading-snug tracking-[-0.015em] text-ink">
-          <Link
-            href={`/${locale}/prompts/${prompt.category}/${prompt.id}`}
-            className="transition-colors duration-200 hover:text-accent"
-          >
-            {prompt.title}
-          </Link>
-        </h3>
+        <div className="min-w-0">
+          {categoryLabel && (
+            <div className="mb-1 font-mono text-[10px] uppercase tracking-[0.08em] text-faint">
+              {categoryLabel}
+            </div>
+          )}
+          <h3 className="text-[15.5px] font-semibold leading-snug tracking-[-0.015em] text-ink">
+            <Link
+              href={`/${locale}/prompts/${prompt.category}/${prompt.id}`}
+              className="transition-colors duration-200 hover:text-accent"
+            >
+              {prompt.title}
+            </Link>
+          </h3>
+        </div>
         <div className="flex shrink-0 items-center gap-1.5">
           <FavoriteButton
             promptId={prompt.id}
@@ -98,17 +113,25 @@ export default function PromptCard({
       </div>
 
       {locked ? (
+        /*
+          prompt.prompt здесь — настоящее начало текста (сервер срезал
+          его через veil в lib/prompts.ts, не оставил пустым): видно, что
+          промт специфичный и длинный, а не заглушка под сплошным
+          размытием, как было раньше.
+        */
         <div className="relative mt-4">
-          <pre
-            aria-hidden
-            className="pointer-events-none max-h-72 select-none overflow-hidden whitespace-pre-wrap rounded-card border border-line bg-sunken p-3.5 font-mono text-[12px] leading-[1.65] text-muted blur-[5px]"
-          >
-            {VEIL}
+          <pre className="max-h-32 overflow-hidden whitespace-pre-wrap rounded-card border border-line bg-sunken p-3.5 font-mono text-[12px] leading-[1.65] text-muted">
+            {highlightVars(prompt.prompt)}
+            <span aria-hidden>…</span>
           </pre>
+          <div
+            aria-hidden
+            className="pointer-events-none absolute inset-x-0 bottom-0 h-16 rounded-b-card bg-gradient-to-t from-surface via-surface/90 to-transparent"
+          />
 
-          <div className="absolute inset-0 flex flex-col items-center justify-center gap-3 rounded-card bg-surface/55 px-5 text-center">
-            <span className="flex h-10 w-10 items-center justify-center rounded-full border border-line-strong bg-surface text-accent">
-              <Lock size={16} />
+          <div className="relative mt-2 flex flex-col items-center gap-2.5 rounded-card border border-line bg-surface px-4 py-4 text-center">
+            <span className="flex h-9 w-9 items-center justify-center rounded-full border border-line-strong bg-sunken text-accent">
+              <Lock size={15} />
             </span>
             <p className="text-[12.5px] leading-relaxed text-muted">
               {t.card.lockedTitle}
