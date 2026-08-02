@@ -11,9 +11,25 @@ import { siteUrl } from "@/lib/site";
   аккуратность кода здесь.
 */
 
+export interface Invitee {
+  /** Почта до первой буквы: b***@gmail.com. Маску ставит база. */
+  email: string;
+  joined: string;
+  paid: boolean;
+}
+
 export interface PartnerStats {
   code: string;
   link: string;
+  /** Переходов по ссылке. */
+  clicks: number;
+  /** Зарегистрировались по ссылке. */
+  signups: number;
+  /** Из них оплатили. */
+  paid: number;
+  /** Зарегистрировались, но пока не платили. */
+  unpaid: number;
+  invitees: Invitee[];
   /** Оплат, приведённых партнёром. */
   sales: number;
   /** Заработано всего. */
@@ -35,13 +51,19 @@ export async function getPartnerStats(
   try {
     const supabase = await createClient();
 
-    const [profile, referrals] = await Promise.all([
+    const [profile, referrals, funnel] = await Promise.all([
       supabase
         .from("profiles")
         .select("referral_code")
         .eq("id", user.id)
         .maybeSingle(),
       supabase.from("referrals").select("commission, paid_out"),
+      /*
+        Воронка и список приглашённых — одной функцией в базе: почты
+        лежат в auth.users, куда обычному пользователю ходу нет, а
+        выборку функция ограничивает своими по auth.uid().
+      */
+      supabase.rpc("partner_stats"),
     ]);
 
     const code = (profile.data?.referral_code as string | undefined) ?? "";
@@ -63,13 +85,28 @@ export async function getPartnerStats(
       .filter((r) => r.paid_out)
       .reduce((sum, r) => sum + cents(r.commission), 0);
 
+    const stats = (funnel.data ?? null) as {
+      clicks: number;
+      people: { email: string; joined: string; paid: boolean }[];
+    } | null;
+
+    const invitees = stats?.people ?? [];
+    const paid = invitees.filter((person) => person.paid).length;
+
     return {
       code,
       /*
-        Ссылка ведёт на язык, с которого партнёр её скопировал: он и
-        приводит людей из своей аудитории. Параметр ловит middleware.
+        Короткая ссылка вида /r/КОД: её проще продиктовать и вставить в
+        описание канала, и именно она считает переходы. Язык подберётся
+        сам по браузеру перешедшего — партнёр приводит людей из своей
+        аудитории, но она не обязательно одноязычная.
       */
-      link: `${siteUrl()}/${locale}?ref=${code}`,
+      link: `${siteUrl()}/r/${code}`,
+      clicks: stats?.clicks ?? 0,
+      signups: invitees.length,
+      paid,
+      unpaid: invitees.length - paid,
+      invitees,
       sales: rows.length,
       earned: earned / 100,
       paidOut: paidOut / 100,
