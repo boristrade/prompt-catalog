@@ -110,12 +110,21 @@ export default async function HomePage({
                   className="transition-transform duration-200 group-hover:translate-x-1"
                 />
               </Link>
-              <Link
-                href={`/${locale}/tools`}
+              {/*
+                Кнопка ведёт в раздел «Как это работает» ниже на этой же
+                странице, а не на /tools. Раньше вела туда — и человек,
+                спросивший «как это работает», попадал на подборку чужих
+                сервисов, где ответа на свой вопрос не находил.
+
+                Якорь, а не переход: ответ уже под ногами, гонять за ним
+                на другую страницу незачем.
+              */}
+              <a
+                href="#how"
                 className="rounded-chip border border-line-strong px-5 py-3 text-[14px] font-medium text-ink transition-[background-color,transform] duration-200 hover:bg-surface active:scale-[0.97]"
               >
                 {t.home.ctaHow}
-              </Link>
+              </a>
             </div>
 
             {/*
@@ -281,7 +290,9 @@ export default async function HomePage({
       </section>
 
       {/* Как это работает */}
-      <section className="pb-20">
+      {/* scroll-mt — под липкую шапку: без отступа заголовок раздела
+          уезжает под неё и человек попадает сразу на середину списка. */}
+      <section id="how" className="scroll-mt-24 pb-20">
         <Reveal>
           <h2 className="font-display text-center text-[27px] text-ink md:text-[32px]">
             {t.home.howTitle}
