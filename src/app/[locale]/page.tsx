@@ -28,14 +28,25 @@ export async function generateMetadata({
   params: Promise<{ locale: string }>;
 }) {
   const { locale, t } = await pageLocale(params);
+
+  /*
+    Заголовок целиком, обе половины.
+
+    Раньше в title уходила только первая: старый заголовок был длинным, к
+    нему шаблон добавлял «— PrompTom», и в выдаче строка обрезалась на
+    середине. Новый короче — вместе с названием сайта он укладывается в
+    полсотни символов на всех шести языках, то есть влезает целиком.
+
+    И это уже не украшательство, а необходимость: первая половина
+    заканчивается запятой («Как писать промты,»), и сама по себе в
+    заголовке вкладки она выглядела бы обрубком.
+  */
+  const heading = `${t.home.titleMain} ${t.home.titleAccent}`;
+
   return pageMeta({
     locale,
-    // Без второй половины заголовка: к ней шаблон добавит «— PrompTom»,
-    // и в выдаче строка обрежется на середине.
-    title: t.home.titleMain,
+    title: heading,
     description: t.home.subtitle,
-    // В превью, наоборот, обе половины: там строка длиннее и обрезать нечего.
-    socialTitle: `${t.home.titleMain} ${t.home.titleAccent}`,
   });
 }
 
@@ -68,7 +79,19 @@ export default async function HomePage({
       <section className="glow relative pt-14 pb-14 md:pt-20 md:pb-16">
         <div className="relative z-10 grid items-center gap-12 lg:grid-cols-[1fr_minmax(0,520px)]">
           <div>
-            <h1 className="font-display rise text-[40px] leading-[1.07] text-ink md:text-[50px]">
+            {/*
+              text-balance выравнивает строки по длине. Без него браузер
+              набивает первую строку под завязку и сбрасывает остаток
+              вниз: заголовок разваливался на «Как писать / промты, /
+              чтобы / получалось», где две средние строки — по одному
+              слову. На узком экране это стоит лишней строки высоты и
+              читается рвано.
+
+              Размер на телефоне чуть меньше: у нового заголовка длиннее
+              самое длинное слово, и на 360px при 40px оно упиралось в
+              края.
+            */}
+            <h1 className="font-display rise text-balance text-[34px] leading-[1.08] text-ink sm:text-[40px] md:text-[50px]">
               {t.home.titleMain}{" "}
               <span className="grad-text">{t.home.titleAccent}</span>
             </h1>
@@ -87,12 +110,21 @@ export default async function HomePage({
                   className="transition-transform duration-200 group-hover:translate-x-1"
                 />
               </Link>
-              <Link
-                href={`/${locale}/tools`}
+              {/*
+                Кнопка ведёт в раздел «Как это работает» ниже на этой же
+                странице, а не на /tools. Раньше вела туда — и человек,
+                спросивший «как это работает», попадал на подборку чужих
+                сервисов, где ответа на свой вопрос не находил.
+
+                Якорь, а не переход: ответ уже под ногами, гонять за ним
+                на другую страницу незачем.
+              */}
+              <a
+                href="#how"
                 className="rounded-chip border border-line-strong px-5 py-3 text-[14px] font-medium text-ink transition-[background-color,transform] duration-200 hover:bg-surface active:scale-[0.97]"
               >
                 {t.home.ctaHow}
-              </Link>
+              </a>
             </div>
 
             {/*
@@ -258,7 +290,9 @@ export default async function HomePage({
       </section>
 
       {/* Как это работает */}
-      <section className="pb-20">
+      {/* scroll-mt — под липкую шапку: без отступа заголовок раздела
+          уезжает под неё и человек попадает сразу на середину списка. */}
+      <section id="how" className="scroll-mt-24 pb-20">
         <Reveal>
           <h2 className="font-display text-center text-[27px] text-ink md:text-[32px]">
             {t.home.howTitle}
