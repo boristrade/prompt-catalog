@@ -129,6 +129,11 @@ export const config = {
       уводили его на /en/robots.txt, то есть на 404. Карта сайта была бы
       написана и никем не прочитана.
 
+      /r/ — реферальные ссылки: маршрут сам ставит cookie и уводит на
+      нужный язык. Языковой префикс превратил бы /r/КОД в /ru/r/КОД, то
+      есть в несуществующую страницу, и партнёрские ссылки перестали бы
+      работать.
+
       .html в том же списке — из-за файлов подтверждения прав в поисковых
       панелях. Google просит положить googleXXXX.html в корень и забирает
       его строго по этому адресу: увели бы на /en/googleXXXX.html — и
@@ -136,6 +141,6 @@ export const config = {
       страниц с расширением .html у нас нет, так что список ничего не
       перехватывает.
     */
-    "/((?!api|auth|robots\\.txt|sitemap\\.xml|_next/static|_next/image|favicon.ico|.*\\.(?:svg|png|jpg|jpeg|gif|webp|html)$).*)",
+    "/((?!api|auth|r/|robots\\.txt|sitemap\\.xml|_next/static|_next/image|favicon.ico|.*\\.(?:svg|png|jpg|jpeg|gif|webp|html)$).*)",
   ],
 };

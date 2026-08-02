@@ -1,6 +1,14 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { ArrowLeft, BadgeDollarSign, TrendingUp, Users, Wallet } from "lucide-react";
+import {
+  ArrowLeft,
+  BadgeDollarSign,
+  MousePointerClick,
+  TrendingUp,
+  UserPlus,
+  Users,
+  Wallet,
+} from "lucide-react";
 import { currentAdmin } from "@/lib/admin";
 import { listPartners } from "@/lib/admin-data";
 import { markPaidOut } from "@/lib/admin-actions";
@@ -45,9 +53,13 @@ export default async function AdminPartnersPage({
   const totalEarned = partners.reduce((sum, p) => sum + p.earned, 0);
   const totalPending = partners.reduce((sum, p) => sum + p.pending, 0);
   const totalSales = partners.reduce((sum, p) => sum + p.sales, 0);
+  const totalClicks = partners.reduce((sum, p) => sum + p.clicks, 0);
+  const totalSignups = partners.reduce((sum, p) => sum + p.signups, 0);
 
   const cards = [
     { icon: Users, label: "Партнёров", value: String(partners.length) },
+    { icon: MousePointerClick, label: "Переходов", value: String(totalClicks) },
+    { icon: UserPlus, label: "Регистраций", value: String(totalSignups) },
     { icon: TrendingUp, label: "Продаж по ссылкам", value: String(totalSales) },
     { icon: BadgeDollarSign, label: "Начислено всего", value: money(totalEarned) },
     { icon: Wallet, label: "К выплате", value: money(totalPending) },
@@ -77,7 +89,7 @@ export default async function AdminPartnersPage({
         </div>
       )}
 
-      <div className="mt-8 grid grid-cols-2 gap-3 lg:grid-cols-4">
+      <div className="mt-8 grid grid-cols-2 gap-3 lg:grid-cols-3 xl:grid-cols-6">
         {cards.map((card) => (
           <div
             key={card.label}
@@ -109,6 +121,12 @@ export default async function AdminPartnersPage({
                 </div>
                 <div className="mt-1 text-[12.5px] text-muted">
                   {partner.sales} продаж · начислено {money(partner.earned)}
+                </div>
+                {/* Воронка: видно, где обрывается путь — на переходе,
+                    на регистрации или на оплате. */}
+                <div className="mt-1.5 font-mono text-[11.5px] text-faint">
+                  {partner.clicks} переходов → {partner.signups} регистраций →{" "}
+                  {partner.buyers} оплатили
                 </div>
                 <div className="mt-2 font-mono text-[11.5px] tracking-[0.08em] text-faint">
                   {partner.code || "код не выдан"}

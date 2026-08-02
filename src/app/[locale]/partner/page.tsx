@@ -1,5 +1,14 @@
 import Link from "next/link";
-import { BadgeDollarSign, Link2, TrendingUp, Wallet } from "lucide-react";
+import {
+  BadgeDollarSign,
+  CheckCircle2,
+  Clock,
+  Link2,
+  MousePointerClick,
+  TrendingUp,
+  UserPlus,
+  Wallet,
+} from "lucide-react";
 import { PERIODS, COMMISSION_PERCENT, commissionOf } from "@/lib/billing";
 import { SUPPORT_MAILTO } from "@/lib/contact";
 import { getPartnerStats } from "@/lib/partner";
@@ -48,6 +57,17 @@ export default async function PartnerPage({
 
   const money = (value: number) =>
     `$${value.toFixed(2).replace(/\.00$/, "")}`;
+
+  /* Воронка отдельно от денег: это разные вопросы к одной странице —
+     «работает ли моя ссылка» и «сколько мне должны». */
+  const funnel = stats
+    ? [
+        { icon: MousePointerClick, label: t.partner.statClicks, value: String(stats.clicks) },
+        { icon: UserPlus, label: t.partner.statSignups, value: String(stats.signups) },
+        { icon: CheckCircle2, label: t.partner.statBuyers, value: String(stats.paid) },
+        { icon: Clock, label: t.partner.statNoBuy, value: String(stats.unpaid) },
+      ]
+    : [];
 
   const cards = stats
     ? [
@@ -108,6 +128,80 @@ export default async function PartnerPage({
               {t.partner.empty}
             </p>
           )}
+
+          <Reveal delay={40}>
+            <div className="mt-12">
+              <h2 className="text-[19px] font-semibold tracking-[-0.015em] text-ink">
+                {t.partner.funnelTitle}
+              </h2>
+              <div className="mt-5 grid grid-cols-2 gap-3 lg:grid-cols-4">
+                {funnel.map((card) => (
+                  <div
+                    key={card.label}
+                    className="rounded-card border border-line bg-surface p-4"
+                  >
+                    <span className="flex items-center gap-2 text-[12px] text-muted">
+                      <card.icon size={13} className="text-accent" />
+                      {card.label}
+                    </span>
+                    <div className="mt-2 font-mono text-[22px] text-ink">
+                      {card.value}
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </Reveal>
+
+          <Reveal delay={80}>
+            <div className="mt-12">
+              <h2 className="text-[19px] font-semibold tracking-[-0.015em] text-ink">
+                {t.partner.inviteesTitle}
+              </h2>
+              <p className="mt-2 max-w-xl text-[12.5px] leading-relaxed text-faint">
+                {t.partner.inviteesNote}
+              </p>
+
+              {stats.invitees.length > 0 ? (
+                <ul className="mt-5 max-w-2xl divide-y divide-line overflow-hidden rounded-card border border-line bg-surface">
+                  {stats.invitees.map((person, i) => (
+                    <li
+                      key={`${person.email}-${i}`}
+                      className="flex items-center justify-between gap-4 px-5 py-3.5"
+                    >
+                      <div className="min-w-0">
+                        <div className="truncate font-mono text-[13px] text-ink">
+                          {person.email}
+                        </div>
+                        <div className="mt-0.5 text-[12px] text-faint">
+                          {new Date(person.joined).toLocaleDateString(locale, {
+                            day: "numeric",
+                            month: "short",
+                            year: "numeric",
+                          })}
+                        </div>
+                      </div>
+                      <span
+                        className={`shrink-0 rounded-chip border px-2.5 py-1 text-[11.5px] ${
+                          person.paid
+                            ? "border-accent/40 text-accent"
+                            : "border-line-strong text-muted"
+                        }`}
+                      >
+                        {person.paid
+                          ? t.partner.inviteePaid
+                          : t.partner.inviteeUnpaid}
+                      </span>
+                    </li>
+                  ))}
+                </ul>
+              ) : (
+                <div className="mt-5 max-w-2xl rounded-card border border-dashed border-line-strong bg-surface p-8 text-center text-[13px] text-muted">
+                  {t.partner.inviteesEmpty}
+                </div>
+              )}
+            </div>
+          </Reveal>
         </>
       ) : (
         /* Гостю показываем условия целиком, а вместо статистики — вход. */

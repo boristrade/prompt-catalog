@@ -144,6 +144,12 @@ export interface Partner {
   id: string;
   email: string;
   code: string;
+  /** Переходов по ссылке. */
+  clicks: number;
+  /** Зарегистрировались по ссылке. */
+  signups: number;
+  /** Из них оплатили хотя бы раз. */
+  buyers: number;
   sales: number;
   earned: number;
   pending: number;
@@ -152,11 +158,29 @@ export interface Partner {
 export async function listPartners(): Promise<Partner[]> {
   const supabase = createAdminClient();
 
-  const { data: rows, error } = await supabase
-    .from("referrals")
-    .select("partner_id, commission, paid_out");
+  /*
+    Воронка и начисления читаются отдельно и по разным причинам: воронка
+    есть даже у того, кто пока никого не привёл к оплате, а начисления —
+    только у того, кто привёл. Партнёр без продаж, но с переходами, тоже
+    должен быть виден: по нему и понятно, что ссылка работает, а
+    конверсии нет.
+  */
+  const [{ data: rows, error }, { data: overview }] = await Promise.all([
+    supabase.from("referrals").select("partner_id, commission, paid_out"),
+    supabase.rpc("partners_overview"),
+  ]);
   if (error) throw new Error(error.message);
-  if (!rows || rows.length === 0) return [];
+
+  const funnel = new Map(
+    ((overview ?? []) as {
+      partner_id: string;
+      clicks: number;
+      signups: number;
+      paid: number;
+    }[]).map((f) => [f.partner_id, f]),
+  );
+
+  if ((!rows || rows.length === 0) && funnel.size === 0) return [];
 
   /*
     Суммируем в центах и делим один раз в конце: складывать дробные
@@ -166,7 +190,7 @@ export async function listPartners(): Promise<Partner[]> {
   const cents = (value: number) => Math.round(Number(value) * 100);
   const totals = new Map<string, { sales: number; earned: number; pending: number }>();
 
-  for (const row of rows) {
+  for (const row of rows ?? []) {
     const id = row.partner_id as string;
     const value = cents(row.commission as number);
     const current = totals.get(id) ?? { sales: 0, earned: 0, pending: 0 };
@@ -177,7 +201,8 @@ export async function listPartners(): Promise<Partner[]> {
     totals.set(id, current);
   }
 
-  const ids = [...totals.keys()];
+  // Объединяем: кто-то есть только в воронке, кто-то только в начислениях.
+  const ids = [...new Set([...totals.keys(), ...funnel.keys()])];
 
   const { data: profiles } = await supabase
     .from("profiles")
@@ -202,18 +227,29 @@ export async function listPartners(): Promise<Partner[]> {
   );
 
   const partners = ids.map((id): Partner => {
-    const total = totals.get(id)!;
+    const total = totals.get(id) ?? { sales: 0, earned: 0, pending: 0 };
+    const f = funnel.get(id);
     return {
       id,
       email: emailById.get(id) ?? "",
       code: codeById.get(id) ?? "",
+      clicks: f?.clicks ?? 0,
+      signups: Number(f?.signups ?? 0),
+      buyers: Number(f?.paid ?? 0),
       sales: total.sales,
       earned: total.earned / 100,
       pending: total.pending / 100,
     };
   });
 
-  // Сверху те, кому больше должны: с них и начинается разбор выплат.
-  partners.sort((a, b) => b.pending - a.pending || b.earned - a.earned);
+  /*
+    Сверху те, кому больше должны, — с них начинается разбор выплат.
+    Дальше по заработку, потом по переходам: партнёр без продаж, но с
+    трафиком, тоже интересен — с ним есть о чём поговорить.
+  */
+  partners.sort(
+    (a, b) =>
+      b.pending - a.pending || b.earned - a.earned || b.clicks - a.clicks,
+  );
   return partners;
 }
