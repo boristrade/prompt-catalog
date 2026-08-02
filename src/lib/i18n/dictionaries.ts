@@ -74,10 +74,10 @@ const ru = {
     heroLabel: "Пример промта",
     heroDemo:
       "Создай реалистичное изображение будущего города на закате, [[киберпанк стиль]], неоновые огни, летящие машины, высокая детализация, [[8k, cinematic…]]",
-    titleMain: "Лучшие промты для любых задач",
-    titleAccent: "с искусственным интеллектом",
+    titleMain: "Как писать промты,",
+    titleAccent: "чтобы получалось",
     subtitle:
-      "Готовые промты для ChatGPT, Midjourney, Claude и других AI-сервисов. Экономьте время и получайте предсказуемый результат.",
+      "Готовые промты для ChatGPT, Claude и Midjourney. К каждому — пример результата: видно, что выйдет, ещё до того как скопируете.",
     ctaFind: "Найти промт",
     ctaHow: "Как это работает?",
     handpicked: "отобраны и проверены вручную",
@@ -411,10 +411,10 @@ const en: Dictionary = {
     heroLabel: "Prompt example",
     heroDemo:
       "Create a realistic image of a future city at sunset, [[cyberpunk style]], neon lights, flying cars, high detail, [[8k, cinematic…]]",
-    titleMain: "The best prompts for any task",
-    titleAccent: "with artificial intelligence",
+    titleMain: "How to write prompts",
+    titleAccent: "that actually work",
     subtitle:
-      "Ready-made prompts for ChatGPT, Midjourney, Claude and other AI services. Save time and get predictable results.",
+      "Ready-made prompts for ChatGPT, Claude and Midjourney. Every one comes with a sample result — you see what you'll get before you copy anything.",
     ctaFind: "Find a prompt",
     ctaHow: "How does it work?",
     handpicked: "handpicked and tested by hand",
@@ -746,10 +746,10 @@ const fr: Dictionary = {
     heroLabel: "Exemple de prompt",
     heroDemo:
       "Crée une image réaliste d'une ville du futur au coucher du soleil, [[style cyberpunk]], néons, voitures volantes, haute définition, [[8k, cinematic…]]",
-    titleMain: "Les meilleurs prompts pour toutes vos tâches",
-    titleAccent: "avec l'intelligence artificielle",
+    titleMain: "Écrire des prompts",
+    titleAccent: "qui fonctionnent vraiment",
     subtitle:
-      "Des prompts prêts à l'emploi pour ChatGPT, Midjourney, Claude et d'autres services d'IA. Gagnez du temps et obtenez un résultat prévisible.",
+      "Des prompts prêts à l'emploi pour ChatGPT, Claude et Midjourney. Chacun est accompagné d'un exemple de résultat : vous voyez ce que vous obtiendrez avant même de copier.",
     ctaFind: "Trouver un prompt",
     ctaHow: "Comment ça marche ?",
     handpicked: "sélectionnés et vérifiés à la main",
@@ -1087,10 +1087,10 @@ const uk: Dictionary = {
     heroLabel: "Приклад промту",
     heroDemo:
       "Створи реалістичне зображення міста майбутнього на заході сонця, [[кіберпанк-стиль]], неонові вогні, летючі машини, висока деталізація, [[8k, cinematic…]]",
-    titleMain: "Найкращі промти для будь-яких завдань",
-    titleAccent: "зі штучним інтелектом",
+    titleMain: "Як писати промти,",
+    titleAccent: "щоб виходило",
     subtitle:
-      "Готові промти для ChatGPT, Midjourney, Claude та інших AI-сервісів. Заощаджуйте час і отримуйте передбачуваний результат.",
+      "Готові промти для ChatGPT, Claude і Midjourney. До кожного — приклад результату: видно, що вийде, ще до того як скопіюєте.",
     ctaFind: "Знайти промт",
     ctaHow: "Як це працює?",
     handpicked: "відібрані та перевірені вручну",
@@ -1423,10 +1423,10 @@ const de: Dictionary = {
     heroLabel: "Prompt-Beispiel",
     heroDemo:
       "Erstelle ein realistisches Bild einer Stadt der Zukunft bei Sonnenuntergang, [[Cyberpunk-Stil]], Neonlichter, fliegende Autos, hohe Detailtiefe, [[8k, cinematic…]]",
-    titleMain: "Die besten Prompts für jede Aufgabe",
-    titleAccent: "mit künstlicher Intelligenz",
+    titleMain: "Prompts schreiben,",
+    titleAccent: "die funktionieren",
     subtitle:
-      "Fertige Prompts für ChatGPT, Midjourney, Claude und andere KI-Dienste. Sparen Sie Zeit und erhalten Sie vorhersehbare Ergebnisse.",
+      "Fertige Prompts für ChatGPT, Claude und Midjourney. Zu jedem gehört ein Beispielergebnis — Sie sehen, was herauskommt, bevor Sie etwas kopieren.",
     ctaFind: "Prompt finden",
     ctaHow: "Wie funktioniert das?",
     handpicked: "handverlesen und geprüft",
@@ -1764,10 +1764,10 @@ const pl: Dictionary = {
     heroLabel: "Przykład promptu",
     heroDemo:
       "Stwórz realistyczny obraz miasta przyszłości o zachodzie słońca, [[styl cyberpunk]], neony, latające samochody, wysoka szczegółowość, [[8k, cinematic…]]",
-    titleMain: "Najlepsze prompty do każdego zadania",
-    titleAccent: "ze sztuczną inteligencją",
+    titleMain: "Jak pisać prompty,",
+    titleAccent: "żeby działały",
     subtitle:
-      "Gotowe prompty do ChatGPT, Midjourney, Claude i innych usług AI. Oszczędzaj czas i otrzymuj przewidywalny efekt.",
+      "Gotowe prompty do ChatGPT, Claude i Midjourney. Do każdego dołączony jest przykład wyniku — widzisz, co wyjdzie, zanim cokolwiek skopiujesz.",
     ctaFind: "Znajdź prompt",
     ctaHow: "Jak to działa?",
     handpicked: "wybrane i sprawdzone ręcznie",
