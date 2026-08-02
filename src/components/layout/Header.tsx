@@ -3,7 +3,7 @@
 import { useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Menu, X } from "lucide-react";
+import { Menu, ShieldCheck, X } from "lucide-react";
 import type { Locale } from "@/lib/i18n/config";
 import type { Dictionary } from "@/lib/i18n/dictionaries";
 import ThemeToggle from "@/components/ThemeToggle";
@@ -121,21 +121,39 @@ export default function Header({
               <div className="mt-0.5 truncate text-[12px] text-muted">
                 {user.email}
               </div>
-              <Link
-                href={`/${locale}/account`}
-                onClick={() => setOpen(false)}
-                className="mt-3 block rounded-chip border border-line-strong py-2 text-center text-[13px] font-medium text-ink"
-              >
-                {t.header.account}
-              </Link>
-              <form action="/auth/signout" method="post" className="mt-2">
-                <button
-                  type="submit"
-                  className="w-full rounded-chip border border-line-strong py-2 text-[13px] font-medium text-ink"
+              <div className="mt-3 space-y-2">
+                {/*
+                  Админка есть и на телефоне. На широком экране в неё ведёт
+                  меню под аватаром, но оно спрятано за lg: — с телефона
+                  владелец не попадал в неё вовсе, кроме как набрав адрес
+                  руками.
+                */}
+                {user.isAdmin && (
+                  <Link
+                    href={`/${locale}/admin`}
+                    onClick={() => setOpen(false)}
+                    className="flex items-center justify-center gap-2 rounded-chip border border-accent/40 py-2 text-[13px] font-medium text-accent"
+                  >
+                    <ShieldCheck size={14} />
+                    Админка
+                  </Link>
+                )}
+                <Link
+                  href={`/${locale}/account`}
+                  onClick={() => setOpen(false)}
+                  className="block rounded-chip border border-line-strong py-2 text-center text-[13px] font-medium text-ink"
                 >
-                  {t.header.logout}
-                </button>
-              </form>
+                  {t.header.account}
+                </Link>
+                <form action="/auth/signout" method="post">
+                  <button
+                    type="submit"
+                    className="w-full rounded-chip border border-line-strong py-2 text-[13px] font-medium text-ink"
+                  >
+                    {t.header.logout}
+                  </button>
+                </form>
+              </div>
             </div>
           ) : (
             <Link
