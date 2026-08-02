@@ -1,3 +1,5 @@
+import { existsSync } from "node:fs";
+import { join } from "node:path";
 import type { Metadata } from "next";
 import { LOCALES, type Locale } from "@/lib/i18n/config";
 import { localeAlternates } from "@/lib/i18n";
@@ -96,7 +98,18 @@ export function pageMeta({
   };
 }
 
-/** Карточка раздела каталога, если для него нарисована обложка. */
+/*
+  Карточка раздела каталога — или общая фирменная, если своей не нарисовали.
+
+  Раньше адрес собирался из slug без проверки, и у нового раздела og:image
+  указывал на несуществующий файл. Это не видно ни в сборке, ни на самой
+  странице: ломается только превью в мессенджере — ровно там, где ссылку и
+  пересылают, и ровно так, что автор об этом не узнает. Поэтому проверяем
+  файл на диске, как это делает coverFor для обложек.
+*/
+const OG_DIR = join(process.cwd(), "public", "og");
+
 export function categoryOgImage(slug: string): string {
-  return `/og/${slug}.jpg`;
+  const path = `/og/${slug}.jpg`;
+  return existsSync(join(OG_DIR, `${slug}.jpg`)) ? path : DEFAULT_OG_IMAGE;
 }

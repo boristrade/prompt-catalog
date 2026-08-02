@@ -181,8 +181,17 @@ export default async function HomePage({
                   href={`/${locale}/prompts/${c.slug}`}
                   className="group relative z-[1] flex h-full flex-col overflow-hidden rounded-card border border-line bg-surface transition-[border-color,transform] duration-200 ease-out hover:-translate-y-1 hover:border-line-strong"
                 >
-                  {cover && (
-                    <div className="relative aspect-[16/10] w-full overflow-hidden bg-sunken">
+                  {/*
+                    Обложки нет — рисуем заглушку той же высоты, а не
+                    пропускаем блок. Карточка без картинки рядом с пятью
+                    картиночными читается как недогрузившаяся, хотя на
+                    деле файл просто ещё не нарисован. Заглушка из
+                    фирменного градиента выглядит как решение, а не как
+                    сбой, и исчезает сама, стоит положить файл в
+                    public/covers — coverFor подхватит его по имени.
+                  */}
+                  <div className="relative aspect-[16/10] w-full overflow-hidden bg-sunken">
+                    {cover ? (
                       <Image
                         src={cover}
                         alt=""
@@ -190,8 +199,15 @@ export default async function HomePage({
                         sizes="(min-width: 1280px) 20vw, (min-width: 1024px) 33vw, (min-width: 640px) 50vw, 100vw"
                         className="object-cover transition-transform duration-300 ease-out group-hover:scale-[1.04]"
                       />
-                    </div>
-                  )}
+                    ) : (
+                      <div className="flex h-full w-full items-center justify-center bg-[radial-gradient(110%_110%_at_28%_18%,rgba(139,92,246,0.30),rgba(139,92,246,0.06)_55%,transparent_78%)]">
+                        <Sparkles
+                          size={34}
+                          className="text-accent opacity-60 transition-transform duration-300 ease-out group-hover:scale-110"
+                        />
+                      </div>
+                    )}
+                  </div>
 
                   <div className="flex flex-1 flex-col p-5">
                     <h3 className="text-[15.5px] font-semibold tracking-[-0.015em] text-ink">
