@@ -4,7 +4,8 @@ export type CategorySlug =
   | "marketers"
   | "ugc"
   | "marketplaces"
-  | "saas";
+  | "saas"
+  | "threads";
 
 export interface Category {
   slug: CategorySlug;
@@ -44,6 +45,13 @@ export const CATEGORIES: Category[] = [
     nav: "Для SaaS",
     description:
       "Проверка идеи, границы MVP, онбординг, тарифы и метрики роста.",
+  },
+  {
+    slug: "threads",
+    title: "Промты для Threads",
+    nav: "Для Threads",
+    description:
+      "Попасть в рекомендации: хуки, посты под ответы, первый час, ссылки без потери охвата.",
   },
 ];
 

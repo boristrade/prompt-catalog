@@ -63,6 +63,12 @@ const ru = {
       description:
         "Проверка идеи, границы MVP, онбординг, тарифы и метрики роста.",
     },
+    threads: {
+      title: "Промты для Threads",
+      nav: "Для Threads",
+      description:
+        "Попасть в рекомендации: хуки, посты под ответы, первый час, ссылки без потери охвата.",
+    },
   },
   home: {
     heroLabel: "Пример промта",
@@ -394,6 +400,12 @@ const en: Dictionary = {
       description:
         "Idea validation, MVP scope, onboarding, pricing and growth metrics.",
     },
+    threads: {
+      title: "Prompts for Threads",
+      nav: "For Threads",
+      description:
+        "Getting into recommendations: hooks, posts built for replies, the first hour, links without losing reach.",
+    },
   },
   home: {
     heroLabel: "Prompt example",
@@ -722,6 +734,12 @@ const fr: Dictionary = {
       nav: "Pour le SaaS",
       description:
         "Validation de l'idée, périmètre du MVP, onboarding, tarifs et métriques de croissance.",
+    },
+    threads: {
+      title: "Prompts pour Threads",
+      nav: "Pour Threads",
+      description:
+        "Entrer dans les recommandations : accroches, posts conçus pour les réponses, la première heure, liens sans perte de portée.",
     },
   },
   home: {
@@ -1058,6 +1076,12 @@ const uk: Dictionary = {
       description:
         "Перевірка ідеї, межі MVP, онбординг, тарифи та метрики зростання.",
     },
+    threads: {
+      title: "Промти для Threads",
+      nav: "Для Threads",
+      description:
+        "Потрапити в рекомендації: хуки, пости під відповіді, перша година, посилання без втрати охоплення.",
+    },
   },
   home: {
     heroLabel: "Приклад промту",
@@ -1387,6 +1411,12 @@ const de: Dictionary = {
       nav: "Für SaaS",
       description:
         "Ideenvalidierung, MVP-Umfang, Onboarding, Preise und Wachstumsmetriken.",
+    },
+    threads: {
+      title: "Prompts für Threads",
+      nav: "Für Threads",
+      description:
+        "In die Empfehlungen kommen: Hooks, Beiträge für Antworten, die erste Stunde, Links ohne Reichweitenverlust.",
     },
   },
   home: {
@@ -1722,6 +1752,12 @@ const pl: Dictionary = {
       nav: "Dla SaaS",
       description:
         "Walidacja pomysłu, zakres MVP, onboarding, ceny i metryki wzrostu.",
+    },
+    threads: {
+      title: "Prompty na Threads",
+      nav: "Na Threads",
+      description:
+        "Wejść do rekomendacji: hooki, posty pod odpowiedzi, pierwsza godzina, linki bez utraty zasięgu.",
     },
   },
   home: {

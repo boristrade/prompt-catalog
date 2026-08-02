@@ -1429,4 +1429,262 @@ If a metric leads to no decision, leave it out.`,
     example: `The number that matters at your stage: the share reaching first value within 7 days. Revenue at 30 customers is noise — one payment swings it.
 How it's gamed: retention rises if you stop acquiring. Watch new sign-ups alongside it.`,
   },
+
+  // ─────────────────────────── Threads ───────────────────────────
+  "threads-hook-lab": {
+    title: "20 hooks that fit before the «more» cut",
+    summary:
+      "The first line decides everything: on a phone only about 90 characters show before «more». Hooks are written to that limit.",
+    bestFor: "ChatGPT / Claude",
+    tags: ["hooks", "threads", "reach"],
+    prompt: `Write 20 opening lines for Threads posts on the topic "{topic}".
+
+Audience: {who}
+My role: {who you are to them — practitioner, seller, observer}
+
+Hard limits:
+— No line longer than 90 characters. That is what shows in the feed before someone taps "more"; anything past it goes unread if the first part didn't land.
+— No "Did you know that", "Top 5 ways", "Here's a roundup" — these read as templates and get scrolled past.
+— No caps lock, no emoji chains.
+
+Give 4 groups of 5:
+1. Personal experience with a specific number or timeframe.
+2. Disagreement with received wisdom in the niche.
+3. An observation the reader recognises in themselves.
+4. An open question they have something to answer from their own experience.
+
+After each line, in brackets, say what reply it is built for. If the only possible reply is "agreed" — rewrite it: that hook collects likes, not conversation.`,
+    example: `Personal experience:
+"Posted on Threads daily for six months. First four months: about 30 views each." (expecting: "so what changed in month five?")
+
+Disagreement:
+"Posting at the best time is advice that will do nothing for you. Here's why." (expecting: pushback from people who believe in timing)`,
+  },
+  "threads-reply-magnet": {
+    title: "A post built for replies, not likes",
+    summary:
+      "Replies are the strongest signal in the recommendation feed. This post is assembled so people want to write, not silently like.",
+    bestFor: "ChatGPT / Claude",
+    tags: ["threads", "engagement", "recommendations"],
+    prompt: `Write a Threads post on the topic "{topic}" designed to pull replies.
+
+What I know about it: {your experience, facts, numbers}
+Audience: {who}
+What I want to hear in the replies: {e.g. how other people solve this}
+
+Rules:
+— No longer than 500 characters, that is the platform limit. 300 is better.
+— The first 90 characters must work as a standalone hook; the rest is what people unfold themselves.
+— End on a question the reader already has an answer to from their own experience. Not "what do you think?" but something specific: their case, their number, their choice.
+— Leave a place in the text where the reader can disagree. A post everyone agrees with gives nobody anything to say.
+
+Don't do this:
+— "Tell me in the comments!" — a direct ask works worse than a question people simply have something to say to.
+— Don't invent provocation for the sake of an argument. A fight collects replies once, and then people unfollow.
+
+Give 3 versions of the post and, under each, what kind of reply it is most likely to collect.`,
+    example: `Version 1 (298 characters):
+"I let go of the strongest person on the team. He was right more often than anyone — and that was the problem.
+
+He didn't argue, he explained. After a few of those explanations people stopped offering their own ideas — why bother if you'll turn out wrong anyway.
+
+One strong voice can quietly switch off everyone else.
+
+Has this happened to you, and how did you handle it?"
+
+Will collect: stories about people's own "too-right" colleagues, and an argument about whether letting them go was right.`,
+  },
+  "threads-first-thirty": {
+    title: "The first thirty minutes after posting",
+    summary:
+      "The feed watches speed: 20 replies in half an hour push a post further than 50 over a day. A plan for that window.",
+    bestFor: "ChatGPT / Claude",
+    tags: ["threads", "algorithm", "first hour"],
+    prompt: `Draw up a plan for the first 30 minutes after publishing a Threads post.
+
+Post text: {paste the post}
+Topic: {what it's about}
+Who I am in this niche: {role}
+Follower count: {number}
+
+The recommendation feed looks at speed rather than total reactions: a post that collects replies in the first half hour is shown more widely than the same post collecting more over a full day. So that half hour has to be worked by hand.
+
+Give me:
+1. Three prepared answers to the most likely objections to this post — so I reply immediately instead of composing on the spot.
+2. The first comment worth leaving under my own post: it must add to the topic, not be a "bumping this".
+3. Five types of account worth pulling into the conversation and what to write to them — not "check out my post", but something substantive.
+4. Three posts by other authors on the topic where a substantial reply in the same window is worth leaving: other people's threads bring visitors to the profile.
+5. The "this one didn't work" signal: what numbers at minute 30 mean pushing further is pointless, and what to do instead.
+
+Do not suggest: engagement pods, one-word replies, reposting the same text an hour later.`,
+    example: `Answer to "your sample is just too small":
+"Agreed, 40 cases is thin for conclusions. That's why I wrote 'this is how it went for me', not 'this is how it always works'. Has it gone differently for you on a bigger sample?"
+
+"Didn't work" signal: fewer than 3 replies and under 200 views at minute 30. Stop pushing — work out why the first line failed and reuse the topic in a week with a different hook.`,
+  },
+  "threads-link-without-loss": {
+    title: "A link without losing reach",
+    summary:
+      "A link in the body sends people off-platform, and the feed accounts for that. The scheme: the post stands alone, the link comes as the first reply.",
+    bestFor: "ChatGPT / Claude",
+    tags: ["threads", "traffic", "links"],
+    prompt: `Split my link into a Threads post and a first reply.
+
+Where I'm sending people: {URL and what's there}
+Who needs it: {audience}
+What they get by clicking: {specific benefit}
+
+Platforms have no interest in sending people away, and a link in the post body historically cost reach. The rules are softer now, but "post separately, link in the first reply" stays safer: the post gets to travel on its own merits first.
+
+Give me:
+1. A post with no link that is useful on its own — someone who clicks nothing still takes something away. No more than 500 characters.
+2. A first reply with the link: one line of context and the URL. Not "more at the link", but what exactly is waiting there.
+3. A second version of the post with the link inline, so there is something to compare against if I decide to test both.
+4. What to measure to tell which version worked better: two specific numbers and how to compare them.
+
+Separately, warn me if my link requires signing up or leads straight to a payment page: that visibly cuts click-through, and it is better to say so honestly in the reply itself.`,
+    example: `Post (no link):
+"Spent three weeks working out what shipping to the marketplace actually costs. Turned out 18% more than my spreadsheet said.
+
+I'd left out: returns, paid intake, storage over the limit.
+
+If you're doing unit economics — check those three lines, they're almost always missing."
+
+First reply:
+"Put my spreadsheet with those lines here, take it: {link}"`,
+  },
+  "threads-strong-opinion": {
+    title: "A strong opinion you won't regret",
+    summary:
+      "A post worth arguing with on the merits. Checked separately so it doesn't turn into cheap provocation.",
+    bestFor: "ChatGPT / Claude",
+    tags: ["threads", "opinion", "discussion"],
+    prompt: `Help me put a strong opinion into a Threads post.
+
+Topic: {what about}
+What I actually think: {your position, a rough draft is fine}
+What it's based on: {experience, numbers, cases}
+
+I want a post some readers will disagree with — and want to explain why. But not at the cost of my reputation.
+
+Do this:
+1. State my position in one sentence under 90 characters, so it is clear exactly what there is to argue with.
+2. Assemble a post under 500 characters: the position, one piece of grounding from my own experience, and an admission of where I am wrong. That last part is mandatory — an opinion with no stated limits reads as posturing.
+3. Write the three strongest objections that will come, and an honest answer to each.
+4. Check the resulting post against this list and give a verdict on every point:
+   — Would I repeat this under my own name a year from now?
+   — Is this an argument about the work, or a swipe at people?
+   — Do I have grounds beyond irritation?
+   — If someone else had written this, would I reply on the merits or scroll past?
+
+If even one point fails, say so plainly and suggest how to reframe it.`,
+    example: `Position (84 characters):
+"AI courses sell a skill that goes stale faster than the course takes to finish."
+
+Check:
+— Repeat in a year: yes, the field is only speeding up.
+— About the work: yes, this is about the product, not the people.
+— Grounds: two courses taken, both outdated by the end.
+— Would reply myself: yes, there's a case to make about fundamentals.`,
+  },
+  "threads-week-plan": {
+    title: "A week of posts from one piece of material",
+    summary:
+      "One breakdown, article or video becomes seven standalone posts — not by slicing it, but by taking different angles.",
+    bestFor: "ChatGPT / Claude",
+    tags: ["threads", "content plan", "repurposing"],
+    prompt: `Turn one piece of material into a week of Threads posts.
+
+Material: {paste the text, transcript or notes}
+My niche: {what my profile is about}
+Audience: {who}
+
+Don't slice the material into sequential chunks — that gives you seven fragments where each one needs the previous to make sense. Take different angles on the same thing instead.
+
+Seven posts, one per day, each under 500 characters and self-contained:
+1. Monday — the conclusion in full, no build-up.
+2. Tuesday — the least obvious detail in the material.
+3. Wednesday — a mistake I made myself on this topic.
+4. Thursday — a number or fact that surprises.
+5. Friday — a question to the audience they have their own answer to.
+6. Saturday — a short breakdown of someone else's case or objection.
+7. Sunday — what I'm changing in my own work after this.
+
+For each, give: the first line under 90 characters separately, the post itself, and one topic tag (no more than one — a pile of tags reads as spam and performs worse).
+
+At the end, say which two of the seven belong at the start of the week if I only publish some of them, and why those two.`,
+    example: `Wednesday (a mistake):
+First line: "Kept a spending spreadsheet for a year that lied to me every month."
+
+Post: "I counted purchase and shipping, I didn't count time. My own time never went into cost of goods — it was 'free', after all.
+
+Once I priced it at $5/hour, two products out of five turned out to run at a loss.
+
+Tag: #marketplaces"`,
+  },
+  "threads-profile-setup": {
+    title: "A profile that turns a visit into a follow",
+    summary:
+      "From a recommended post people land on your profile and decide in seconds. A 150-character bio and a pinned post built for that decision.",
+    bestFor: "ChatGPT / Claude",
+    tags: ["threads", "profile", "followers"],
+    prompt: `Put together my Threads profile: bio and pinned post.
+
+What I do: {occupation}
+What I'll be writing about: {2–3 topics}
+Who for: {audience}
+How I differ from others in this niche: {experience, numbers, point of view}
+What someone gets by following: {specifically}
+
+People arrive at the profile from the recommendation feed and decide in a couple of seconds. The bio is 150 characters, and that is all you get.
+
+Give me:
+1. Five bio options under 150 characters. Each must make clear what the profile is about and why you specifically. No "coffee and travel lover", no list of credentials.
+2. For each option — who it suits and who it doesn't.
+3. A pinned post under 500 characters: who you are, what will be here, and one example of your usefulness inside the text itself — not a promise, but something useful right away.
+4. Three topics for the first posts that will make good on the bio's promise. If the bio promises breakdowns and the first posts are about breakfast, people unfollow.
+
+Separately, tell me if my answers don't show any difference from a hundred similar profiles — and what to put up front in that case.`,
+    example: `Bio (129 characters):
+"4 years selling on marketplaces, 6 stores now. I write about honest unit economics — including my own million-dollar mistakes."
+
+Who it suits: people already making sales. A beginner won't see themselves — for them, option 3 works better.`,
+  },
+  "threads-post-mortem": {
+    title: "A breakdown of the post that didn't take off",
+    summary:
+      "An honest walk through the funnel: where exactly it broke — the first line, the unfold, or the reply.",
+    bestFor: "ChatGPT / Claude",
+    tags: ["threads", "analytics", "breakdown"],
+    prompt: `Break down my Threads post that got no reach.
+
+Post text: {paste the whole post}
+Views: {number}
+Likes: {number}
+Replies: {number}
+Reposts: {number}
+Followers at time of posting: {number}
+Posted at: {when}
+
+Work through it stage by stage, not in generalities. A post has a funnel, and it can break in three different places — each treated differently:
+
+1. Few views with a normal reply rate — the post didn't get distributed. Look at the topic and the timing.
+2. Many views, few replies — the first line didn't work, or the post left nothing to talk about.
+3. Replies but no reposts — the post is interesting but not something people want to pass on. Look for anything a reader could claim as their own.
+
+Work out which case mine is from the numbers and say it plainly. Then:
+— What exactly in the text caused it. Quote the lines.
+— Rewrite the first line three ways.
+— Say whether the topic is worth reusing or is dead.
+— One lesson for next time, stated as a rule.
+
+If the numbers are normal for a profile my size and I'm worrying over nothing, say that. Don't invent a problem.`,
+    example: `Yours is case two: 1,400 views against 2 replies. Distribution happened, conversation didn't.
+
+The cause is the line "I've put together a roundup of tools for you" — it promises a list, and lists get read in silence.
+
+Rewrite: "Out of 12 tools I tried, two are left. I deleted the rest in the first week."
+
+Rule: if a post can be silently saved, it will be silently saved.`,
+  },
 };
