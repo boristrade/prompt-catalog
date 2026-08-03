@@ -112,6 +112,37 @@ const ru = {
     searchPlaceholder: "Название, задача или тег",
     searchButton: "Найти",
   },
+  guides: {
+    nav: "Гайды",
+    eyebrow: "Гайды",
+    title: "Разборы, а не промты",
+    subtitle:
+      "Как писать промты, почему нейросеть отвечает не то и с чего начать в Claude Code. Читается за пять минут, применяется сразу.",
+    minutes: "мин чтения",
+    readMore: "Читать",
+    back: "Все гайды",
+  },
+  skills: {
+    nav: "Скилы",
+    eyebrow: "Скилы для Claude Code",
+    title: "Правила, которые агент применяет сам",
+    subtitle:
+      "Скил лежит в проекте и подключается автоматически, когда задача под него подходит. Скопируйте файл, положите в папку — и всё.",
+    copy: "Скопировать файл",
+    copied: "Файл скопирован",
+    back: "Все скилы",
+    whatTitle: "Что делает",
+    whyTitle: "Зачем он нужен",
+    fileTitle: "Файл SKILL.md",
+    installTitle: "Куда положить",
+    installSteps: [
+      "Создайте в проекте папку .claude/skills/{folder}",
+      "Положите в неё файл SKILL.md с текстом ниже",
+      "Всё. Claude Code подключит скил сам, когда задача подойдёт под описание",
+    ],
+    installNote:
+      "Чтобы скил работал во всех проектах, а не в одном, положите его в ~/.claude/skills вместо папки проекта.",
+  },
   allPrompts: {
     eyebrow: "Все промты",
     title: "Весь каталог целиком",
@@ -448,6 +479,37 @@ const en: Dictionary = {
     title: "Catalogue",
     searchPlaceholder: "Title, task, or tag",
     searchButton: "Search",
+  },
+  guides: {
+    nav: "Guides",
+    eyebrow: "Guides",
+    title: "Explanations, not prompts",
+    subtitle:
+      "How to write prompts, why the AI answers the wrong thing, and where to start with Claude Code. Five minutes to read, useful immediately.",
+    minutes: "min read",
+    readMore: "Read",
+    back: "All guides",
+  },
+  skills: {
+    nav: "Skills",
+    eyebrow: "Skills for Claude Code",
+    title: "Rules the agent applies on its own",
+    subtitle:
+      "A skill lives in your project and loads automatically when a task matches it. Copy the file, drop it in a folder — that's it.",
+    copy: "Copy the file",
+    copied: "File copied",
+    back: "All skills",
+    whatTitle: "What it does",
+    whyTitle: "Why you'd want it",
+    fileTitle: "SKILL.md file",
+    installTitle: "Where to put it",
+    installSteps: [
+      "Create the folder .claude/skills/{folder} in your project",
+      "Put a SKILL.md file in it with the text below",
+      "That's it. Claude Code loads the skill itself when a task matches the description",
+    ],
+    installNote:
+      "To make the skill available in every project rather than one, put it in ~/.claude/skills instead of the project folder.",
   },
   allPrompts: {
     eyebrow: "All prompts",
@@ -787,6 +849,37 @@ const fr: Dictionary = {
     searchPlaceholder: "Titre, tâche ou tag",
     searchButton: "Rechercher",
   },
+  guides: {
+    nav: "Guides",
+    eyebrow: "Guides",
+    title: "Des explications, pas des prompts",
+    subtitle:
+      "Comment écrire des prompts, pourquoi l'IA répond à côté, et par où commencer avec Claude Code. Cinq minutes de lecture, utile tout de suite.",
+    minutes: "min de lecture",
+    readMore: "Lire",
+    back: "Tous les guides",
+  },
+  skills: {
+    nav: "Skills",
+    eyebrow: "Skills pour Claude Code",
+    title: "Des règles que l'agent applique tout seul",
+    subtitle:
+      "Un skill vit dans votre projet et se charge automatiquement quand une tâche lui correspond. Copiez le fichier, placez-le dans un dossier, c'est tout.",
+    copy: "Copier le fichier",
+    copied: "Fichier copié",
+    back: "Tous les skills",
+    whatTitle: "Ce qu'il fait",
+    whyTitle: "À quoi il sert",
+    fileTitle: "Fichier SKILL.md",
+    installTitle: "Où le placer",
+    installSteps: [
+      "Créez le dossier .claude/skills/{folder} dans votre projet",
+      "Placez-y un fichier SKILL.md avec le texte ci-dessous",
+      "C'est tout. Claude Code charge le skill lui-même quand une tâche correspond à la description",
+    ],
+    installNote:
+      "Pour que le skill soit disponible dans tous vos projets et pas un seul, placez-le dans ~/.claude/skills au lieu du dossier du projet.",
+  },
   allPrompts: {
     eyebrow: "Tous les prompts",
     title: "Le catalogue en entier",
@@ -1123,6 +1216,37 @@ const uk: Dictionary = {
     title: "Каталог",
     searchPlaceholder: "Назва, задача або тег",
     searchButton: "Знайти",
+  },
+  guides: {
+    nav: "Гайди",
+    eyebrow: "Гайди",
+    title: "Розбори, а не промти",
+    subtitle:
+      "Як писати промти, чому нейромережа відповідає не те і з чого почати в Claude Code. Читається за п'ять хвилин, застосовується одразу.",
+    minutes: "хв читання",
+    readMore: "Читати",
+    back: "Усі гайди",
+  },
+  skills: {
+    nav: "Скіли",
+    eyebrow: "Скіли для Claude Code",
+    title: "Правила, які агент застосовує сам",
+    subtitle:
+      "Скіл лежить у проєкті й підключається автоматично, коли задача під нього підходить. Скопіюйте файл, покладіть у теку — і все.",
+    copy: "Скопіювати файл",
+    copied: "Файл скопійовано",
+    back: "Усі скіли",
+    whatTitle: "Що робить",
+    whyTitle: "Навіщо він потрібен",
+    fileTitle: "Файл SKILL.md",
+    installTitle: "Куди покласти",
+    installSteps: [
+      "Створіть у проєкті теку .claude/skills/{folder}",
+      "Покладіть у неї файл SKILL.md з текстом нижче",
+      "Усе. Claude Code підключить скіл сам, коли задача підійде під опис",
+    ],
+    installNote:
+      "Щоб скіл працював в усіх проєктах, а не в одному, покладіть його в ~/.claude/skills замість теки проєкту.",
   },
   allPrompts: {
     eyebrow: "Усі промти",
@@ -1465,6 +1589,37 @@ const de: Dictionary = {
     searchPlaceholder: "Titel, Aufgabe oder Tag",
     searchButton: "Suchen",
   },
+  guides: {
+    nav: "Guides",
+    eyebrow: "Guides",
+    title: "Erklärungen statt Prompts",
+    subtitle:
+      "Wie man Prompts schreibt, warum die KI am Thema vorbei antwortet und wie man mit Claude Code anfängt. Fünf Minuten Lesezeit, sofort anwendbar.",
+    minutes: "Min. Lesezeit",
+    readMore: "Lesen",
+    back: "Alle Guides",
+  },
+  skills: {
+    nav: "Skills",
+    eyebrow: "Skills für Claude Code",
+    title: "Regeln, die der Agent von selbst anwendet",
+    subtitle:
+      "Ein Skill liegt im Projekt und wird automatisch geladen, wenn eine Aufgabe dazu passt. Datei kopieren, in einen Ordner legen — fertig.",
+    copy: "Datei kopieren",
+    copied: "Datei kopiert",
+    back: "Alle Skills",
+    whatTitle: "Was er tut",
+    whyTitle: "Wozu er gut ist",
+    fileTitle: "SKILL.md-Datei",
+    installTitle: "Wohin damit",
+    installSteps: [
+      "Legen Sie im Projekt den Ordner .claude/skills/{folder} an",
+      "Legen Sie dort eine SKILL.md mit dem Text unten ab",
+      "Fertig. Claude Code lädt den Skill selbst, sobald eine Aufgabe zur Beschreibung passt",
+    ],
+    installNote:
+      "Damit der Skill in allen Projekten statt nur in einem funktioniert, legen Sie ihn in ~/.claude/skills statt in den Projektordner.",
+  },
   allPrompts: {
     eyebrow: "Alle Prompts",
     title: "Der ganze Katalog",
@@ -1801,6 +1956,37 @@ const pl: Dictionary = {
     title: "Katalog",
     searchPlaceholder: "Tytuł, zadanie lub tag",
     searchButton: "Szukaj",
+  },
+  guides: {
+    nav: "Poradniki",
+    eyebrow: "Poradniki",
+    title: "Wyjaśnienia, nie prompty",
+    subtitle:
+      "Jak pisać prompty, dlaczego AI odpowiada nie na temat i od czego zacząć z Claude Code. Pięć minut czytania, od razu do użycia.",
+    minutes: "min czytania",
+    readMore: "Czytaj",
+    back: "Wszystkie poradniki",
+  },
+  skills: {
+    nav: "Skille",
+    eyebrow: "Skille do Claude Code",
+    title: "Zasady, które agent stosuje sam",
+    subtitle:
+      "Skill leży w projekcie i ładuje się automatycznie, gdy zadanie do niego pasuje. Skopiuj plik, wrzuć do folderu — i tyle.",
+    copy: "Skopiuj plik",
+    copied: "Plik skopiowany",
+    back: "Wszystkie skille",
+    whatTitle: "Co robi",
+    whyTitle: "Do czego się przyda",
+    fileTitle: "Plik SKILL.md",
+    installTitle: "Gdzie go umieścić",
+    installSteps: [
+      "Utwórz w projekcie folder .claude/skills/{folder}",
+      "Umieść w nim plik SKILL.md z tekstem poniżej",
+      "Gotowe. Claude Code sam załaduje skill, gdy zadanie będzie pasować do opisu",
+    ],
+    installNote:
+      "Aby skill działał we wszystkich projektach, a nie w jednym, umieść go w ~/.claude/skills zamiast w folderze projektu.",
   },
   allPrompts: {
     eyebrow: "Wszystkie prompty",

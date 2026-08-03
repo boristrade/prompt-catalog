@@ -21,6 +21,8 @@ export default function Footer({
   t: Dictionary;
 }) {
   const support = [
+    { label: t.guides.nav, href: `/${locale}/guides` },
+    { label: t.skills.nav, href: `/${locale}/skills` },
     { label: t.footer.pricing, href: `/${locale}/pricing` },
     { label: t.footer.account, href: `/${locale}/account` },
     { label: t.partner.nav, href: `/${locale}/partner` },
