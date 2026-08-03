@@ -64,6 +64,38 @@ export function faqSchema(items: { q: string; a: string }[]) {
 }
 
 /*
+  Гайд как Article — здесь это честно: он написан, чтобы его читали, у
+  него есть заголовок и краткое содержание, и то и другое видно на
+  странице.
+
+  Даты публикации нет намеренно. Её пришлось бы или выдумать, или
+  подставить дату сборки — а дата сборки меняется при каждом деплое, и
+  Google увидел бы, что «статья обновлена» там, где не поменялось ни
+  слова. Разметка без даты честнее разметки с неправдой.
+*/
+export function articleSchema(params: {
+  locale: string;
+  /** Путь без языка: "/guides/claude-md". */
+  path: string;
+  title: string;
+  description: string;
+}) {
+  return {
+    "@context": "https://schema.org",
+    "@type": "Article",
+    headline: params.title,
+    description: params.description,
+    url: `${siteUrl()}/${params.locale}${params.path}`,
+    inLanguage: params.locale,
+    isPartOf: {
+      "@type": "WebSite",
+      name: "PrompTom",
+      url: siteUrl(),
+    },
+  };
+}
+
+/*
   Промт как CreativeWork, а не Article: у него нет автора-журналиста и
   даты публикации, и вписывать их ради более крупного значка в выдаче
   значило бы сообщить неправду разметкой, которую не видно на странице.

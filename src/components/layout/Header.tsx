@@ -24,6 +24,8 @@ export default function Header({
   const pathname = usePathname();
 
   const supportItems = [
+    { href: `/${locale}/guides`, label: t.guides.nav },
+    { href: `/${locale}/skills`, label: t.skills.nav },
     { href: `/${locale}/pricing`, label: t.footer.pricing },
     { href: `/${locale}/account`, label: t.footer.account },
     { href: `/${locale}/account#favorites`, label: t.account.favorites },

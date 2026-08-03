@@ -2,6 +2,8 @@ import type { MetadataRoute } from "next";
 import { CATEGORIES } from "@/lib/categories";
 import { PROMPTS } from "@/lib/prompts";
 import { LEGAL_DOCS } from "@/lib/legal";
+import { GUIDES } from "@/lib/guides";
+import { SKILLS } from "@/lib/skills";
 import { LOCALES, DEFAULT_LOCALE } from "@/lib/i18n/config";
 import { siteUrl } from "@/lib/site";
 
@@ -35,6 +37,23 @@ const PATHS: { path: string; priority: number; changeFrequency: Change }[] = [
   */
   ...PROMPTS.map((p) => ({
     path: `/prompts/${p.category}/${p.id}`,
+    priority: 0.7,
+    changeFrequency: "monthly" as Change,
+  })),
+  /*
+    Гайды и скилы — то, ради чего приходят из поиска по вопросу, а не по
+    названию сайта. Каждый отдельным адресом: на список никто не ищет,
+    ищут «как писать промты» и «скил для Claude Code».
+  */
+  { path: "/guides", priority: 0.8, changeFrequency: "monthly" },
+  ...GUIDES.map((slug) => ({
+    path: `/guides/${slug}`,
+    priority: 0.7,
+    changeFrequency: "monthly" as Change,
+  })),
+  { path: "/skills", priority: 0.8, changeFrequency: "monthly" },
+  ...SKILLS.map((id) => ({
+    path: `/skills/${id}`,
     priority: 0.7,
     changeFrequency: "monthly" as Change,
   })),
