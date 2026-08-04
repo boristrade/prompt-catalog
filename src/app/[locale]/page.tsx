@@ -1,7 +1,19 @@
 import Link from "next/link";
 import Image from "next/image";
-import { ArrowRight, Check, FileText, Layers, Sparkles, Zap } from "lucide-react";
+import {
+  ArrowRight,
+  BookOpen,
+  Check,
+  FileText,
+  Layers,
+  Sparkles,
+  Terminal,
+  Zap,
+} from "lucide-react";
 import { CATEGORIES } from "@/lib/categories";
+import { GUIDES } from "@/lib/guides";
+import { PDF_GUIDE_PATHS } from "@/lib/pdf-guides";
+import { SKILLS } from "@/lib/skills";
 import { PROMPTS, countByCategory } from "@/lib/prompts";
 import { TOOLS } from "@/lib/tools";
 import { coverFor } from "@/lib/covers";
@@ -10,6 +22,7 @@ import { pageLocale } from "@/lib/i18n";
 import { templatesFor } from "@/lib/templates";
 import { pageMeta } from "@/lib/seo";
 import Reveal from "@/components/Reveal";
+import DisplayCards from "@/components/DisplayCards";
 import TemplateMarquee from "@/components/TemplateMarquee";
 import HeroVisual from "@/components/HeroVisual";
 
@@ -62,8 +75,40 @@ export default async function HomePage({
   const stats = [
     { icon: FileText, value: `${PROMPTS.length}`, label: t.home.statPrompts },
     { icon: Sparkles, value: `${freeCount}`, label: t.home.statFree },
-    { icon: Layers, value: `${CATEGORIES.length}`, label: t.home.statCategories },
+    {
+      icon: Layers,
+      value: `${CATEGORIES.length}`,
+      label: t.home.statCategories,
+    },
     { icon: Zap, value: `${TOOLS.length}`, label: t.home.statTools },
+  ];
+
+  /*
+    Три полки сайта. Числа считаются, а не пишутся руками: положишь
+    завтра ещё один гайд — карточка обновится сама, как и весь раздел.
+  */
+  const decks = [
+    {
+      href: `/${locale}/guides`,
+      icon: <BookOpen size={15} />,
+      title: t.guides.nav,
+      description: t.guides.title,
+      meta: `${GUIDES.length + PDF_GUIDE_PATHS.length} ${t.home.deckGuides}`,
+    },
+    {
+      href: `/${locale}/skills`,
+      icon: <Terminal size={15} />,
+      title: t.skills.nav,
+      description: t.skills.title,
+      meta: `${SKILLS.length} ${t.home.deckSkills}`,
+    },
+    {
+      href: `/${locale}/prompts`,
+      icon: <FileText size={15} />,
+      title: t.allPrompts.navLink,
+      description: t.allPrompts.title,
+      meta: `${PROMPTS.length} ${t.home.deckPrompts}`,
+    },
   ];
 
   const steps = [
@@ -177,6 +222,21 @@ export default async function HomePage({
         </Reveal>
       </section>
 
+      {/* Три полки: гайды, скилы, промты */}
+      <section className="pb-20">
+        <Reveal>
+          <h2 className="font-display text-[27px] text-ink md:text-[32px]">
+            {t.home.decksTitle}
+          </h2>
+        </Reveal>
+
+        <Reveal delay={80}>
+          <div className="mt-8 lg:mt-14">
+            <DisplayCards cards={decks} />
+          </div>
+        </Reveal>
+      </section>
+
       {/* Категории */}
       <section className="pb-20">
         <Reveal>
@@ -209,11 +269,11 @@ export default async function HomePage({
                 {/* Обёртка нужна ради подсветки: свечение рисуется на ней,
                     потому что overflow-hidden самой карточки его срезал бы. */}
                 <div className="spotlight h-full">
-                <Link
-                  href={`/${locale}/prompts/${c.slug}`}
-                  className="group relative z-[1] flex h-full flex-col overflow-hidden rounded-card border border-line bg-surface transition-[border-color,transform] duration-200 ease-out hover:-translate-y-1 hover:border-line-strong"
-                >
-                  {/*
+                  <Link
+                    href={`/${locale}/prompts/${c.slug}`}
+                    className="group relative z-[1] flex h-full flex-col overflow-hidden rounded-card border border-line bg-surface transition-[border-color,transform] duration-200 ease-out hover:-translate-y-1 hover:border-line-strong"
+                  >
+                    {/*
                     Обложки нет — рисуем заглушку той же высоты, а не
                     пропускаем блок. Карточка без картинки рядом с пятью
                     картиночными читается как недогрузившаяся, хотя на
@@ -222,41 +282,41 @@ export default async function HomePage({
                     сбой, и исчезает сама, стоит положить файл в
                     public/covers — coverFor подхватит его по имени.
                   */}
-                  <div className="relative aspect-[16/10] w-full overflow-hidden bg-sunken">
-                    {cover ? (
-                      <Image
-                        src={cover}
-                        alt=""
-                        fill
-                        sizes="(min-width: 1280px) 20vw, (min-width: 1024px) 33vw, (min-width: 640px) 50vw, 100vw"
-                        className="object-cover transition-transform duration-300 ease-out group-hover:scale-[1.04]"
-                      />
-                    ) : (
-                      <div className="flex h-full w-full items-center justify-center bg-[radial-gradient(110%_110%_at_28%_18%,rgba(139,92,246,0.30),rgba(139,92,246,0.06)_55%,transparent_78%)]">
-                        <Sparkles
-                          size={34}
-                          className="text-accent opacity-60 transition-transform duration-300 ease-out group-hover:scale-110"
+                    <div className="relative aspect-[16/10] w-full overflow-hidden bg-sunken">
+                      {cover ? (
+                        <Image
+                          src={cover}
+                          alt=""
+                          fill
+                          sizes="(min-width: 1280px) 20vw, (min-width: 1024px) 33vw, (min-width: 640px) 50vw, 100vw"
+                          className="object-cover transition-transform duration-300 ease-out group-hover:scale-[1.04]"
                         />
-                      </div>
-                    )}
-                  </div>
+                      ) : (
+                        <div className="flex h-full w-full items-center justify-center bg-[radial-gradient(110%_110%_at_28%_18%,rgba(139,92,246,0.30),rgba(139,92,246,0.06)_55%,transparent_78%)]">
+                          <Sparkles
+                            size={34}
+                            className="text-accent opacity-60 transition-transform duration-300 ease-out group-hover:scale-110"
+                          />
+                        </div>
+                      )}
+                    </div>
 
-                  <div className="flex flex-1 flex-col p-5">
-                    <h3 className="text-[15.5px] font-semibold tracking-[-0.015em] text-ink">
-                      {t.categories[c.slug].nav}
-                    </h3>
-                    <p className="mt-2 flex-1 text-[13px] leading-relaxed text-muted">
-                      {t.categories[c.slug].description}
-                    </p>
-                    <span className="mt-4 inline-flex items-center gap-1.5 text-[12.5px] font-medium text-accent">
-                      {countByCategory(c.slug)} {t.catalog.prompts}
-                      <ArrowRight
-                        size={13}
-                        className="transition-transform duration-200 group-hover:translate-x-1"
-                      />
-                    </span>
-                  </div>
-                </Link>
+                    <div className="flex flex-1 flex-col p-5">
+                      <h3 className="text-[15.5px] font-semibold tracking-[-0.015em] text-ink">
+                        {t.categories[c.slug].nav}
+                      </h3>
+                      <p className="mt-2 flex-1 text-[13px] leading-relaxed text-muted">
+                        {t.categories[c.slug].description}
+                      </p>
+                      <span className="mt-4 inline-flex items-center gap-1.5 text-[12.5px] font-medium text-accent">
+                        {countByCategory(c.slug)} {t.catalog.prompts}
+                        <ArrowRight
+                          size={13}
+                          className="transition-transform duration-200 group-hover:translate-x-1"
+                        />
+                      </span>
+                    </div>
+                  </Link>
                 </div>
               </Reveal>
             );
