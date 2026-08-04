@@ -1,13 +1,22 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { ArrowLeft, Info } from "lucide-react";
-import { SKILLS, skill } from "@/lib/skills";
+import { ArrowLeft, Info, Lock } from "lucide-react";
+import { SKILLS, isSkillLocked, skill, veilSkill } from "@/lib/skills";
+import { getAccount } from "@/lib/account";
 import { LOCALES } from "@/lib/i18n/config";
 import { pageLocale } from "@/lib/i18n";
 import { pageMeta } from "@/lib/seo";
 import { articleSchema, jsonLd } from "@/lib/schema";
 import CopyFile from "@/components/CopyFile";
 import Reveal from "@/components/Reveal";
+
+/*
+  Страница зависит от вошедшего: у оплатившего файл открыт, у остальных
+  обрезан. Без этой строчки Next собрал бы её один раз на сборке — когда
+  никто не вошёл, — и подписчик получал бы ту же закрытую версию, что и
+  гость, навсегда. Ровно так же помечены страницы промтов.
+*/
+export const dynamic = "force-dynamic";
 
 export function generateStaticParams() {
   return LOCALES.flatMap((locale) => SKILLS.map((id) => ({ locale, id })));
@@ -40,8 +49,17 @@ export default async function SkillPage({
   const { id } = await params;
   const { locale, t } = await pageLocale(params);
 
-  const item = skill(locale, id);
-  if (!item) notFound();
+  const full = skill(locale, id);
+  if (!full) notFound();
+
+  /*
+    Под замком только файл. Название, описание, разбор и инструкция
+    «куда положить» открыты всем — по ним на страницу приходят из
+    поиска, и прятать их значило бы спрятать саму страницу.
+  */
+  const account = await getAccount();
+  const locked = isSkillLocked(full, account?.plan ?? "free");
+  const item = locked ? veilSkill(full) : full;
 
   return (
     <article className="pt-10 pb-20 md:pt-14">
@@ -54,6 +72,7 @@ export default async function SkillPage({
               path: `/skills/${id}`,
               title: item.title,
               description: item.summary,
+              free: full.tier === "free",
             }),
           ),
         }}
@@ -74,6 +93,15 @@ export default async function SkillPage({
       <div className="mt-4 flex flex-wrap items-center gap-1.5">
         <span className="rounded-chip border border-line-strong bg-sunken px-2.5 py-1.5 font-mono text-[11px] text-muted">
           {item.folder}
+        </span>
+        <span
+          className={`rounded-chip px-2.5 py-1.5 font-mono text-[10.5px] tracking-[0.08em] ${
+            full.tier === "pro"
+              ? "border border-accent/40 text-accent"
+              : "border border-line-strong text-faint"
+          }`}
+        >
+          {full.tier === "pro" ? "PRO" : "FREE"}
         </span>
         {item.tags.map((tag) => (
           <span
@@ -192,13 +220,51 @@ export default async function SkillPage({
                   {item.folder}/{file.path}
                 </div>
               )}
-              <CopyFile
-                content={file.text}
-                copyLabel={t.skills.copy}
-                copiedLabel={t.skills.copied}
-              />
+
+              {locked ? (
+                /*
+                  file.text здесь уже обрезан на сервере (veilSkill), а не
+                  спрятан размытием поверх целого текста: под замком лежит
+                  то, чего в странице нет вовсе. Видное начало — настоящее,
+                  чтобы человек решал, платить ли, посмотрев на сам файл, а
+                  не на замок.
+                */
+                <div className="relative">
+                  <pre className="max-h-64 overflow-hidden whitespace-pre-wrap rounded-card border border-line bg-sunken p-5 font-mono text-[12px] leading-[1.7] text-muted">
+                    {file.text}
+                    <span aria-hidden>{"\n…"}</span>
+                  </pre>
+                  <div
+                    aria-hidden
+                    className="pointer-events-none absolute inset-x-0 bottom-0 h-32 rounded-b-card bg-gradient-to-t from-surface via-surface/95 to-transparent"
+                  />
+                </div>
+              ) : (
+                <CopyFile
+                  content={file.text}
+                  copyLabel={t.skills.copy}
+                  copiedLabel={t.skills.copied}
+                />
+              )}
             </div>
           ))}
+
+          {locked && (
+            <div className="relative mt-3 flex flex-col items-center gap-4 rounded-card border border-line bg-surface px-6 py-8 text-center">
+              <span className="flex h-12 w-12 items-center justify-center rounded-full border border-line-strong bg-sunken text-accent">
+                <Lock size={18} />
+              </span>
+              <p className="max-w-sm text-[13.5px] leading-relaxed text-muted">
+                {t.skills.lockedTitle}
+              </p>
+              <Link
+                href={`/${locale}/pricing`}
+                className="grad-fill rounded-chip px-5 py-2.5 text-[13.5px] font-semibold shadow-[0_6px_20px_-8px_var(--glow)] transition-[opacity,transform] duration-200 hover:opacity-90 active:scale-[0.97]"
+              >
+                {t.card.lockedCta}
+              </Link>
+            </div>
+          )}
         </div>
       </Reveal>
     </article>

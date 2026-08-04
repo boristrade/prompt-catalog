@@ -50,10 +50,32 @@ export interface SkillFile {
   text: string;
 }
 
+export type SkillTier = "free" | "pro";
+
+/*
+  Какие скилы входят в подписку. Список здесь, а не в шапке файла, и это
+  намеренно: платность — решение владельца сайта, а шапку пишет автор
+  скила, часто посторонний. Дай мы ей решать — присланный файл сам бы
+  назначал себе цену.
+
+  Умолчание — «бесплатно». Забытая строчка тут делает скил открытым, а не
+  закрытым: ошибиться в сторону «отдали лишнее» неприятно, ошибиться в
+  сторону «взяли деньги за то, что обещали даром» — хуже.
+*/
+const PRO_SKILLS: readonly string[] = [
+  "remotion-video",
+  "trendwatch",
+  "viral-content-factory",
+  "openmontage",
+  "smm-producer",
+  "carousel-conveyor",
+];
+
 export interface Skill extends SkillText {
   id: string;
   /** Имя папки в .claude/skills. Одна на все языки: это путь на диске. */
   folder: string;
+  tier: SkillTier;
   /** Содержимое SKILL.md целиком. */
   file: string;
   /*
@@ -641,11 +663,59 @@ export function skill(locale: Locale, id: string): Skill | undefined {
 
   const text = (locale === "ru" ? RU : EN)[id] ?? found.fallback;
   // Имя папки совпадает с id: путь на диске один на все языки.
-  return { ...text, id, folder: id, file: found.file, files: found.files };
+  return {
+    ...text,
+    id,
+    folder: id,
+    tier: PRO_SKILLS.includes(id) ? "pro" : "free",
+    file: found.file,
+    files: found.files,
+  };
 }
 
 export function allSkills(locale: Locale): Skill[] {
   return FOUND.map((item) => skill(locale, item.id)!);
+}
+
+export function isSkillLocked(item: Skill, plan: "free" | "pro"): boolean {
+  return item.tier === "pro" && plan !== "pro";
+}
+
+/*
+  Прячем сам файл, а не страницу.
+
+  Всё, ради чего на страницу приходят из поиска, остаётся открытым:
+  название, описание, разбор «что делает» и «зачем нужен», инструкция
+  куда положить. Под замок уходит ровно то, что покупают, — текст файла.
+
+  Начало файла при этом видно, как и у промтов: обрыв настоящий, он
+  сделан здесь, на сервере, а не нарисован размытием поверх готового
+  текста. Человек, ещё не решивший платить, должен увидеть хоть строку
+  того, за что его просят заплатить, — иначе он платит за кота в мешке.
+
+  Режем по границе строки: файл — это разметка, и обрыв посреди строки
+  выглядел бы как испорченный файл, а не как «дальше по подписке».
+
+  Показываем не начало файла, а начало инструкций — шапку пропускаем.
+  Она бывает на семьсот символов, целиком занимает видимую часть окна, и
+  человек упирается в замок, прочитав ровно то, что и так написано на
+  странице заголовком и описанием. Покупают не шапку.
+*/
+const PREVIEW_CHARS = 900;
+
+export function veilSkill(item: Skill): Skill {
+  const cut = (text: string) => {
+    const header = text.startsWith("---\n") ? text.indexOf("\n---", 4) : -1;
+    const from = header < 0 ? 0 : text.indexOf("\n", header + 4) + 1;
+
+    const limit = Math.min(PREVIEW_CHARS, Math.floor((text.length - from) / 2));
+    const head = text.slice(from, from + limit);
+    const lastLine = head.lastIndexOf("\n");
+    return (lastLine > 0 ? head.slice(0, lastLine) : head).trimStart();
+  };
+
+  const files = item.files.map((file) => ({ ...file, text: cut(file.text) }));
+  return { ...item, file: files[0].text, files };
 }
 
 /*
