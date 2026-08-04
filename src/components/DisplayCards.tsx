@@ -58,11 +58,16 @@ export interface DisplayCard {
   перебивает утилиту Tailwind на том же элементе — сдвиг молча не
   применился бы.
 
-  Нахлёст на телефоне в 12 пикселей выбран по содержимому, а не на глаз:
-  у карточки 16 пикселей нижнего поля, глубже — и наползаем на строку с
-  количеством. Поля по бокам — из-за поворота: повёрнутая карточка
-  занимает чуть больше своей ширины, и на 360px это давало ровно один
-  лишний пиксель прокрутки.
+  Нахлёст на телефоне — 28 пикселей, и под него у карточки увеличено
+  нижнее поле: заходить на столько в обычные 16 значило бы наползать на
+  строку с количеством. Сначала было 12 пикселей и поворот в полтора
+  градуса — по разметке всё правильно, а глазом на телефоне не отличить
+  от простого списка. Стопка должна читаться как стопка.
+
+  Поля по бокам разные у каждой карточки: одинаковые края выдают список,
+  разные — кучу карточек. Заодно они дают запас под поворот: повёрнутая
+  карточка занимает чуть больше своей ширины, и на 360px без запаса
+  появлялся лишний пиксель горизонтальной прокрутки.
 
   На широком экране разведены на девять рем, а не на четыре, как в
   исходнике: при тесном нахлёсте у двух задних видно один заголовок, а
@@ -75,9 +80,9 @@ export interface DisplayCard {
   распирала колонку на два десятка пикселей.
 */
 const LAYERS = [
-  "z-[1] min-w-0 mx-1 -rotate-[1.6deg] lg:mx-0 lg:rotate-0 lg:[grid-area:stack] lg:-translate-x-36 lg:-translate-y-3 lg:opacity-70 lg:hover:z-10 lg:hover:-translate-y-9 lg:hover:opacity-100",
-  "z-[2] min-w-0 mx-1 -mt-3 rotate-[1.1deg] lg:mx-0 lg:mt-0 lg:rotate-0 lg:[grid-area:stack] lg:translate-y-7 lg:opacity-85 lg:hover:z-10 lg:hover:translate-y-1 lg:hover:opacity-100",
-  "z-[3] min-w-0 mx-1 -mt-3 -rotate-[0.8deg] lg:mx-0 lg:mt-0 lg:rotate-0 lg:[grid-area:stack] lg:translate-x-36 lg:translate-y-[4.25rem] lg:hover:z-10 lg:hover:translate-y-10",
+  "z-[1] min-w-0 mr-7 -rotate-[3deg] lg:mr-0 lg:rotate-0 lg:[grid-area:stack] lg:-translate-x-36 lg:-translate-y-3 lg:opacity-70 lg:hover:z-10 lg:hover:-translate-y-9 lg:hover:opacity-100",
+  "z-[2] min-w-0 mx-3 -mt-7 rotate-[2.2deg] lg:mx-0 lg:mt-0 lg:rotate-0 lg:[grid-area:stack] lg:translate-y-7 lg:opacity-85 lg:hover:z-10 lg:hover:translate-y-1 lg:hover:opacity-100",
+  "z-[3] min-w-0 ml-7 -mt-7 -rotate-[1.4deg] lg:ml-0 lg:mt-0 lg:rotate-0 lg:[grid-area:stack] lg:translate-x-36 lg:translate-y-[4.25rem] lg:hover:z-10 lg:hover:translate-y-10",
 ];
 
 export default function DisplayCards({ cards }: { cards: DisplayCard[] }) {
@@ -93,8 +98,8 @@ export default function DisplayCards({ cards }: { cards: DisplayCard[] }) {
               href={card.href}
               className="
                 group flex h-full flex-col justify-between gap-3 overflow-hidden
-                rounded-card border border-line bg-surface px-5 py-4
-                shadow-[0_10px_30px_-18px_rgba(0,0,0,0.5)]
+                rounded-card border border-line bg-surface px-5 pb-9 pt-4 lg:py-4
+                shadow-[0_14px_34px_-16px_rgba(0,0,0,0.65)]
                 transition-[border-color,transform] duration-200
                 hover:border-line-strong active:scale-[0.985]
                 lg:h-36 lg:w-[22rem] lg:-skew-y-[8deg] lg:shadow-none
