@@ -79,6 +79,16 @@ export function articleSchema(params: {
   path: string;
   title: string;
   description: string;
+  /*
+    Открыт ли материал целиком. Поле необязательное: у гайдов замка нет
+    вовсе, и писать им «доступно бесплатно» значило бы отвечать на
+    вопрос, которого никто не задавал.
+
+    Там, где замок есть, поле обязано быть правдой. Разметка «бесплатно»
+    на странице с замком — это ровно то, за что Google выдаёт ручные
+    санкции по всему сайту, а не по одной странице.
+  */
+  free?: boolean;
 }) {
   return {
     "@context": "https://schema.org",
@@ -87,6 +97,7 @@ export function articleSchema(params: {
     description: params.description,
     url: `${siteUrl()}/${params.locale}${params.path}`,
     inLanguage: params.locale,
+    ...(params.free === undefined ? {} : { isAccessibleForFree: params.free }),
     isPartOf: {
       "@type": "WebSite",
       name: "PrompTom",

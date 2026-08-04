@@ -1,7 +1,14 @@
 import { describe, it, expect, vi } from "vitest";
 import { existsSync, readdirSync, rmSync, writeFileSync } from "node:fs";
 import { join } from "node:path";
-import { SKILLS, allSkills, isSkill, skill } from "./skills";
+import {
+  SKILLS,
+  allSkills,
+  isSkill,
+  isSkillLocked,
+  skill,
+  veilSkill,
+} from "./skills";
 
 /*
   Скилы читаются с диска: .md в content/skills — и скил на сайте.
@@ -245,6 +252,97 @@ describe("скилы", () => {
       expect(item!.title).toBe("Nested front matter");
       // Теги лежат под metadata, а не наверху, — наверх они не всплывают.
       expect(item!.tags).toEqual([]);
+    } finally {
+      rmSync(path, { force: true });
+      vi.resetModules();
+    }
+  });
+
+  it("платных и бесплатных поровну", () => {
+    const all = allSkills("ru");
+    const pro = all.filter((item) => item.tier === "pro");
+
+    expect(pro.length * 2, `платных ${pro.length} из ${all.length}`).toBe(
+      all.length,
+    );
+  });
+
+  /*
+    Под замком должен оказаться файл — и только он. Название, описание и
+    разбор остаются, потому что по ним на страницу приходят из поиска:
+    спрячь мы их, страница исчезла бы из выдачи вместе с файлом.
+  */
+  it("замок прячет файл, но не описание", () => {
+    for (const item of allSkills("ru")) {
+      const veiled = veilSkill(item);
+
+      expect(veiled.title).toBe(item.title);
+      expect(veiled.summary).toBe(item.summary);
+      expect(veiled.what).toEqual(item.what);
+      expect(veiled.why).toBe(item.why);
+      expect(veiled.folder).toBe(item.folder);
+
+      for (const [i, file] of veiled.files.entries()) {
+        const full = item.files[i].text;
+        expect(file.path, item.id).toBe(item.files[i].path);
+        expect(file.text.length, `${item.id}/${file.path}`).toBeLessThan(
+          full.length,
+        );
+        // Показанное — настоящий кусок файла, а не выдуманный образец.
+        expect(file.text.length, `${item.id}/${file.path}`).toBeGreaterThan(40);
+        expect(full.includes(file.text), `${item.id}/${file.path}`).toBe(true);
+        // И это уже инструкции, а не шапка: шапку человек и так видит
+        // на странице заголовком и описанием.
+        expect(file.text.startsWith("---"), `${item.id}/${file.path}`).toBe(
+          false,
+        );
+      }
+
+      expect(veiled.file).toBe(veiled.files[0].text);
+    }
+  });
+
+  /*
+    Обрыв по границе строки: файл — это разметка, и обрубок посреди
+    строки читается как испорченный файл, а не как «дальше по подписке».
+  */
+  it("обрезанный файл не обрывается посреди строки", () => {
+    for (const item of allSkills("ru")) {
+      for (const file of veilSkill(item).files) {
+        const full = item.files.find((f) => f.path === file.path)!.text;
+        const rest = full.slice(full.indexOf(file.text) + file.text.length);
+        expect(rest.startsWith("\n"), `${item.id}/${file.path}`).toBe(true);
+      }
+    }
+  });
+
+  it("замок только у платных и только для неоплативших", () => {
+    const pro = allSkills("ru").find((item) => item.tier === "pro")!;
+    const free = allSkills("ru").find((item) => item.tier === "free")!;
+
+    expect(isSkillLocked(pro, "free")).toBe(true);
+    expect(isSkillLocked(pro, "pro")).toBe(false);
+    expect(isSkillLocked(free, "free")).toBe(false);
+    expect(isSkillLocked(free, "pro")).toBe(false);
+  });
+
+  /*
+    Новый файл, положенный в папку, обязан быть бесплатным, пока его
+    намеренно не внесли в платные. Ошибка в эту сторону отдаёт лишнее;
+    ошибка в обратную берёт деньги за то, чего никто не обещал продавать.
+  */
+  it("скил без строчки в платных считается бесплатным", async () => {
+    const path = join(DIR, "vitest-tier.md");
+    writeFileSync(
+      path,
+      "---\nname: vitest-tier\ndescription: A skill nobody marked as paid, so it must be free.\n---\n\n# Tier default\n\nBody.\n",
+      "utf8",
+    );
+
+    try {
+      vi.resetModules();
+      const fresh = await import("./skills");
+      expect(fresh.skill("ru", "vitest-tier")!.tier).toBe("free");
     } finally {
       rmSync(path, { force: true });
       vi.resetModules();

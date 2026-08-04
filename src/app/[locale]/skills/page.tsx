@@ -58,9 +58,22 @@ export default async function SkillsPage({
                     {item.title}
                   </h2>
                   {/* Имя папки — оно же имя скила: по нему человек узнаёт
-                      свой скил в списке .claude/skills. */}
-                  <div className="mt-1 font-mono text-[11px] text-faint">
-                    {item.folder}
+                      свой скил в списке .claude/skills. Рядом тариф: под
+                      замком у скила только файл, но узнать об этом до
+                      перехода честнее, чем после. */}
+                  <div className="mt-1 flex flex-wrap items-center gap-2">
+                    <span className="font-mono text-[11px] text-faint">
+                      {item.folder}
+                    </span>
+                    <span
+                      className={`rounded-chip px-1.5 py-0.5 font-mono text-[9.5px] tracking-[0.08em] ${
+                        item.tier === "pro"
+                          ? "border border-accent/40 text-accent"
+                          : "border border-line-strong text-faint"
+                      }`}
+                    >
+                      {item.tier === "pro" ? "PRO" : "FREE"}
+                    </span>
                   </div>
                 </div>
               </div>
@@ -81,7 +94,9 @@ export default async function SkillsPage({
               </div>
 
               <span className="mt-5 inline-flex items-center gap-1.5 text-[12.5px] font-medium text-accent">
-                {t.skills.copy}
+                {/* У закрытого скила файл скопировать нельзя — обещать
+                    это на карточке значило бы соврать до перехода. */}
+                {item.tier === "pro" ? t.skills.details : t.skills.copy}
                 <ArrowRight
                   size={13}
                   className="transition-transform duration-200 group-hover:translate-x-1"
