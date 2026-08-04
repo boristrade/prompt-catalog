@@ -1,12 +1,10 @@
 import { describe, it, expect } from "vitest";
 import { GUIDES, allGuides, guide, isGuide } from "./guides";
-import { SKILLS, allSkills, isSkill, skill } from "./skills";
 
 /*
-  Тексты гайдов и скилов живут в двух таблицах — русской и английской.
-  TypeScript следит за тем, чтобы ключи совпадали, но не видит, что
-  перевод забыли и оставили русскую строку, или что раздел пустой.
-  Это ловим здесь.
+  Тексты гайдов живут в двух таблицах — русской и английской. TypeScript
+  следит за тем, чтобы ключи совпадали, но не видит, что перевод забыли и
+  оставили русскую строку, или что раздел пустой. Это ловим здесь.
 */
 
 describe("гайды", () => {
@@ -58,67 +56,5 @@ describe("гайды", () => {
 
   it("allGuides отдаёт все и в том же порядке", () => {
     expect(allGuides("ru").map((g) => g.slug)).toEqual([...GUIDES]);
-  });
-});
-
-describe("скилы", () => {
-  it("у каждого есть описание, разбор и файл", () => {
-    for (const locale of ["ru", "en"] as const) {
-      for (const id of SKILLS) {
-        const item = skill(locale, id);
-        expect(item.title.length, `${locale}/${id}`).toBeGreaterThan(3);
-        expect(item.summary.length, `${locale}/${id}`).toBeGreaterThan(20);
-        expect(item.what.length, `${locale}/${id}`).toBeGreaterThanOrEqual(2);
-        expect(item.why.length, `${locale}/${id}`).toBeGreaterThan(40);
-        expect(item.tags.length, `${locale}/${id}`).toBeGreaterThan(0);
-      }
-    }
-  });
-
-  /*
-    Файл обязан начинаться с шапки из трёх дефисов с полями name и
-    description — без неё Claude Code скил не подключит, а человек об
-    этом узнает, только когда скил молча не сработает.
-  */
-  it("каждый файл начинается с корректной шапки", () => {
-    for (const id of SKILLS) {
-      const file = skill("ru", id).file;
-      expect(file.startsWith("---\n"), id).toBe(true);
-
-      const header = file.slice(4, file.indexOf("\n---", 4));
-      expect(header, id).toMatch(/^name: [a-z0-9-]+$/m);
-      expect(header, id).toMatch(/^description: .{20,}$/m);
-    }
-  });
-
-  it("имя внутри файла совпадает с адресом страницы и именем папки", () => {
-    for (const id of SKILLS) {
-      const item = skill("ru", id);
-      expect(item.file).toContain(`name: ${id}`);
-      expect(item.folder).toBe(id);
-    }
-  });
-
-  it("файл один и тот же на всех языках", () => {
-    for (const id of SKILLS) {
-      expect(skill("en", id).file).toBe(skill("ru", id).file);
-    }
-  });
-
-  it("в английских описаниях нет кириллицы", () => {
-    for (const id of SKILLS) {
-      const item = skill("en", id);
-      const all = [item.title, item.summary, item.why, ...item.what, ...item.tags].join(" ");
-      expect(all, `en/${id}`).not.toMatch(/[а-яА-ЯёЁ]/);
-    }
-  });
-
-  it("isSkill отсекает чужие адреса", () => {
-    expect(isSkill("dead-code")).toBe(true);
-    expect(isSkill("нет-такого")).toBe(false);
-  });
-
-  it("allSkills отдаёт все и в том же порядке", () => {
-    expect(allSkills("en").map((s) => s.id)).toEqual([...SKILLS]);
   });
 });

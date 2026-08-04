@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { ArrowLeft, Info } from "lucide-react";
-import { SKILLS, isSkill, skill } from "@/lib/skills";
+import { SKILLS, skill } from "@/lib/skills";
 import { LOCALES } from "@/lib/i18n/config";
 import { pageLocale } from "@/lib/i18n";
 import { pageMeta } from "@/lib/seo";
@@ -20,9 +20,10 @@ export async function generateMetadata({
 }) {
   const { id } = await params;
   const { locale } = await pageLocale(params);
-  if (!isSkill(id)) return {};
 
   const item = skill(locale, id);
+  if (!item) return {};
+
   return pageMeta({
     locale,
     path: `/skills/${id}`,
@@ -38,9 +39,9 @@ export default async function SkillPage({
 }) {
   const { id } = await params;
   const { locale, t } = await pageLocale(params);
-  if (!isSkill(id)) notFound();
 
   const item = skill(locale, id);
+  if (!item) notFound();
 
   return (
     <article className="pt-10 pb-20 md:pt-14">
@@ -88,32 +89,42 @@ export default async function SkillPage({
         {item.summary}
       </p>
 
-      <div className="mt-12 max-w-3xl">
-        <h2 className="text-[17px] font-semibold tracking-[-0.015em] text-ink">
-          {t.skills.whatTitle}
-        </h2>
-        <ul className="mt-3.5 space-y-2.5">
-          {item.what.map((line) => (
-            <li
-              key={line}
-              className="relative pl-5 text-[14px] leading-relaxed text-muted before:absolute before:left-0 before:top-[0.65em] before:h-1 before:w-1 before:rounded-full before:bg-violet"
-            >
-              {line}
-            </li>
-          ))}
-        </ul>
-      </div>
-
-      <Reveal delay={40}>
-        <div className="mt-10 max-w-3xl rounded-card border border-line bg-sunken p-6">
-          <h2 className="text-[15px] font-semibold tracking-[-0.015em] text-ink">
-            {t.skills.whyTitle}
+      {/*
+        Разбор «что делает» и «зачем нужен» есть не у каждого скила: он
+        пишется руками и по-русски, а сам файл — по-английски и для
+        модели. Скил без разбора показывает то, что есть: описание из
+        шапки, куда положить и сам файл.
+      */}
+      {item.what.length > 0 && (
+        <div className="mt-12 max-w-3xl">
+          <h2 className="text-[17px] font-semibold tracking-[-0.015em] text-ink">
+            {t.skills.whatTitle}
           </h2>
-          <p className="mt-2.5 text-[14px] leading-relaxed text-muted">
-            {item.why}
-          </p>
+          <ul className="mt-3.5 space-y-2.5">
+            {item.what.map((line) => (
+              <li
+                key={line}
+                className="relative pl-5 text-[14px] leading-relaxed text-muted before:absolute before:left-0 before:top-[0.65em] before:h-1 before:w-1 before:rounded-full before:bg-violet"
+              >
+                {line}
+              </li>
+            ))}
+          </ul>
         </div>
-      </Reveal>
+      )}
+
+      {item.why && (
+        <Reveal delay={40}>
+          <div className="mt-10 max-w-3xl rounded-card border border-line bg-sunken p-6">
+            <h2 className="text-[15px] font-semibold tracking-[-0.015em] text-ink">
+              {t.skills.whyTitle}
+            </h2>
+            <p className="mt-2.5 text-[14px] leading-relaxed text-muted">
+              {item.why}
+            </p>
+          </div>
+        </Reveal>
+      )}
 
       {/* Сначала куда положить, потом сам файл: скопировав текст, человек
           уже должен знать, что с ним делать. */}
