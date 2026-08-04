@@ -87,6 +87,25 @@ function titleFrom(file: string, id: string): string {
   return words.charAt(0).toUpperCase() + words.slice(1);
 }
 
+/*
+  Описание в шапке написано для модели, а не для карточки, и длины ему
+  никто не задавал: у иного скила это абзац на тысячу символов, который
+  на карточке вытеснит всё остальное. Режем по концу предложения, а если
+  и первое предложение длинное — по слову, с многоточием, чтобы обрыв был
+  виден и не выглядел потерянным текстом.
+*/
+const SUMMARY_LIMIT = 200;
+
+function shorten(text: string): string {
+  if (text.length <= SUMMARY_LIMIT) return text;
+
+  const sentence = text.slice(0, SUMMARY_LIMIT).lastIndexOf(". ");
+  if (sentence > 60) return text.slice(0, sentence + 1);
+
+  const word = text.slice(0, SUMMARY_LIMIT).lastIndexOf(" ");
+  return `${text.slice(0, word > 60 ? word : SUMMARY_LIMIT).trimEnd()}…`;
+}
+
 interface Found {
   id: string;
   file: string;
@@ -110,7 +129,7 @@ function readSkills(): Found[] {
       file,
       fallback: {
         title: head.title || titleFrom(file, id),
-        summary: head.description || "",
+        summary: shorten(head.description || ""),
         what: [],
         why: "",
         tags: head.tags
@@ -146,6 +165,20 @@ function readSkills(): Found[] {
   по-английски объяснено модели, а не читателю.
 */
 const RU: Record<string, SkillText> = {
+  "carousel-conveyor": {
+    title: "Карусели для Reels и TikTok",
+    summary:
+      "Собирает карусели вокруг одного персонажа: лицо генерируется один раз, подписи накладываются кодом и бесплатно.",
+    what: [
+      "Срабатывает, когда вы просите собрать карусели для персонажа, завести нового или запланировать посты.",
+      "Сначала заводит персонажа: одно опорное селфи и около шести сцен на его основе. Это единственное место, где тратятся деньги, — примерно 0,6 доллара на персонажа.",
+      "Дальше карусели собираются из этих же фотографий, а текст накладывается поверх кодом. Переписать подпись, сменить @-подпись или пересобрать раскладку ничего не стоит.",
+      "Каждая сцена делается из оригинального селфи, а не из предыдущей сцены: правка правки уводит лицо в сторону, и через несколько шагов персонаж перестаёт быть узнаваемым.",
+      "Перед публикацией показывает готовые слайды и ждёт одобрения — проверяется, что лицо на всех слайдах одно и то же. Каждый пост помечается как сделанный с помощью ИИ.",
+    ],
+    why: "В таком конвейере дорого стоит только генерация лиц, и заманчиво платить за неё каждый раз заново. Скил устроен наоборот: лицо покупается один раз на персонажа, а подписи, раскладка и расписание делаются кодом бесплатно. Второе, ради чего он нужен, — запрет публиковать непроверенное: уехавшее между слайдами лицо видно только глазами, поэтому слайды сначала показываются вам.",
+    tags: ["контент", "соцсети"],
+  },
   "commit-message": {
     title: "Сообщение коммита",
     summary:
@@ -201,6 +234,20 @@ const RU: Record<string, SkillText> = {
 };
 
 const EN: Record<string, SkillText> = {
+  "carousel-conveyor": {
+    title: "Carousels for Reels and TikTok",
+    summary:
+      "Builds carousels around one recurring character: the face is generated once, captions are composited in code for free.",
+    what: [
+      "Triggers when you ask to build carousels for a character, stand up a new one, or schedule posts.",
+      "Sets the character up first: one anchor selfie and about six scenes made from it. That is the only place money is spent — roughly $0.60 per character.",
+      "Every carousel then reuses those photos, with the text composited on top in code. Rewriting a caption, changing the @handle or redoing the layout costs nothing.",
+      "Each scene is edited from the original selfie, never from another scene: editing an edit drifts the face, and after a few hops the character stops being recognisable.",
+      "Before anything is published it shows the finished slides and waits for approval — the check is that the face is the same on every slide. Every post is flagged as AI-generated.",
+    ],
+    why: "In this kind of pipeline only face generation costs real money, and it is tempting to pay for it again every time. The skill does the opposite: the face is bought once per character, while captions, layout and scheduling are done in code for free. The other reason it exists is the ban on publishing unreviewed work: a face that drifted between slides is visible only to the eye, so the slides go to you first.",
+    tags: ["content", "social"],
+  },
   "commit-message": {
     title: "Commit message",
     summary:

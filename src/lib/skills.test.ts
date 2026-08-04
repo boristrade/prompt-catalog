@@ -1,5 +1,5 @@
-import { describe, it, expect } from "vitest";
-import { existsSync, readdirSync } from "node:fs";
+import { describe, it, expect, vi } from "vitest";
+import { existsSync, readdirSync, rmSync, writeFileSync } from "node:fs";
 import { join } from "node:path";
 import { SKILLS, allSkills, isSkill, skill } from "./skills";
 
@@ -92,7 +92,9 @@ describe("скилы", () => {
   */
   it("скил без разбора берёт название и описание из самого файла", () => {
     const withText = allSkills("ru").filter((item) => item.what.length > 0);
-    const withoutText = allSkills("ru").filter((item) => item.what.length === 0);
+    const withoutText = allSkills("ru").filter(
+      (item) => item.what.length === 0,
+    );
 
     // Сейчас разбор написан для всех — значит, проверять нечего, но и
     // молча пропускать нельзя: пусть тест скажет об этом прямо.
@@ -103,6 +105,56 @@ describe("скилы", () => {
       expect(item.summary.length, item.id).toBeGreaterThan(20);
       expect(item.what, item.id).toEqual([]);
       expect(item.why, item.id).toBe("");
+    }
+  });
+
+  /*
+    Главное обещание раздела: положил .md — скил на сайте, без правки
+    кода. Проверяем это на настоящем файле, а не на разговорах: кладём
+    его в каталог, заново читаем модуль и смотрим, что получилось.
+
+    Заодно проверяется длина описания. В шапке оно написано для модели, и
+    у иного скила это абзац на тысячу символов — на карточке он вытеснил
+    бы всё остальное.
+  */
+  it("положенный .md публикуется сам, с названием и описанием из файла", async () => {
+    const long = `Turns things into other things. ${"Explains the reasoning at length. ".repeat(20)}`;
+    const path = join(DIR, "vitest-drop-in.md");
+
+    writeFileSync(
+      path,
+      `---\nname: vitest-drop-in\ndescription: ${long}\ntags: one, two\n---\n\n# A dropped-in skill\n\nBody.\n`,
+      "utf8",
+    );
+
+    try {
+      vi.resetModules();
+      const fresh = await import("./skills");
+      const item = fresh.skill("ru", "vitest-drop-in");
+
+      expect(
+        item,
+        "скил не появился после того, как файл положили",
+      ).toBeDefined();
+      expect(item!.title).toBe("A dropped-in skill");
+      expect(item!.folder).toBe("vitest-drop-in");
+      expect(item!.tags).toEqual(["one", "two"]);
+
+      // Обрезано по концу предложения: сколько целых фраз влезло, столько
+      // и осталось — без хвоста, оборванного посреди слова.
+      expect(item!.summary.length).toBeLessThanOrEqual(200);
+      expect(item!.summary.startsWith("Turns things into other things.")).toBe(
+        true,
+      );
+      expect(item!.summary.endsWith(".")).toBe(true);
+      expect(long.startsWith(item!.summary)).toBe(true);
+
+      // Разбора нет — страница покажет то, что есть, и не упадёт.
+      expect(item!.what).toEqual([]);
+      expect(item!.why).toBe("");
+    } finally {
+      rmSync(path, { force: true });
+      vi.resetModules();
     }
   });
 
