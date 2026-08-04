@@ -120,6 +120,8 @@ const ru = {
       "Как писать промты, почему нейросеть отвечает не то и с чего начать в Claude Code. Читается за пять минут, применяется сразу.",
     minutes: "мин чтения",
     readMore: "Читать",
+    openPdf: "Открыть PDF",
+    pages: "стр.",
     back: "Все гайды",
   },
   skills: {
@@ -488,6 +490,8 @@ const en: Dictionary = {
       "How to write prompts, why the AI answers the wrong thing, and where to start with Claude Code. Five minutes to read, useful immediately.",
     minutes: "min read",
     readMore: "Read",
+    openPdf: "Open the PDF",
+    pages: "pages",
     back: "All guides",
   },
   skills: {
@@ -857,6 +861,8 @@ const fr: Dictionary = {
       "Comment écrire des prompts, pourquoi l'IA répond à côté, et par où commencer avec Claude Code. Cinq minutes de lecture, utile tout de suite.",
     minutes: "min de lecture",
     readMore: "Lire",
+    openPdf: "Ouvrir le PDF",
+    pages: "pages",
     back: "Tous les guides",
   },
   skills: {
@@ -1225,6 +1231,8 @@ const uk: Dictionary = {
       "Як писати промти, чому нейромережа відповідає не те і з чого почати в Claude Code. Читається за п'ять хвилин, застосовується одразу.",
     minutes: "хв читання",
     readMore: "Читати",
+    openPdf: "Відкрити PDF",
+    pages: "стор.",
     back: "Усі гайди",
   },
   skills: {
@@ -1597,6 +1605,8 @@ const de: Dictionary = {
       "Wie man Prompts schreibt, warum die KI am Thema vorbei antwortet und wie man mit Claude Code anfängt. Fünf Minuten Lesezeit, sofort anwendbar.",
     minutes: "Min. Lesezeit",
     readMore: "Lesen",
+    openPdf: "PDF öffnen",
+    pages: "Seiten",
     back: "Alle Guides",
   },
   skills: {
@@ -1965,6 +1975,8 @@ const pl: Dictionary = {
       "Jak pisać prompty, dlaczego AI odpowiada nie na temat i od czego zacząć z Claude Code. Pięć minut czytania, od razu do użycia.",
     minutes: "min czytania",
     readMore: "Czytaj",
+    openPdf: "Otwórz PDF",
+    pages: "str.",
     back: "Wszystkie poradniki",
   },
   skills: {

@@ -3,6 +3,7 @@ import { CATEGORIES } from "@/lib/categories";
 import { PROMPTS } from "@/lib/prompts";
 import { LEGAL_DOCS } from "@/lib/legal";
 import { GUIDES } from "@/lib/guides";
+import { PDF_GUIDE_PATHS } from "@/lib/pdf-guides";
 import { SKILLS } from "@/lib/skills";
 import { LOCALES, DEFAULT_LOCALE } from "@/lib/i18n/config";
 import { siteUrl } from "@/lib/site";
@@ -75,18 +76,34 @@ export default function sitemap(): MetadataRoute.Sitemap {
   const base = siteUrl();
   const lastModified = new Date();
 
-  return PATHS.flatMap(({ path, priority, changeFrequency }) => {
-    const languages = Object.fromEntries(
-      LOCALES.map((locale) => [locale, `${base}/${locale}${path}`]),
-    );
+  /*
+    Гайды-файлы стоят отдельной строкой, а не в PATHS: у них нет языковых
+    версий — файл один и лежит по одному адресу. Прогнав их через общий
+    цикл, мы объявили бы шесть переводов одного PDF, которых не
+    существует.
+  */
+  const files = PDF_GUIDE_PATHS.map((path) => ({
+    url: `${base}${path}`,
+    lastModified,
+    changeFrequency: "monthly" as Change,
+    priority: 0.7,
+  }));
 
-    return LOCALES.map((locale) => ({
-      url: `${base}/${locale}${path}`,
-      lastModified,
-      changeFrequency,
-      // Английская версия чуть важнее прочих: на неё же ведёт x-default.
-      priority: locale === DEFAULT_LOCALE ? priority : priority * 0.9,
-      alternates: { languages },
-    }));
-  });
+  return [
+    ...files,
+    ...PATHS.flatMap(({ path, priority, changeFrequency }) => {
+      const languages = Object.fromEntries(
+        LOCALES.map((locale) => [locale, `${base}/${locale}${path}`]),
+      );
+
+      return LOCALES.map((locale) => ({
+        url: `${base}/${locale}${path}`,
+        lastModified,
+        changeFrequency,
+        // Английская версия чуть важнее прочих: на неё же ведёт x-default.
+        priority: locale === DEFAULT_LOCALE ? priority : priority * 0.9,
+        alternates: { languages },
+      }));
+    }),
+  ];
 }

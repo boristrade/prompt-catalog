@@ -140,7 +140,12 @@ export const config = {
       подтверждение не прошло бы, причём без внятной причины. Своих
       страниц с расширением .html у нас нет, так что список ничего не
       перехватывает.
+
+      .pdf — гайды-файлы из public/guides. Файл лежит по одному адресу на
+      все языки, а языкового префикса у него нет: без этой строчки
+      /guides/имя.pdf увело бы на /ru/guides/имя.pdf, то есть на 404, и
+      гайд не открылся бы ни у кого.
     */
-    "/((?!api|auth|r/|robots\\.txt|sitemap\\.xml|_next/static|_next/image|favicon.ico|.*\\.(?:svg|png|jpg|jpeg|gif|webp|html)$).*)",
+    "/((?!api|auth|r/|robots\\.txt|sitemap\\.xml|_next/static|_next/image|favicon.ico|.*\\.(?:svg|png|jpg|jpeg|gif|webp|avif|pdf|html)$).*)",
   ],
 };
