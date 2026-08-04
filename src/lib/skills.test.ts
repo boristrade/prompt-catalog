@@ -167,7 +167,9 @@ describe("скилы", () => {
 
     writeFileSync(
       path,
-      `---\nname: vitest-drop-in\ndescription: ${long}\ntags: one, two\n---\n\n# A dropped-in skill\n\nBody.\n`,
+      // Описание в кавычках — так пишут, когда внутри есть двоеточие.
+      // Кавычки нужны формату, а не карточке.
+      `---\nname: vitest-drop-in\ndescription: "${long}"\ntags: one, two\n---\n\n# A dropped-in skill\n\nBody.\n`,
       "utf8",
     );
 
