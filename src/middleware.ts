@@ -34,8 +34,30 @@ function localeFromPath(pathname: string): string | null {
 }
 
 export async function middleware(request: NextRequest) {
-  const { pathname, search } = request.nextUrl;
+  const { pathname, search, searchParams } = request.nextUrl;
   const current = localeFromPath(pathname);
+
+  /*
+    Возврат после входа, пришедший не на свой адрес.
+
+    Мы просим Supabase вернуть человека на /auth/callback, но если этот
+    адрес не внесён в список разрешённых, Supabase молча меняет его на
+    Site URL — то есть на корень сайта. Код входа приезжает на «/», где
+    его никто не ждёт: обмена на сессию не происходит, человек видит
+    обычную главную и не понимает, почему не вошёл. Ошибки при этом нет
+    нигде — ни в браузере, ни в логах.
+
+    Ловим такой возврат и уводим на настоящую точку обмена. Это не
+    замена настройке: если в Site URL стоит чужой домен, сюда запрос
+    вовсе не доедет. Это страховка от половины ошибки — когда домен
+    поправили, а список разрешённых адресов забыли.
+  */
+  const stray = searchParams.has("code") || searchParams.has("token_hash");
+  if (stray && !pathname.startsWith("/auth/")) {
+    const url = request.nextUrl.clone();
+    url.pathname = "/auth/callback";
+    return NextResponse.redirect(url);
+  }
 
   // Языка в адресе нет — уводим на подходящий и запоминаем выбор.
   if (!current) {
