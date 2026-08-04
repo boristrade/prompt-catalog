@@ -147,7 +147,16 @@ export default async function SkillPage({
                   перенос и нужен.
                 */}
                 <span className="min-w-0 break-words text-[14px] leading-relaxed text-muted">
-                  {step.replace("{folder}", item.folder)}
+                  {/*
+                    Второй шаг у скила из нескольких файлов другой: класть
+                    надо не один SKILL.md, а всю папку с вложенностью.
+                    Инструкция «положите файл SKILL.md» увела бы человека
+                    в скил, который сошлётся на соседний файл и не найдёт
+                    его.
+                  */}
+                  {i === 1 && item.files.length > 1
+                    ? t.skills.installStepFiles
+                    : step.replace("{folder}", item.folder)}
                 </span>
               </li>
             ))}
@@ -167,15 +176,29 @@ export default async function SkillPage({
       <Reveal delay={80}>
         <div className="mt-12 max-w-3xl">
           <h2 className="text-[17px] font-semibold tracking-[-0.015em] text-ink">
-            {t.skills.fileTitle}
+            {item.files.length > 1 ? t.skills.filesTitle : t.skills.fileTitle}
           </h2>
-          <div className="mt-5">
-            <CopyFile
-              content={item.file}
-              copyLabel={t.skills.copy}
-              copiedLabel={t.skills.copied}
-            />
-          </div>
+
+          {/*
+            У скила из нескольких файлов над каждым подписан его путь
+            внутри папки: путь — это и есть инструкция, куда файл класть,
+            и без него «references/scenarios.md» превратилось бы в ещё
+            один безымянный кусок текста.
+          */}
+          {item.files.map((file, i) => (
+            <div key={file.path} className={i === 0 ? "mt-5" : "mt-8"}>
+              {item.files.length > 1 && (
+                <div className="mb-2.5 min-w-0 break-all font-mono text-[12px] text-faint">
+                  {item.folder}/{file.path}
+                </div>
+              )}
+              <CopyFile
+                content={file.text}
+                copyLabel={t.skills.copy}
+                copiedLabel={t.skills.copied}
+              />
+            </div>
+          ))}
         </div>
       </Reveal>
     </article>
