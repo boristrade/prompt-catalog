@@ -16,7 +16,6 @@ import type { Locale } from "@/lib/i18n/config";
 */
 
 export const GUIDES = [
-  "telegram-mini-app",
   "how-to-write-prompts",
   "why-ai-answers-wrong",
   "claude-code-start",
@@ -45,90 +44,6 @@ export interface Guide {
 }
 
 const RU: Record<GuideSlug, Guide> = {
-  "telegram-mini-app": {
-    title: "Своё приложение за вечер: Mini App",
-    summary:
-      "Без кода. Без идеи. Берёшь готовый чертёж успешной апки — и собираешь свою версию.",
-    intro:
-      "Инструкция без воды: берёшь готовый чертёж работающего Telegram-приложения, собираешь по нему свою версию и выкладываешь в каталог. Код писать не нужно, идею придумывать тоже. Время — один вечер, бюджет — ноль, навыки — копировать, вставлять и нажимать Accept.",
-    minutes: 8,
-    sections: [
-      {
-        title: "Как это работает",
-        body: [
-          "Раньше путь был такой: придумать идею, изучить рынок, написать техзадание, объяснить модели что нужно и надеяться на результат. Каждый шаг — место, где всё ломается.",
-          "Сейчас порядок другой. На appss.pro есть рейтинг Telegram-приложений, которые уже работают и уже собрали аудиторию. У каждого есть кнопка Remix. Нажимаешь — получаешь не промпт на три строки, а полную декомпозицию приложения: скриншоты каждого экрана, логику каждой кнопки, схему навигации, монетизацию, функции, целевую аудиторию и 50-страничную методологию Telegram-разработки.",
-          "Всё это лежит в одном архиве. Скачал, распаковал, отдал в cursor — он читает и собирает.",
-          "Когда я первый раз открыл такой архив, я понял, в чём подвох: подвоха нет. Это полная разборка приложения, у которого сотни тысяч пользователей — каждый экран, каждая механика, каждый поток. Продакт-менеджер собирает такой документ неделю. Здесь — одна кнопка и десять секунд.",
-        ],
-      },
-      {
-        title: "Часть 1. Выбираем чертёж",
-        body: [
-          "Понадобятся три инструмента, все с бесплатным тарифом: appss.pro — выбираешь чертёж и потом листишь готовое приложение; cursor — собирает приложение из чертежа; telegram — там приложение живёт и работает.",
-          "01. Заходим на appss.pro. Регистрация не нужна, чтобы просто посмотреть рейтинг.",
-          "02. Открываем рейтинг. Пять колонок: по выручке, по активной аудитории, растущие, трендовые, новые. Смотри на цифры: пользователи, рост, категория. Проверенная механика лучше сырой гипотезы.",
-          "03. Выбираем приложение и жмём Remix. Ты не копируешь чужое — берёшь скелет и делаешь свою версию: другая тема, другая аудитория, другой контент.",
-          "04. Изучаем схему: как пользователь ходит по боту и мини-приложению, что происходит по каждой кнопке, сценарии использования и скриншоты всех экранов.",
-          "05. Скачиваем архив кнопкой Download.",
-        ],
-      },
-      {
-        title: "Что внутри архива",
-        body: [
-          "Это не файл с промптом, а готовый набор материалов для сборки. Четыре части.",
-          "PROMPT.md — мозг. 150+ строк: что делает приложение, как работает, функции, монетизация, аудитория, архитектура. Вставляется в cursor без правок.",
-          "screens/ — глаза. Скриншоты каждого экрана: главная, функционал, профиль, магазин, настройки. Cursor строит интерфейс по ним, поэтому приложение выглядит как продукт, а не как прототип.",
-          "schema.json — скелет. Граф всех экранов: что куда ведёт, какие кнопки, какие связи. Модель читает его программно — ни одна кнопка не теряется.",
-          "METHODOLOGY.pdf — учебник. 50+ страниц практик Telegram-разработки: боты, платежи, удержание, уведомления. Одинаковый в каждом архиве — прочитай один раз и поймёшь архитектуру любого приложения.",
-        ],
-      },
-      {
-        title: "Часть 2. Собираем приложение",
-        body: [
-          "06. Устанавливаем cursor. Заходим на cursor.com, жмём большую кнопку Download, ставим как обычную программу. Если сомневаешься: cursor — официальный редактор кода с миллионами пользователей. Это не вирус.",
-          "07. Загружаем архив и запускаем. File → Open Folder → создаём пустую папку. Распаковываем архив прямо в неё. Открываем чат: Cmd+L на mac или Ctrl+L на windows.",
-          "Копируй и вставляй: «Прочитай PROMPT.md и METHODOLOGY.pdf в этой папке. Используй скриншоты из screens/ как визуальный референс. Собери рабочее приложение как Telegram Mini App».",
-          "08. Ждём сборку. Cursor читает файлы, смотрит скриншоты, понимает логику и начинает строить. На вопрос «Создать файл?» — Accept, на «Запустить?» — Run. Ждать 5–15 минут. Когда закончит — приложение собрано.",
-        ],
-      },
-      {
-        title: "Часть 3. Переносим в Telegram",
-        body: [
-          "09. Запускаем локально. Копируй и вставляй: «Запусти приложение локально и дай мне ссылку, по которой я могу открыть его в браузере». Получишь адрес вида http://localhost:3000. Открой и проверь, что всё работает.",
-          "10. Выкладываем в интернет. Telegram открывает только публичные адреса. Простой бесплатный способ — Vercel. Копируй и вставляй: «Помоги мне выложить это приложение на Vercel, чтобы оно было доступно по публичной ссылке. Объясни каждый шаг как для новичка». Через 2–3 минуты получишь адрес вида https://твоё-приложение.vercel.app",
-          "11. Создаём бота. В Telegram находим @BotFather — с синей галочкой. Команда /newbot → имя → юзернейм, оканчивающийся на bot. Получаешь токен — сохрани его.",
-          "Привязываем приложение: /newapp → выбираем бота → название, описание, иконка 512×512 → в поле Web App URL вставляем ссылку с Vercel.",
-        ],
-      },
-      {
-        title: "Часть 4. Запуск и публикация",
-        body: [
-          "12. Тестируем. Находим бота в Telegram → Start → открываем мини-приложение. Работает. Если не работает: копируешь текст ошибки в cursor и пишешь «исправь». В большинстве случаев этого достаточно.",
-          "13. Публикуем в каталоге. Круг замкнулся: Add App → карточка → название, описание, иконка, скриншоты. Карточку можно сгенерировать на appss.pro.",
-          "Бесплатный трафик: в каталоге тысячи людей ищут новые приложения. Реклама не нужна.",
-          "Статистика: переходы, открытия, реакции, удержание, источники. Видно не только сколько зашло, но и как ведут себя внутри.",
-          "Полный цикл: рейтинг → Remix → cursor → Telegram → каталог → пользователи → статистика → улучшения.",
-        ],
-      },
-      {
-        title: "Бонус: нейросеть и оплата",
-        body: [
-          "Два блока, которые превращают приложение в продукт: умные функции и приём денег. Оба подключаются за тот же вечер.",
-          "Нейросеть. Нужен API-ключ — пароль для доступа к модели. Регистрируешься, создаёшь ключ, отдаёшь cursor'у. Дальше он подключает сам.",
-          "Anthropic · Claude (platform.claude.com) — сильная модель для сложных задач и длинных текстов. Google · Gemini (aistudio.google.com) — щедрый бесплатный тариф, хорошо для первого запуска. OpenAI · GPT (platform.openai.com) — самая известная, много готовых примеров.",
-          "Оплата. @tribute — платёжный бот в Telegram. Создаёшь подписку или разовый платёж → получаешь ссылку → встраиваешь в приложение. Пользователи платят внутри Telegram, деньги приходят тебе.",
-        ],
-      },
-      {
-        title: "Что дальше",
-        body: [
-          "Это было одно приложение. Механика повторяемая: рейтинг → Remix → cursor → Telegram → каталог. Второй раз проходится быстрее, потому что все инструменты уже стоят.",
-          "Я делаю по паре приложений в неделю и докручиваю каждое до состояния, когда им реально пользуются. Смысл не в количестве, а в том, чтобы находить работающие механики и адаптировать их под свою аудиторию.",
-        ],
-      },
-    ],
-  },
   "how-to-write-prompts": {
     title: "Как писать промты, чтобы получалось",
     summary:
@@ -339,90 +254,6 @@ const RU: Record<GuideSlug, Guide> = {
 };
 
 const EN: Record<GuideSlug, Guide> = {
-  "telegram-mini-app": {
-    title: "Your own app in one evening: a Mini App",
-    summary:
-      "No code. No idea needed. You take the blueprint of an app that already works and build your own version.",
-    intro:
-      "No filler: take the blueprint of a working Telegram app, build your own version from it and publish it to the catalogue. You don't write code and you don't invent the idea. Time: one evening. Budget: nothing. Skills: copy, paste, and click Accept.",
-    minutes: 8,
-    sections: [
-      {
-        title: "How this works",
-        body: [
-          "The old route was: come up with an idea, research the market, write a spec, explain to the model what you want, and hope. Every one of those steps is a place where it falls apart.",
-          "The order is different now. appss.pro has a ranking of Telegram apps that already work and already have an audience. Each one has a Remix button. Press it and you don't get a three-line prompt — you get a full decomposition of the app: screenshots of every screen, the logic behind every button, the navigation map, monetisation, features, target audience, and a 50-page methodology of Telegram development.",
-          "All of it comes in one archive. Download it, unpack it, hand it to cursor — it reads and builds.",
-          "The first time I opened one of those archives I worked out where the catch was: there isn't one. It's a complete teardown of an app with hundreds of thousands of users — every screen, every mechanic, every flow. A product manager spends a week assembling a document like that. Here it's one button and ten seconds.",
-        ],
-      },
-      {
-        title: "Part 1. Picking a blueprint",
-        body: [
-          "You need three tools, all with a free tier: appss.pro — where you pick the blueprint and later publish the finished app; cursor — which builds the app from the blueprint; telegram — where the app lives and runs.",
-          "01. Go to appss.pro. You don't need to register just to look at the ranking.",
-          "02. Open the ranking. Five columns: by revenue, by active audience, growing, trending, new. Look at the numbers: users, growth, category. A proven mechanic beats a raw hypothesis.",
-          "03. Pick an app and hit Remix. You're not copying someone else's work — you take the skeleton and make your own version: different theme, different audience, different content.",
-          "04. Study the map: how a user moves through the bot and the mini app, what happens on each button, use cases and screenshots of every screen.",
-          "05. Download the archive with the Download button.",
-        ],
-      },
-      {
-        title: "What's inside the archive",
-        body: [
-          "This isn't a file with a prompt in it — it's a complete build kit. Four parts.",
-          "PROMPT.md — the brain. 150+ lines: what the app does, how it works, features, monetisation, audience, architecture. Goes into cursor with no edits.",
-          "screens/ — the eyes. Screenshots of every screen: home, features, profile, store, settings. Cursor builds the interface from them, which is why the app comes out looking like a product rather than a prototype.",
-          "schema.json — the skeleton. A graph of every screen: what leads where, which buttons, which connections. The model reads it programmatically, so not a single button gets lost.",
-          "METHODOLOGY.pdf — the textbook. 50+ pages of Telegram development practice: bots, payments, retention, notifications. It's the same in every archive — read it once and you'll understand the architecture of any app.",
-        ],
-      },
-      {
-        title: "Part 2. Building the app",
-        body: [
-          "06. Install cursor. Go to cursor.com, hit the big Download button, install it like any other program. If you're unsure: cursor is an official code editor with millions of users. It isn't a virus.",
-          "07. Load the archive and start. File → Open Folder → create an empty folder. Unpack the archive straight into it. Open the chat: Cmd+L on mac or Ctrl+L on windows.",
-          "Copy and paste: “Read PROMPT.md and METHODOLOGY.pdf in this folder. Use the screenshots in screens/ as a visual reference. Build a working app as a Telegram Mini App.”",
-          "08. Wait for the build. Cursor reads the files, looks at the screenshots, works out the logic and starts building. When it asks “Create file?” — Accept; “Run?” — Run. Expect 5–15 minutes. When it finishes, the app is built.",
-        ],
-      },
-      {
-        title: "Part 3. Moving it into Telegram",
-        body: [
-          "09. Run it locally. Copy and paste: “Run the app locally and give me a link I can open in a browser.” You'll get an address like http://localhost:3000. Open it and check everything works.",
-          "10. Put it online. Telegram only opens public addresses. The simple free route is Vercel. Copy and paste: “Help me deploy this app to Vercel so it's available at a public link. Explain every step as if to a beginner.” In two or three minutes you'll have an address like https://your-app.vercel.app",
-          "11. Create a bot. In Telegram find @BotFather — the one with the blue tick. Command /newbot → name → a username ending in bot. You get a token; save it.",
-          "Attach the app: /newapp → pick the bot → name, description, 512×512 icon → paste the Vercel link into the Web App URL field.",
-        ],
-      },
-      {
-        title: "Part 4. Launch and publish",
-        body: [
-          "12. Test it. Find the bot in Telegram → Start → open the mini app. It works. If it doesn't: copy the error text into cursor and write “fix it”. That's usually enough.",
-          "13. Publish to the catalogue. The circle closes: Add App → listing → name, description, icon, screenshots. The listing can be generated on appss.pro.",
-          "Free traffic: thousands of people browse the catalogue looking for new apps. You don't need ads.",
-          "Statistics: visits, opens, reactions, retention, sources. You see not just how many came in, but how they behave once inside.",
-          "The full loop: ranking → Remix → cursor → Telegram → catalogue → users → statistics → improvements.",
-        ],
-      },
-      {
-        title: "Bonus: AI and payments",
-        body: [
-          "Two blocks that turn an app into a product: smart features and taking money. Both connect in the same evening.",
-          "AI. You need an API key — a password for access to the model. You register, create a key, hand it to cursor. It connects everything itself from there.",
-          "Anthropic · Claude (platform.claude.com) — a strong model for hard tasks and long texts. Google · Gemini (aistudio.google.com) — a generous free tier, good for a first launch. OpenAI · GPT (platform.openai.com) — the best known, with plenty of ready examples.",
-          "Payments. @tribute is a payment bot inside Telegram. Create a subscription or a one-off payment → get a link → embed it in the app. People pay inside Telegram and the money comes to you.",
-        ],
-      },
-      {
-        title: "What next",
-        body: [
-          "That was one app. The mechanic repeats: ranking → Remix → cursor → Telegram → catalogue. The second run is faster because all the tools are already installed.",
-          "I ship a couple of apps a week and keep polishing each one until people actually use it. The point isn't the count — it's finding mechanics that work and adapting them to your own audience.",
-        ],
-      },
-    ],
-  },
   "how-to-write-prompts": {
     title: "How to write prompts that actually work",
     summary:

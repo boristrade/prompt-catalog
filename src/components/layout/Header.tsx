@@ -23,21 +23,42 @@ export default function Header({
   const [open, setOpen] = useState(false);
   const pathname = usePathname();
 
+  /*
+    wide — показывать ли пункт в строке наверху широкого экрана.
+
+    В строку помещается около пяти пунктов, а их девять: на русском и
+    украинском ряд перестаёт влезать уже на 1024px и выталкивает кнопки
+    входа за край экрана — вместе с горизонтальной прокруткой на всех
+    страницах сразу. Поэтому наверху остаётся то, ради чего на сайт
+    приходят, а остальное живёт в подвале и в меню под аватаром.
+
+    В меню телефона по-прежнему попадают все девять: там список
+    вертикальный и в длине не ограничен, а терять пункт из-за нехватки
+    места на чужом экране — это ровно та ошибка, из-за которой на
+    телефоне однажды пропала админка.
+  */
   const supportItems = [
-    { href: `/${locale}/guides`, label: t.guides.nav },
-    { href: `/${locale}/skills`, label: t.skills.nav },
-    { href: `/${locale}/pricing`, label: t.footer.pricing },
-    { href: `/${locale}/account`, label: t.footer.account },
-    { href: `/${locale}/account#favorites`, label: t.account.favorites },
-    { href: `/${locale}/partner`, label: t.partner.nav },
-    { href: `/${locale}/faq`, label: t.footer.faq },
+    { href: `/${locale}/guides`, label: t.guides.nav, wide: true },
+    { href: `/${locale}/skills`, label: t.skills.nav, wide: true },
+    { href: `/${locale}/pricing`, label: t.footer.pricing, wide: true },
+    // Кабинет и избранное открыты только вошедшему — у него они есть в
+    // меню под аватаром, а гостю показывать их наверху незачем.
+    { href: `/${locale}/account`, label: t.footer.account, wide: false },
+    {
+      href: `/${locale}/account#favorites`,
+      label: t.account.favorites,
+      wide: false,
+    },
+    { href: `/${locale}/partner`, label: t.partner.nav, wide: true },
+    // Вопросы и обратная связь есть в подвале на каждой странице.
+    { href: `/${locale}/faq`, label: t.footer.faq, wide: false },
     // Страница, а не mailto: в меню ссылка должна открывать что-то
     // видимое. mailto молчит, если почтового клиента по умолчанию нет.
-    { href: `/${locale}/contact`, label: t.footer.feedback },
+    { href: `/${locale}/contact`, label: t.footer.feedback, wide: false },
   ];
 
   const nav = [
-    { href: `/${locale}`, label: t.nav.home, full: t.nav.home },
+    { href: `/${locale}`, label: t.nav.home, full: t.nav.home, wide: true },
     ...supportItems.map((item) => ({ ...item, full: item.label })),
   ];
 
@@ -47,19 +68,21 @@ export default function Header({
         <Logo locale={locale} />
 
         <nav className="hidden items-center gap-1 lg:flex">
-          {nav.map((item) => (
-            <Link
-              key={item.href}
-              href={item.href}
-              className={`whitespace-nowrap rounded-chip px-2.5 py-1.5 text-[13.5px] transition-colors duration-200 ${
-                pathname === item.href
-                  ? "text-ink"
-                  : "text-muted hover:text-ink"
-              }`}
-            >
-              {item.label}
-            </Link>
-          ))}
+          {nav
+            .filter((item) => item.wide)
+            .map((item) => (
+              <Link
+                key={item.href}
+                href={item.href}
+                className={`whitespace-nowrap rounded-chip px-2.5 py-1.5 text-[13.5px] transition-colors duration-200 ${
+                  pathname === item.href
+                    ? "text-ink"
+                    : "text-muted hover:text-ink"
+                }`}
+              >
+                {item.label}
+              </Link>
+            ))}
         </nav>
 
         <div className="hidden items-center gap-2 lg:flex">

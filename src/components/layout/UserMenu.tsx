@@ -2,7 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
-import { CreditCard, LogOut, ShieldCheck, User } from "lucide-react";
+import { Bookmark, CreditCard, LogOut, ShieldCheck, User } from "lucide-react";
 import type { Locale } from "@/lib/i18n/config";
 import type { Dictionary } from "@/lib/i18n/dictionaries";
 
@@ -104,6 +104,22 @@ export default function UserMenu({
           >
             <User size={14} />
             {t.header.account}
+          </Link>
+
+          {/*
+            Избранное живёт здесь, а не в строке наверху: девять пунктов в
+            строку не влезают, и её пришлось сократить. Спрятать пункт под
+            аватар можно, потерять — нет: в меню телефона он есть, и на
+            широком экране должен быть тоже.
+          */}
+          <Link
+            href={`/${locale}/account#favorites`}
+            role="menuitem"
+            onClick={() => setOpen(false)}
+            className="flex w-full items-center gap-2 px-4 py-3 text-left text-[13px] text-muted transition-colors duration-200 hover:bg-sunken hover:text-ink"
+          >
+            <Bookmark size={14} />
+            {t.account.favorites}
           </Link>
 
           <Link

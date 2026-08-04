@@ -1,7 +1,8 @@
 import Link from "next/link";
-import { notFound } from "next/navigation";
+import { notFound, permanentRedirect } from "next/navigation";
 import { ArrowLeft, Clock } from "lucide-react";
 import { GUIDES, guide, isGuide } from "@/lib/guides";
+import { pdfGuide } from "@/lib/pdf-guides";
 import { LOCALES } from "@/lib/i18n/config";
 import { pageLocale } from "@/lib/i18n";
 import { pageMeta } from "@/lib/seo";
@@ -15,9 +16,7 @@ import Reveal from "@/components/Reveal";
   сознательно.
 */
 export function generateStaticParams() {
-  return LOCALES.flatMap((locale) =>
-    GUIDES.map((slug) => ({ locale, slug })),
-  );
+  return LOCALES.flatMap((locale) => GUIDES.map((slug) => ({ locale, slug })));
 }
 
 export async function generateMetadata({
@@ -45,7 +44,17 @@ export default async function GuidePage({
 }) {
   const { slug } = await params;
   const { locale, t } = await pageLocale(params);
-  if (!isGuide(slug)) notFound();
+
+  /*
+    Гайд-файл: страницы у него нет, есть сам PDF. Адрес /guides/<имя>
+    оставлен рабочим намеренно — по нему уже ходили ссылки, когда этот
+    гайд был набран текстом, и ломать их из-за смены формата незачем.
+  */
+  if (!isGuide(slug)) {
+    const file = pdfGuide(locale, slug);
+    if (file) permanentRedirect(file.file);
+    notFound();
+  }
 
   const item = guide(locale, slug);
 
