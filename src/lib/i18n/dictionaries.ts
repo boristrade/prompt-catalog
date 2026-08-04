@@ -117,7 +117,7 @@ const ru = {
     eyebrow: "Гайды",
     title: "Разборы, а не промты",
     subtitle:
-      "Как писать промты, почему нейросеть отвечает не то и с чего начать в Claude Code. Читается за пять минут, применяется сразу.",
+      "Пошаговые инструкции для применения и получения результата.",
     minutes: "мин чтения",
     readMore: "Читать",
     openPdf: "Открыть PDF",
@@ -490,7 +490,7 @@ const en: Dictionary = {
     eyebrow: "Guides",
     title: "Explanations, not prompts",
     subtitle:
-      "How to write prompts, why the AI answers the wrong thing, and where to start with Claude Code. Five minutes to read, useful immediately.",
+      "Step-by-step instructions to follow and get a result.",
     minutes: "min read",
     readMore: "Read",
     openPdf: "Open the PDF",
@@ -864,7 +864,7 @@ const fr: Dictionary = {
     eyebrow: "Guides",
     title: "Des explications, pas des prompts",
     subtitle:
-      "Comment écrire des prompts, pourquoi l'IA répond à côté, et par où commencer avec Claude Code. Cinq minutes de lecture, utile tout de suite.",
+      "Des instructions pas à pas à suivre pour obtenir un résultat.",
     minutes: "min de lecture",
     readMore: "Lire",
     openPdf: "Ouvrir le PDF",
@@ -1237,7 +1237,7 @@ const uk: Dictionary = {
     eyebrow: "Гайди",
     title: "Розбори, а не промти",
     subtitle:
-      "Як писати промти, чому нейромережа відповідає не те і з чого почати в Claude Code. Читається за п'ять хвилин, застосовується одразу.",
+      "Покрокові інструкції для застосування та отримання результату.",
     minutes: "хв читання",
     readMore: "Читати",
     openPdf: "Відкрити PDF",
@@ -1614,7 +1614,7 @@ const de: Dictionary = {
     eyebrow: "Guides",
     title: "Erklärungen statt Prompts",
     subtitle:
-      "Wie man Prompts schreibt, warum die KI am Thema vorbei antwortet und wie man mit Claude Code anfängt. Fünf Minuten Lesezeit, sofort anwendbar.",
+      "Schritt-für-Schritt-Anleitungen zum Anwenden — mit Ergebnis.",
     minutes: "Min. Lesezeit",
     readMore: "Lesen",
     openPdf: "PDF öffnen",
@@ -1987,7 +1987,7 @@ const pl: Dictionary = {
     eyebrow: "Poradniki",
     title: "Wyjaśnienia, nie prompty",
     subtitle:
-      "Jak pisać prompty, dlaczego AI odpowiada nie na temat i od czego zacząć z Claude Code. Pięć minut czytania, od razu do użycia.",
+      "Instrukcje krok po kroku do zastosowania i uzyskania wyniku.",
     minutes: "min czytania",
     readMore: "Czytaj",
     openPdf: "Otwórz PDF",
