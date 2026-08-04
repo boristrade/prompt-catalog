@@ -15,15 +15,15 @@ describe("siteUrl", () => {
   });
 
   it("своя переменная — в приоритете, лишний слэш в конце срезается", () => {
-    process.env.NEXT_PUBLIC_SITE_URL = "https://promptom.io/";
-    process.env.VERCEL_PROJECT_PRODUCTION_URL = "prompt-catalog-alpha.vercel.app";
-    expect(siteUrl()).toBe("https://promptom.io");
+    process.env.NEXT_PUBLIC_SITE_URL = "https://promptom.app/";
+    process.env.VERCEL_PROJECT_PRODUCTION_URL = "example-project.vercel.app";
+    expect(siteUrl()).toBe("https://promptom.app");
   });
 
   it("своей переменной нет — берётся боевой домен Vercel", () => {
     delete process.env.NEXT_PUBLIC_SITE_URL;
-    process.env.VERCEL_PROJECT_PRODUCTION_URL = "prompt-catalog-alpha.vercel.app";
-    expect(siteUrl()).toBe("https://prompt-catalog-alpha.vercel.app");
+    process.env.VERCEL_PROJECT_PRODUCTION_URL = "example-project.vercel.app";
+    expect(siteUrl()).toBe("https://example-project.vercel.app");
   });
 
   it("ничего не задано — localhost, а не пустая строка", () => {
@@ -34,7 +34,7 @@ describe("siteUrl", () => {
 
   it("пустая строка в переменной не считается заданным значением", () => {
     process.env.NEXT_PUBLIC_SITE_URL = "";
-    process.env.VERCEL_PROJECT_PRODUCTION_URL = "prompt-catalog-alpha.vercel.app";
-    expect(siteUrl()).toBe("https://prompt-catalog-alpha.vercel.app");
+    process.env.VERCEL_PROJECT_PRODUCTION_URL = "example-project.vercel.app";
+    expect(siteUrl()).toBe("https://example-project.vercel.app");
   });
 });

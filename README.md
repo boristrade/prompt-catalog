@@ -78,7 +78,7 @@ NEXT_PUBLIC_GOOGLE_AUTH=true
 |---|---|
 | `NEXT_PUBLIC_SUPABASE_URL` | `https://<проект>.supabase.co` |
 | `NEXT_PUBLIC_SUPABASE_ANON_KEY` | `anon public` из Project Settings → API |
-| `NEXT_PUBLIC_SITE_URL` | `https://prompt-catalog-alpha.vercel.app` |
+| `NEXT_PUBLIC_SITE_URL` | `https://promptom.app` |
 | `NEXT_PUBLIC_GOOGLE_AUTH` | `true`, только если настроен Google |
 | `NEXT_PUBLIC_EMAIL_AUTH` | `false`, чтобы убрать вход по почте (по умолчанию включён) |
 
@@ -173,7 +173,7 @@ NEXT_PUBLIC_GOOGLE_AUTH=true
 Запасной путь, когда платёж не долетел:
 
 ```bash
-curl -X POST https://prompt-catalog-alpha.vercel.app/api/billing/activate \
+curl -X POST https://promptom.app/api/billing/activate \
   -H "Authorization: Bearer $BILLING_WEBHOOK_SECRET" \
   -H "Content-Type: application/json" \
   -d '{"code":"A1B2C3D4","period":"yearly"}'
@@ -251,7 +251,7 @@ supabase/
 
 | Событие | Что происходит |
 |---|---|
-| мёрж в `main` | продакшн-деплой на `https://prompt-catalog-alpha.vercel.app` |
+| мёрж в `main` | продакшн-деплой на `https://promptom.app` |
 | пуш в ветку с pull request | превью-деплой, ссылка появляется в PR |
 
 Ни токенов, ни GitHub Actions для этого не нужно: секретов в репозитории нет вовсе.
