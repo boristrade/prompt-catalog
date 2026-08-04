@@ -230,11 +230,11 @@ export default async function HomePage({
           </h2>
         </Reveal>
 
-        <Reveal delay={80}>
-          <div className="mt-8 lg:mt-14">
-            <DisplayCards cards={decks} />
-          </div>
-        </Reveal>
+        {/* Без общей обёртки Reveal: карточки появляются по очереди,
+            каждая своей — иначе стопка выехала бы разом. */}
+        <div className="mt-8 lg:mt-14">
+          <DisplayCards cards={decks} />
+        </div>
       </section>
 
       {/* Категории */}
