@@ -136,6 +136,9 @@ const ru = {
     whatTitle: "Что делает",
     whyTitle: "Зачем он нужен",
     fileTitle: "Файл SKILL.md",
+    filesTitle: "Файлы скила",
+    installStepFiles:
+      "Положите в неё файлы ниже — с теми же именами и вложенными папками",
     installTitle: "Куда положить",
     installSteps: [
       "Создайте в проекте папку .claude/skills/{folder}",
@@ -506,6 +509,9 @@ const en: Dictionary = {
     whatTitle: "What it does",
     whyTitle: "Why you'd want it",
     fileTitle: "SKILL.md file",
+    filesTitle: "The skill's files",
+    installStepFiles:
+      "Put the files below in it, keeping the same names and subfolders",
     installTitle: "Where to put it",
     installSteps: [
       "Create the folder .claude/skills/{folder} in your project",
@@ -877,6 +883,9 @@ const fr: Dictionary = {
     whatTitle: "Ce qu'il fait",
     whyTitle: "À quoi il sert",
     fileTitle: "Fichier SKILL.md",
+    filesTitle: "Les fichiers du skill",
+    installStepFiles:
+      "Placez-y les fichiers ci-dessous, en gardant les mêmes noms et sous-dossiers",
     installTitle: "Où le placer",
     installSteps: [
       "Créez le dossier .claude/skills/{folder} dans votre projet",
@@ -1247,6 +1256,9 @@ const uk: Dictionary = {
     whatTitle: "Що робить",
     whyTitle: "Навіщо він потрібен",
     fileTitle: "Файл SKILL.md",
+    filesTitle: "Файли скіла",
+    installStepFiles:
+      "Покладіть у неї файли нижче — з тими самими іменами та вкладеними папками",
     installTitle: "Куди покласти",
     installSteps: [
       "Створіть у проєкті теку .claude/skills/{folder}",
@@ -1621,6 +1633,9 @@ const de: Dictionary = {
     whatTitle: "Was er tut",
     whyTitle: "Wozu er gut ist",
     fileTitle: "SKILL.md-Datei",
+    filesTitle: "Die Dateien des Skills",
+    installStepFiles:
+      "Legen Sie die Dateien unten dort ab — mit denselben Namen und Unterordnern",
     installTitle: "Wohin damit",
     installSteps: [
       "Legen Sie im Projekt den Ordner .claude/skills/{folder} an",
@@ -1991,6 +2006,9 @@ const pl: Dictionary = {
     whatTitle: "Co robi",
     whyTitle: "Do czego się przyda",
     fileTitle: "Plik SKILL.md",
+    filesTitle: "Pliki skila",
+    installStepFiles:
+      "Umieść w nim pliki poniżej — z tymi samymi nazwami i podfolderami",
     installTitle: "Gdzie go umieścić",
     installSteps: [
       "Utwórz w projekcie folder .claude/skills/{folder}",

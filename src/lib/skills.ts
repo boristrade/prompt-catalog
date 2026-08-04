@@ -44,12 +44,26 @@ export interface SkillText {
   tags: string[];
 }
 
+export interface SkillFile {
+  /** Путь внутри папки скила: «SKILL.md», «references/scenarios.md». */
+  path: string;
+  text: string;
+}
+
 export interface Skill extends SkillText {
   id: string;
   /** Имя папки в .claude/skills. Одна на все языки: это путь на диске. */
   folder: string;
   /** Содержимое SKILL.md целиком. */
   file: string;
+  /*
+    Все файлы скила, SKILL.md первым. У большинства он один, но скил
+    может ссылаться из инструкций на соседний файл — и тогда без него он
+    не работает: агент прочитает «смотри references/scenarios.md» и не
+    найдёт его. Поэтому показываем на странице всё, что есть в папке, а
+    не только главный файл.
+  */
+  files: SkillFile[];
 }
 
 /*
@@ -109,24 +123,103 @@ function shorten(text: string): string {
 interface Found {
   id: string;
   file: string;
+  files: SkillFile[];
   /** Из шапки файла — на случай, если своего перевода нет. */
   fallback: SkillText;
+}
+
+/*
+  Скил из нескольких файлов лежит папкой: SKILL.md и всё, на что он из
+  него ссылается. Собираем их в один список — SKILL.md первым, остальные
+  по алфавиту, с путём относительно папки скила, потому что путь и есть
+  инструкция, куда файл класть.
+
+  Всё читается текстом. Картинка или архив в папке скила превратились бы
+  в мусор на странице, поэтому на незнакомом расширении сборка падает:
+  тихо пропустить файл — значит опубликовать скил, который у человека не
+  заработает, и не сказать об этом ни слова.
+*/
+const TEXT_EXTENSIONS = [
+  "md",
+  "txt",
+  "json",
+  "yaml",
+  "yml",
+  "csv",
+  "py",
+  "js",
+  "ts",
+  "sh",
+  "toml",
+];
+
+function readFolder(dir: string, prefix = ""): SkillFile[] {
+  const files: SkillFile[] = [];
+
+  for (const entry of readdirSync(dir, { withFileTypes: true }).sort((a, b) =>
+    a.name.localeCompare(b.name),
+  )) {
+    const path = prefix ? `${prefix}/${entry.name}` : entry.name;
+
+    if (entry.isDirectory()) {
+      files.push(...readFolder(join(dir, entry.name), path));
+      continue;
+    }
+
+    const ext = entry.name.slice(entry.name.lastIndexOf(".") + 1).toLowerCase();
+    if (!TEXT_EXTENSIONS.includes(ext)) {
+      throw new Error(
+        `content/skills/${path}: файл с расширением .${ext} на странице ` +
+          `показать нечем. Оставьте в папке скила только текстовые файлы ` +
+          `(${TEXT_EXTENSIONS.join(", ")}).`,
+      );
+    }
+
+    files.push({ path, text: readFileSync(join(dir, entry.name), "utf8") });
+  }
+
+  // SKILL.md — первым: с него читают и его кладут в папку в первую очередь.
+  return files.sort((a, b) =>
+    a.path === "SKILL.md" ? -1 : b.path === "SKILL.md" ? 1 : 0,
+  );
 }
 
 function readSkills(): Found[] {
   if (!existsSync(DIR)) return [];
 
   const found: Found[] = [];
-  for (const name of readdirSync(DIR).sort()) {
-    if (!name.toLowerCase().endsWith(".md")) continue;
+  for (const entry of readdirSync(DIR, { withFileTypes: true }).sort((a, b) =>
+    a.name.localeCompare(b.name),
+  )) {
+    let id: string;
+    let files: SkillFile[];
 
-    const id = name.slice(0, -3);
-    const file = readFileSync(join(DIR, name), "utf8");
+    if (entry.isDirectory()) {
+      id = entry.name;
+      files = readFolder(join(DIR, entry.name));
+
+      if (!files.some((item) => item.path === "SKILL.md")) {
+        throw new Error(
+          `content/skills/${id}: в папке скила нет SKILL.md — ` +
+            `Claude Code подключает скил именно по нему`,
+        );
+      }
+    } else if (entry.name.toLowerCase().endsWith(".md")) {
+      id = entry.name.slice(0, -3);
+      files = [
+        { path: "SKILL.md", text: readFileSync(join(DIR, entry.name), "utf8") },
+      ];
+    } else {
+      continue;
+    }
+
+    const file = files[0].text;
     const head = frontMatter(file);
 
     found.push({
       id,
       file,
+      files,
       fallback: {
         title: head.title || titleFrom(file, id),
         summary: shorten(head.description || ""),
@@ -165,6 +258,20 @@ function readSkills(): Found[] {
   по-английски объяснено модели, а не читателю.
 */
 const RU: Record<string, SkillText> = {
+  "smm-producer": {
+    title: "SMM-продюсер личного бренда",
+    summary:
+      "Ведёт по шести шагам: разбор профиля, распаковка, контент-план на месяц, сценарии, лид-магниты.",
+    what: [
+      "Срабатывает на «разбери мой профиль», «контент-план», «идеи для рилс», «упаковка блога» — даже если слова «SMM» не прозвучало.",
+      "Разбирает профиль по пяти критериям и даёт быстрые правки на один вечер — готовыми формулировками, а не задачами вида «переписать bio».",
+      "Распаковывает вас как эксперта тремя блоками вопросов и собирает позиционирование и контентные столпы, из которых потом растёт весь план.",
+      "Делает план на четыре недели таблицей, где у каждой единицы одна цель из трёх: охват, доверие или продажа. За балансом следит сам.",
+      "Пишет сценарии Reels, каруселей и сторис и предлагает три лид-магнита разной глубины — от чек-листа до разбора.",
+    ],
+    why: "Соблазн получить всё сразу — главная причина, по которой контент-планы не работают: план, выданный до распаковки, написан для всех и ни для кого. Скил устроен так, чтобы этого не дать: один шаг за раз, вопросы блоками по два-три, и следующий шаг не начинается без ответа на предыдущий. Отдельно он не глотает размытые ответы вроде «помогаю людям стать счастливее» — переспрашивает на конкретику.",
+    tags: ["инстаграм", "контент"],
+  },
   "carousel-conveyor": {
     title: "Карусели для Reels и TikTok",
     summary:
@@ -234,6 +341,20 @@ const RU: Record<string, SkillText> = {
 };
 
 const EN: Record<string, SkillText> = {
+  "smm-producer": {
+    title: "Personal brand producer",
+    summary:
+      "Six steps: profile audit, positioning, a month of content, scripts, lead magnets. The skill itself is in Russian.",
+    what: [
+      "Triggers on “audit my profile”, “content plan”, “Reels ideas”, “package my blog” — even when the letters SMM are never said.",
+      "Audits the profile against five criteria and gives fixes doable in one evening — written out ready to paste, not tasks like “rewrite the bio”.",
+      "Unpacks you as an expert through three blocks of questions, then builds the positioning line and the content pillars everything else grows from.",
+      "Produces a four-week plan as a table where every item has exactly one goal — reach, trust or sale — and keeps the mix balanced itself.",
+      "Writes Reels, carousel and Stories scripts, then offers three lead magnets of different depth, from a checklist to a full teardown.",
+    ],
+    why: "Wanting everything at once is the main reason content plans fail: a plan handed over before the unpacking is written for everyone and therefore for no one. The skill is built to refuse that — one step at a time, questions in blocks of two or three, and no next step until the previous one is answered. It also refuses to swallow vague answers like “I help people be happier” and asks for specifics instead.",
+    tags: ["instagram", "content"],
+  },
   "carousel-conveyor": {
     title: "Carousels for Reels and TikTok",
     summary:
@@ -318,7 +439,7 @@ export function skill(locale: Locale, id: string): Skill | undefined {
 
   const text = (locale === "ru" ? RU : EN)[id] ?? found.fallback;
   // Имя папки совпадает с id: путь на диске один на все языки.
-  return { ...text, id, folder: id, file: found.file };
+  return { ...text, id, folder: id, file: found.file, files: found.files };
 }
 
 export function allSkills(locale: Locale): Skill[] {

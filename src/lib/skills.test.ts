@@ -14,16 +14,60 @@ import { SKILLS, allSkills, isSkill, skill } from "./skills";
 
 const DIR = join(process.cwd(), "content", "skills");
 
+/** Сколько файлов лежит в папке скила, считая вложенные. */
+function countFiles(dir: string): number {
+  return readdirSync(dir, { withFileTypes: true }).reduce(
+    (sum, entry) =>
+      sum + (entry.isDirectory() ? countFiles(join(dir, entry.name)) : 1),
+    0,
+  );
+}
+
 describe("скилы", () => {
-  it("находит все .md из content/skills", () => {
+  it("находит всё, что лежит в content/skills", () => {
+    // Скил — это либо имя.md, либо папка имя/ с SKILL.md внутри.
     const onDisk = existsSync(DIR)
-      ? readdirSync(DIR)
-          .filter((name) => name.toLowerCase().endsWith(".md"))
-          .map((name) => name.slice(0, -3))
+      ? readdirSync(DIR, { withFileTypes: true })
+          .filter(
+            (entry) =>
+              entry.isDirectory() || entry.name.toLowerCase().endsWith(".md"),
+          )
+          .map((entry) =>
+            entry.isDirectory() ? entry.name : entry.name.slice(0, -3),
+          )
       : [];
 
     expect(onDisk.length).toBeGreaterThan(0);
     expect([...SKILLS].sort()).toEqual(onDisk.sort());
+  });
+
+  /*
+    Скил из нескольких файлов работает только целиком: SKILL.md
+    ссылается на соседний файл, и без него агент прочитает «смотри
+    references/scenarios.md» и не найдёт его. На странице должны быть все
+    файлы папки, каждый со своим путём.
+  */
+  it("у скила из папки на странице есть все её файлы", () => {
+    for (const id of SKILLS) {
+      const item = skill("ru", id)!;
+
+      expect(item.files.length, id).toBeGreaterThan(0);
+      expect(item.files[0].path, id).toBe("SKILL.md");
+      expect(item.files[0].text, id).toBe(item.file);
+
+      for (const file of item.files) {
+        expect(file.text.length, `${id}/${file.path}`).toBeGreaterThan(0);
+      }
+    }
+
+    const onDisk = readdirSync(DIR, { withFileTypes: true }).filter((entry) =>
+      entry.isDirectory(),
+    );
+    for (const entry of onDisk) {
+      const item = skill("ru", entry.name)!;
+      const count = countFiles(join(DIR, entry.name));
+      expect(item.files.length, entry.name).toBe(count);
+    }
   });
 
   it("у каждого есть название, описание и файл", () => {
