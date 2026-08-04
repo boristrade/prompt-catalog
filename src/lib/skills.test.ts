@@ -204,6 +204,53 @@ describe("скилы", () => {
     }
   });
 
+  /*
+    Шапка бывает не плоской: у скилов с метаданными в ней дерево — автор,
+    лицензия, требования. Вложенный ключ «name» — не имя скила, и принять
+    его за имя значит уронить сборку жалобой на несовпадение, которого
+    нет. Проверяем на такой шапке целиком.
+  */
+  it("вложенные ключи в шапке не путаются с именем скила", async () => {
+    const path = join(DIR, "vitest-nested.md");
+
+    writeFileSync(
+      path,
+      [
+        "---",
+        "name: vitest-nested",
+        "description: A skill whose front matter has nested keys under it.",
+        "author:",
+        "  name: Someone Else",
+        "  url: https://example.com",
+        "metadata:",
+        "  tags: one, two",
+        "  requires:",
+        "    - python3",
+        "---",
+        "",
+        "# Nested front matter",
+        "",
+        "Body.",
+      ].join("\n"),
+      "utf8",
+    );
+
+    try {
+      vi.resetModules();
+      const fresh = await import("./skills");
+      const item = fresh.skill("ru", "vitest-nested");
+
+      expect(item, "скил не собрался из-за вложенной шапки").toBeDefined();
+      expect(item!.folder).toBe("vitest-nested");
+      expect(item!.title).toBe("Nested front matter");
+      // Теги лежат под metadata, а не наверху, — наверх они не всплывают.
+      expect(item!.tags).toEqual([]);
+    } finally {
+      rmSync(path, { force: true });
+      vi.resetModules();
+    }
+  });
+
   it("isSkill отсекает чужие адреса", () => {
     expect(isSkill("dead-code")).toBe(true);
     expect(isSkill("нет-такого")).toBe(false);

@@ -68,9 +68,20 @@ export interface Skill extends SkillText {
 
 /*
   Разбор своими руками, без библиотеки: шапка скила — это несколько строк
-  «ключ: значение» между строками из трёх дефисов, и ничего сложнее в ней
-  не бывает. Значение в несколько строк не поддерживается сознательно —
-  агент такую шапку тоже читает построчно.
+  «ключ: значение» между строками из трёх дефисов, и нужных нам полей в
+  ней ровно три. Значение в несколько строк не поддерживается
+  сознательно — агент такую шапку тоже читает построчно.
+
+  Вложенные ключи пропускаем, и это не мелочь. Шапка бывает и с деревом:
+
+      name: topview-skill
+      author:
+        name: Topview AI
+
+  Разбирая всё подряд, мы прочли бы второе «name» как имя скила — и
+  сборка упала бы с жалобой, что оно не совпадает с именем файла, хотя
+  совпадает. Верхний уровень отличается от вложенного только отступом,
+  по нему и отсекаем; строки списка («- ...») там же.
 */
 function frontMatter(file: string): Record<string, string> {
   if (!file.startsWith("---\n")) return {};
@@ -80,6 +91,8 @@ function frontMatter(file: string): Record<string, string> {
 
   const fields: Record<string, string> = {};
   for (const line of file.slice(4, end).split("\n")) {
+    if (/^[\s-]/.test(line)) continue;
+
     const colon = line.indexOf(":");
     if (colon <= 0) continue;
     fields[line.slice(0, colon).trim()] = unquote(line.slice(colon + 1).trim());
@@ -276,6 +289,77 @@ function readSkills(): Found[] {
   по-английски объяснено модели, а не читателю.
 */
 const RU: Record<string, SkillText> = {
+  "remotion-video": {
+    title: "Remotion: видео кодом на React",
+    summary:
+      "Каждый кадр — React-компонент. Титры, субтитры, переходы, 3D и звук собираются в коде и рендерятся в файл.",
+    what: [
+      "Срабатывает на «сделай видео из кода», «добавь субтитры», «анимируй текст», «сделай моушн-графику», «видео из картинок».",
+      "Всё движение задаётся номером кадра, а не CSS: анимации через классы в рендер не попадают, и скил это запрещает прямо.",
+      "Знает весь набор пакетов: субтитры в стиле TikTok с подсветкой слова, переходы, шрифты Google, Lottie, три-дэ, визуализация звука, световые блики, гифки.",
+      "Считает раскладку по правилам, а не на глаз: безопасные поля, минимальные кегли, одна смысловая точка на сцену — тесноту лечит временем, а не уменьшением шрифта.",
+      "Умеет расшифровать звук через whisper и разложить его на подписи по словам, а длину ролика вычислить из длины озвучки.",
+    ],
+    why: "Видео, собранное руками в редакторе, нельзя пересобрать с другими данными: поменялась цифра — открывай проект и двигай слои. Здесь ролик — это программа: те же сцены с другим текстом рендерятся заново одной командой, а сто роликов по шаблону отличаются только входными данными. Отсюда и главное ограничение, из-за которого чаще всего всё ломается: анимация обязана зависеть от номера кадра, иначе при рендере она просто не сыграет.",
+    tags: ["видео", "код"],
+  },
+  trendwatch: {
+    title: "Разбор вирусных роликов конкурентов",
+    summary:
+      "Разбирает чужие залетевшие видео по семи осям и превращает разбор в идеи под ваш продукт.",
+    what: [
+      "Срабатывает на «что сейчас заходит в TikTok», «разбери конкурента», «придумай хуки для рилс».",
+      "Сначала ищет сам — магазин приложений, поиск, профили конкурентов, — и только потом спрашивает то, чего не найти: цели, KPI, голос бренда.",
+      "Каждое видео разбирается отдельно на семь частей: чем остановлен скролл в первые полторы секунды, чем зацепил хук, формат, обещание, звук и его свежесть, призыв и о чём пишут в комментариях.",
+      "Отделяет заслугу формата от заслуги блогера: пятьсот тысяч просмотров у миллионника ничего не доказывают, а пятьдесят тысяч у пятитысячника доказывают многое. В работу идут только первые.",
+      "Копит опыт в отдельном файле: что пробовали, что вышло, чему научились. С каждым разом отсекает то, что у вас уже не сработало.",
+    ],
+    why: "Смотреть на чужие вирусные видео и повторять их целиком — самый быстрый способ потратить месяц впустую: повторяется обычно то, что видно, а работает то, что не видно. Скил разбирает ролик на части и отделяет три вещи, которые постоянно путают: формат, аудиторию блогера и оплаченный охват. И он помнит ваши прошлые попытки — поэтому со временем перестаёт предлагать то, что у вас уже не полетело.",
+    tags: ["тикток", "продвижение"],
+  },
+  "viral-content-factory": {
+    title: "Фабрика каруселей и видео-примерок",
+    summary:
+      "Собирает карусели и ролики с переодеванием для TikTok и Instagram вокруг придуманных персонажей.",
+    what: [
+      "Срабатывает, когда нужно собрать новую карусель, ролик с переодеванием или расширить библиотеку контента под персонажа.",
+      "Начинает с вопросов: что за продукт, кто персонажи, есть ли референсы и ключи. Без этого не генерирует.",
+      "Карусели — семь-восемь слайдов на тему, в трёх узнаваемых стилях: съёмка «как с телефона», редакционная инфографика и отдельный стиль для персонажей-животных.",
+      "Ролики с переодеванием строятся от одного опорного кадра: человек в чёрном костюме без лица, и каждый следующий кадр — правка этого же кадра, иначе фон и фигура уплывают.",
+      "Держит список того, на чём такие картинки обычно ломаются — лишние пальцы, поехавший текст, слетевший костюм — и правит отдельный кадр, а не пересобирает всю партию.",
+    ],
+    why: "Главная беда такого конвейера — незаметная рассинхронизация: фон чуть другой, фигура чуть другая, и склейка перестаёт читаться как один человек. Здесь всё держится на одном опорном кадре и списке проверок перед сборкой. Плюс банк хуков на девять категорий — не «идеи для контента», а формулы с объяснением, почему каждая работает.",
+    tags: ["контент", "соцсети"],
+  },
+  "topview-skill": {
+    title: "Topview: видео, картинки и голос через API",
+    summary:
+      "Официальный клиент Topview: аватары, генерация видео и картинок, озвучка и клонирование голоса из одного места.",
+    what: [
+      "Срабатывает на просьбы сделать видео с говорящим аватаром, оживить картинку, сгенерировать или отредактировать изображение, убрать фон, озвучить текст.",
+      "Сам выбирает инструмент по задаче, а не заставляет человека знать API: есть дерево решений от «что нужно на выходе» до конкретного скрипта и модели.",
+      "Считает стоимость до запуска и переспрашивает про параметры, которые заметно влияют на результат, — длительность, соотношение сторон, модель, голос.",
+      "Перед первой генерацией показывает весь план и спрашивает, подтверждать ли каждый следующий запуск или дальше работать самому.",
+      "Отвечает по-человечески: без терминала, переменных окружения и сырых ответов сервера. Ссылка на результат первой строкой.",
+      "Требует ключа Topview и работает только с их серверами.",
+    ],
+    why: "Собрать то же самое напрямую через API можно, но тогда человеку придётся знать, чем i2v отличается от omni и какая модель сколько стоит. Скил переворачивает порядок: начинает с того, что нужно на выходе, и сам доходит до инструмента и параметров. Отдельно ценно, что он считает деньги до запуска и показывает план — генерация видео стоит заметно дороже картинки, и узнавать об этом после списания неприятно.",
+    tags: ["видео", "апи"],
+  },
+  "split-screen-script": {
+    title: "Сплит-скрин сценарии для Reels",
+    summary:
+      "Раскладывает текст по тайм-кодам в таблицу: сверху B-roll, снизу речь аватара, рядом звуки и музыка.",
+    what: [
+      "Срабатывает на «распиши сценарий», «сделай раскадровку», «подбери B-roll под текст», «сценарий для рилс по секундам».",
+      "Отдаёт готовую таблицу без предисловий: тайм-код, верхний экран, нижний экран, звук.",
+      "Верхний экран буквально показывает то, о чём говорит аватар: сказал «деньги» — летят купюры, сказал «клиент ушёл» — уходящий силуэт. Плюс указания по эффектам.",
+      "Держит четыре обязательные фазы — зацепка, разворот темы, польза по шагам, призыв — и укладывается в тридцать-шестьдесят секунд с шагом в две-пять секунд.",
+      "На каждое движение сверху прописывает звук и отмечает, что делает музыка: нарастает, бьёт, затухает.",
+    ],
+    why: "Двухэкранный ролик разваливается ровно в одном месте: верхний экран живёт своей жизнью и не иллюстрирует речь. Тогда зритель смотрит картинку, не слышит текст и уходит. Здесь верх привязан к низу пословно и по секундам, а звук расписан на каждое движение — то, что обычно доделывают на монтаже наугад и потому не доделывают вовсе.",
+    tags: ["сценарии", "рилс"],
+  },
   openmontage: {
     title: "OpenMontage: видео из описания",
     summary:
@@ -373,6 +457,77 @@ const RU: Record<string, SkillText> = {
 };
 
 const EN: Record<string, SkillText> = {
+  "remotion-video": {
+    title: "Remotion: video as React code",
+    summary:
+      "Every frame is a React component. Titles, captions, transitions, 3D and audio are written in code and rendered to a file.",
+    what: [
+      "Triggers on “make a video from code”, “add subtitles”, “animate this text”, “motion graphics”, “video from images”.",
+      "All motion is driven by the frame number, never by CSS: class-based animations never make it into the render, and the skill forbids them outright.",
+      "Covers the whole package set: TikTok-style captions with word highlighting, transitions, Google fonts, Lottie, 3D, audio visualisation, light leaks, GIFs.",
+      "Lays out scenes by rule rather than by eye: safe margins, minimum type sizes, one focal point per scene — crowding is solved with time, not by shrinking the text.",
+      "Can transcribe audio with whisper into word-level captions, and derive the video's length from the length of the voice-over.",
+    ],
+    why: "A video cut by hand in an editor can't be rebuilt with different data: change one number and you're back in the project moving layers. Here a video is a program — the same scenes with new text re-render with one command, and a hundred videos from one template differ only by their input. Hence the one constraint that breaks people most often: animation must depend on the frame number, or it simply won't play in the render.",
+    tags: ["video", "code"],
+  },
+  trendwatch: {
+    title: "Reverse-engineering competitors' viral videos",
+    summary:
+      "Breaks down other people's hits along seven axes and turns the analysis into hooks for your own product.",
+    what: [
+      "Triggers on “what's working on TikTok right now”, “analyse this competitor”, “give me hooks for Reels”.",
+      "Researches first — app store, search, competitor profiles — and only then asks for what no tool can return: goals, KPIs, brand voice.",
+      "Each video is decomposed into seven parts: what stopped the scroll in the first 1.5 seconds, what the hook promised, the format, the message, the sound and how fresh it is, the CTA, and what the comments reveal.",
+      "Separates credit due to the format from credit due to the creator: 500k views on a 2M-follower account proves nothing, 50k on a 5k account proves a lot. Only the latter feeds ideation.",
+      "Accumulates a log of what was tried, what happened and what was learned — so over time it stops suggesting what already failed for you.",
+    ],
+    why: "Watching someone's viral video and copying it wholesale is the fastest way to waste a month: what gets copied is what's visible, and what works is what isn't. The skill takes a video apart and separates the three things people constantly conflate — the format, the creator's own audience, and paid amplification. And it remembers your past attempts, so it gets sharper with use.",
+    tags: ["tiktok", "growth"],
+  },
+  "viral-content-factory": {
+    title: "Carousel and outfit-change factory",
+    summary:
+      "Builds carousels and outfit-change videos for TikTok and Instagram around invented characters.",
+    what: [
+      "Triggers when you need a new carousel, an outfit-change video, or more content for an existing character.",
+      "Starts with questions: what the product is, who the characters are, what references and keys exist. It won't generate before that.",
+      "Carousels are seven or eight slides per topic, in three recognisable styles: shot-on-a-phone, editorial infographic, and a separate one for animal characters.",
+      "Outfit-change videos are built from a single anchor frame — a faceless figure in a black morph suit — and every later frame edits that same anchor, otherwise the background and body drift.",
+      "Keeps a checklist of how these images usually fail — extra fingers, garbled text, the suit disappearing — and regenerates the one bad frame rather than the whole batch.",
+    ],
+    why: "The failure mode of this kind of pipeline is quiet drift: the background is slightly off, the body is slightly off, and the cut stops reading as one person. Everything here hangs off one anchor frame plus a checklist run before assembly. On top of that there's a hook bank across nine categories — not “content ideas” but formulas with the reason each one works.",
+    tags: ["content", "social"],
+  },
+  "topview-skill": {
+    title: "Topview: video, images and voice over an API",
+    summary:
+      "The official Topview client: avatars, video and image generation, text-to-speech and voice cloning from one place.",
+    what: [
+      "Triggers on asking for a talking-avatar video, animating an image, generating or editing an image, removing a background, or voicing a script.",
+      "Picks the tool from the task rather than making you know the API: there's a decision tree from “what do you need out” down to the specific script and model.",
+      "Estimates the cost before running and asks about the parameters that visibly change the result — duration, aspect ratio, model, voice.",
+      "Before the first generation it shows the whole plan and asks whether to confirm each later run or carry on unattended.",
+      "Replies in plain language: no terminals, no environment variables, no raw server output. The result link comes first.",
+      "Needs a Topview key and talks only to their servers.",
+    ],
+    why: "You could wire the same calls yourself, but then you have to know how i2v differs from omni and what each model costs. The skill inverts the order: it starts from the output you want and works down to the tool and its parameters. The cost estimate and the up-front plan matter especially — video costs noticeably more than an image, and finding that out after the charge is unpleasant.",
+    tags: ["video", "api"],
+  },
+  "split-screen-script": {
+    title: "Split-screen scripts for Reels",
+    summary:
+      "Lays a script out on a timeline table: B-roll on top, the avatar's speech below, sound and music alongside. Written in Russian.",
+    what: [
+      "Triggers on “break this script down”, “make a storyboard”, “find B-roll for this text”, “a Reels script second by second”.",
+      "Returns the finished table with no preamble: timecode, top screen, bottom screen, sound.",
+      "The top screen literally shows what the avatar is saying: “money” and banknotes fly, “the client left” and a silhouette walks out. With effect notes alongside.",
+      "Holds to four mandatory phases — hook, context, step-by-step value, call to action — inside 30–60 seconds, in steps of two to five.",
+      "Every movement up top gets a sound effect, and the music is marked as rising, hitting or fading.",
+    ],
+    why: "A two-screen video falls apart in exactly one place: the top screen lives its own life and stops illustrating the speech. The viewer then watches the picture, stops hearing the words and leaves. Here the top is tied to the bottom word by word and second by second, and the sound is written out for every movement — the part usually left to guesswork at the edit and therefore left undone.",
+    tags: ["scripts", "reels"],
+  },
   openmontage: {
     title: "OpenMontage: video from a description",
     summary:
