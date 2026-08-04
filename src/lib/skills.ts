@@ -1,3 +1,6 @@
+import "server-only";
+import { existsSync, readFileSync, readdirSync } from "node:fs";
+import { join } from "node:path";
 import type { Locale } from "@/lib/i18n/config";
 
 /*
@@ -12,31 +15,27 @@ import type { Locale } from "@/lib/i18n/config";
   сообщение, и к нему нужна инструкция, куда его положить. Поэтому
   отдельный раздел, а не ещё одна категория каталога.
 
+  Сами файлы лежат в content/skills и читаются при сборке — как PDF в
+  pdf-guides.ts и обложки в covers.ts. Положил .md — скил появился на
+  сайте: имя, описание и адрес страницы берутся из шапки самого файла,
+  той самой, по которой его подключает и агент. Раньше текст файла
+  хранился строкой прямо в этом модуле, и добавление скила означало
+  правку кода в трёх местах.
+
   Текст файла общий для всех языков и остаётся английским: инструкции
   внутри скила читает модель, и смешивать в них языки незачем. Переводим
   только то, что читает человек, — название, описание и разбор.
 */
 
-export const SKILLS = [
-  "commit-message",
-  "self-review",
-  "mobile-check",
-  "dead-code",
-] as const;
-
-export type SkillId = (typeof SKILLS)[number];
-
-export function isSkill(value: string): value is SkillId {
-  return (SKILLS as readonly string[]).includes(value);
-}
+const DIR = join(process.cwd(), "content", "skills");
 
 export interface SkillText {
   title: string;
   /** Одной строкой для карточки и описания в поиске. */
   summary: string;
-  /** Когда он срабатывает и что делает. Абзацами. */
+  /** Когда он срабатывает и что делает. Абзацами. Может не быть. */
   what: string[];
-  /** Зачем он вообще нужен — какая боль без него. */
+  /** Зачем он вообще нужен — какая боль без него. Может не быть. */
   why: string;
   /*
     Теги переводятся вместе с остальным: «вёрстка» в английской карточке
@@ -46,7 +45,7 @@ export interface SkillText {
 }
 
 export interface Skill extends SkillText {
-  id: SkillId;
+  id: string;
   /** Имя папки в .claude/skills. Одна на все языки: это путь на диске. */
   folder: string;
   /** Содержимое SKILL.md целиком. */
@@ -54,215 +53,99 @@ export interface Skill extends SkillText {
 }
 
 /*
-  Тексты файлов. Вынесены отдельно от переводов: файл один на все языки,
-  а описание к нему — своё на каждом.
+  Разбор своими руками, без библиотеки: шапка скила — это несколько строк
+  «ключ: значение» между строками из трёх дефисов, и ничего сложнее в ней
+  не бывает. Значение в несколько строк не поддерживается сознательно —
+  агент такую шапку тоже читает построчно.
 */
-const FILES: Record<SkillId, string> = {
-  "commit-message": `---
-name: commit-message
-description: Write the commit message for the staged changes. Use when the user asks to commit, asks for a commit message, or says the work is ready to commit.
----
+function frontMatter(file: string): Record<string, string> {
+  if (!file.startsWith("---\n")) return {};
 
-# Writing the commit message
+  const end = file.indexOf("\n---", 4);
+  if (end < 0) return {};
 
-Read the staged diff first — \`git diff --cached\`. Never write a message
-from memory of what you did; write it from what is actually staged.
+  const fields: Record<string, string> = {};
+  for (const line of file.slice(4, end).split("\n")) {
+    const colon = line.indexOf(":");
+    if (colon <= 0) continue;
+    fields[line.slice(0, colon).trim()] = line.slice(colon + 1).trim();
+  }
+  return fields;
+}
 
-## The subject line
+/*
+  Название для карточки, когда своего перевода нет: берём первый
+  заголовок из самого файла — «# Writing the commit message». Он написан
+  человеком и читается лучше, чем имя папки. Если заголовка нет, остаётся
+  имя: «commit-message» → «Commit message».
+*/
+function titleFrom(file: string, id: string): string {
+  const heading = file.match(/^# (.+)$/m)?.[1]?.trim();
+  if (heading) return heading;
 
-One line, imperative mood, no trailing full stop. Name the change, not
-the files. "Fix the button that scrolled nowhere" beats "Update page.tsx".
+  const words = id.replace(/[-_]+/g, " ");
+  return words.charAt(0).toUpperCase() + words.slice(1);
+}
 
-Keep it under 72 characters so it doesn't wrap in \`git log\`.
+interface Found {
+  id: string;
+  file: string;
+  /** Из шапки файла — на случай, если своего перевода нет. */
+  fallback: SkillText;
+}
 
-## The body
+function readSkills(): Found[] {
+  if (!existsSync(DIR)) return [];
 
-Explain **why**, not what. The diff already says what changed; it cannot
-say what was wrong before, or what would break if this were done
-differently.
+  const found: Found[] = [];
+  for (const name of readdirSync(DIR).sort()) {
+    if (!name.toLowerCase().endsWith(".md")) continue;
 
-Answer these, in prose, only where they apply:
+    const id = name.slice(0, -3);
+    const file = readFileSync(join(DIR, name), "utf8");
+    const head = frontMatter(file);
 
-- What was broken or missing, described concretely enough that someone
-  hitting the same problem would recognise it.
-- Why this approach and not the obvious alternative.
-- What is deliberately not covered, and why.
+    found.push({
+      id,
+      file,
+      fallback: {
+        title: head.title || titleFrom(file, id),
+        summary: head.description || "",
+        what: [],
+        why: "",
+        tags: head.tags
+          ? head.tags
+              .split(",")
+              .map((tag) => tag.trim())
+              .filter(Boolean)
+          : [],
+      },
+    });
+  }
 
-Wrap the body at 72 characters.
+  /*
+    Сначала те, для которых написан разбор, — в порядке этого разбора;
+    затем остальные по алфавиту. Новый файл попадает в конец списка, а не
+    втискивается в середину по имени.
+  */
+  const order = Object.keys(RU);
+  return found.sort((a, b) => {
+    const ai = order.indexOf(a.id);
+    const bi = order.indexOf(b.id);
+    if (ai !== bi)
+      return (ai < 0 ? order.length : ai) - (bi < 0 ? order.length : bi);
+    return a.id.localeCompare(b.id);
+  });
+}
 
-## What not to write
-
-- Do not list the changed files. \`git show --stat\` does that better.
-- Do not write "various fixes", "improvements", "refactoring" — these
-  say nothing and make the history useless when someone bisects it.
-- Do not restate the subject line in the body.
-- Do not mention the tools or the model that produced the change.
-
-## Before committing
-
-Check that the staged diff contains only what belongs in this commit.
-If it mixes two unrelated changes, say so and offer to split them.
-`,
-
-  "self-review": `---
-name: self-review
-description: Review your own changes before pushing. Use when the user asks to review the diff, asks whether the change is ready, or before opening a pull request.
----
-
-# Reviewing your own diff
-
-Read the full diff against the base branch before saying anything:
-\`git diff origin/main...HEAD\`.
-
-Review it as if someone else wrote it and you are the one who will be
-paged when it breaks.
-
-## What to look for, in order
-
-**1. Does it do what was asked?**
-Compare against the original request, not against your own plan. Scope
-that quietly grew is as much a defect as scope that was dropped.
-
-**2. What happens on the unhappy path?**
-For every new branch: what if the value is null, the list is empty, the
-network call fails, the user is not signed in? Name the specific line
-and the specific input that breaks it.
-
-**3. Does anything fail open?**
-A missing key, an empty allowlist, an unset environment variable —
-does the code then let everyone through, or no one? Letting everyone
-through silently is the worse default and the harder bug to notice.
-
-**4. Is anything now unreachable or duplicated?**
-New code that shadows old code, a second place that must be kept in
-sync with the first, an export nobody imports any more.
-
-**5. Would this be visible if it broke?**
-Changes that only fail somewhere the author never looks — a social
-preview, a scheduled job, an email — deserve a test or a log line.
-
-## How to report
-
-Lead with the most serious finding. For each one give the file, the
-line, and a concrete failing input — not "this could be unsafe" but
-"if \`code\` is empty this returns every row".
-
-If nothing survives that bar, say the diff looks fine. Do not invent
-findings to look thorough.
-`,
-
-  "mobile-check": `---
-name: mobile-check
-description: Check pages on a narrow screen before committing UI work. Use when the user changes layout, adds a component, or asks whether something works on mobile.
----
-
-# Checking a narrow screen
-
-Never claim a layout works on mobile without looking at it. Take a
-screenshot at 360px wide and read it.
-
-## Running the check
-
-Start the app, then drive a browser at 360×800. With Playwright:
-
-\`\`\`js
-const page = await browser.newPage({
-  viewport: { width: 360, height: 800 },
-  deviceScaleFactor: 2,
-});
-await page.goto(url, { waitUntil: "networkidle" });
-await page.screenshot({ path: "mobile.png" });
-\`\`\`
-
-Check both colour schemes — pass \`colorScheme: "dark"\` and \`"light"\` —
-if the project has a theme toggle.
-
-## What to look for
-
-**Horizontal scroll is always a bug.** Detect it, don't eyeball it:
-
-\`\`\`js
-const overflows = await page.evaluate(
-  () => document.documentElement.scrollWidth > window.innerWidth,
-);
-\`\`\`
-
-The usual causes are long unbroken strings (URLs, emails, codes) and
-fixed widths. Fix with \`break-all\` or \`truncate\` inside a \`min-w-0\`
-parent, not by hiding overflow.
-
-**Rows of buttons** must wrap. Without wrapping they run off the edge
-at 360px and the last one becomes unreachable.
-
-**Headings** should not break into single-word lines. \`text-wrap:
-balance\` fixes most of it; if a word still doesn't fit, the type size
-is too large for the viewport.
-
-**Anything behind a \`lg:\` breakpoint is invisible on a phone.** If a
-link or control lives only in a desktop-only block, it does not exist
-for mobile users. Check that every action is reachable from the narrow
-layout too.
-
-**Tap targets** need roughly 44px of height. Text links crammed into a
-row are hard to hit.
-
-## Reporting
-
-Show the screenshot. If something is wrong, say which element and at
-what width it breaks — not "looks a bit tight".
-`,
-
-  "dead-code": `---
-name: dead-code
-description: Find code that nothing uses any more. Use when the user asks to clean up, mentions dead code, or after removing a feature.
----
-
-# Finding dead code
-
-Removing code is safe only when you have shown nothing reaches it.
-Search before deleting, every time.
-
-## Where to look
-
-**Unused exports.** For each exported symbol, search the repository for
-its name. One hit means only the definition — a candidate.
-
-\`\`\`bash
-rg -n "export (function|const|class|type|interface) (\\w+)" -o -r '$2' src | sort -u
-\`\`\`
-
-Then check each name. Beware of symbols reached dynamically, by string
-key or through a barrel file — grep will not see those.
-
-**Files nothing imports.** A module whose path appears in no import
-statement anywhere.
-
-**Branches that cannot be taken.** A condition on a value that is now
-always the same, a case for an enum member that no longer exists.
-
-**Assets nothing references.** Images, fonts and data files whose names
-appear nowhere in the source.
-
-## Before deleting anything
-
-- Check the tests. Code used only by tests is not dead — it is either
-  still needed or the test is stale, and those are different fixes.
-- Check for dynamic access: \`obj[name]\`, \`import(path)\`, string keys in
-  a lookup table.
-- Check the framework's conventions. Files can be entry points by
-  location alone and be imported nowhere.
-
-## How to report
-
-List each finding with the path, what it is, and the evidence that
-nothing uses it — the search you ran and how many hits it returned.
-
-Delete in a separate commit from any behaviour change, so a revert is
-cheap if you were wrong.
-`,
-};
-
-const RU: Record<SkillId, SkillText> = {
+/*
+  Разбор на человеческом языке — необязательный. Скил без него
+  публикуется как есть: название и описание берутся из шапки файла, а
+  страница показывает, куда его положить, и сам файл. Разбор добавляет к
+  этому «что делает» и «зачем нужен» — то, чего в шапке нет и что
+  по-английски объяснено модели, а не читателю.
+*/
+const RU: Record<string, SkillText> = {
   "commit-message": {
     title: "Сообщение коммита",
     summary:
@@ -317,7 +200,7 @@ const RU: Record<SkillId, SkillText> = {
   },
 };
 
-const EN: Record<SkillId, SkillText> = {
+const EN: Record<string, SkillText> = {
   "commit-message": {
     title: "Commit message",
     summary:
@@ -372,12 +255,42 @@ const EN: Record<SkillId, SkillText> = {
   },
 };
 
-export function skill(locale: Locale, id: SkillId): Skill {
-  const text = locale === "ru" ? RU[id] : EN[id];
+const FOUND = readSkills();
+
+/** Адреса всех скилов — для карты сайта и generateStaticParams. */
+export const SKILLS = FOUND.map((item) => item.id);
+
+export function isSkill(value: string): boolean {
+  return SKILLS.includes(value);
+}
+
+/** Скил по адресу или undefined, если такого файла нет. */
+export function skill(locale: Locale, id: string): Skill | undefined {
+  const found = FOUND.find((item) => item.id === id);
+  if (!found) return undefined;
+
+  const text = (locale === "ru" ? RU : EN)[id] ?? found.fallback;
   // Имя папки совпадает с id: путь на диске один на все языки.
-  return { id, ...text, folder: id, file: FILES[id] };
+  return { ...text, id, folder: id, file: found.file };
 }
 
 export function allSkills(locale: Locale): Skill[] {
-  return SKILLS.map((id) => skill(locale, id));
+  return FOUND.map((item) => skill(locale, item.id)!);
+}
+
+/*
+  Имя внутри файла обязано совпадать с именем файла: по имени файла
+  строится адрес страницы и имя папки в инструкции «куда положить», а по
+  имени внутри шапки скил подключает Claude Code. Разойдись они — на
+  сайте была бы одна инструкция, а у человека в проекте другое имя, и
+  скил молча не сработал бы. Пусть лучше падает сборка.
+*/
+for (const item of FOUND) {
+  const declared = frontMatter(item.file).name;
+  if (declared !== item.id) {
+    throw new Error(
+      `content/skills/${item.id}.md: в шапке name: ${declared ?? "(нет)"}, ` +
+        `а файл называется ${item.id}.md — имена должны совпадать`,
+    );
+  }
 }
