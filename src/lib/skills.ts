@@ -82,9 +82,27 @@ function frontMatter(file: string): Record<string, string> {
   for (const line of file.slice(4, end).split("\n")) {
     const colon = line.indexOf(":");
     if (colon <= 0) continue;
-    fields[line.slice(0, colon).trim()] = line.slice(colon + 1).trim();
+    fields[line.slice(0, colon).trim()] = unquote(line.slice(colon + 1).trim());
   }
   return fields;
+}
+
+/*
+  Значение в шапке можно писать и в кавычках: описание с двоеточием
+  внутри без них — уже не YAML, и авторы скилов их ставят. Кавычки нужны
+  формату, а не читателю: оставь мы их как есть — карточка начиналась бы
+  с кавычки и ею же заканчивалась.
+*/
+function unquote(value: string): string {
+  const first = value[0];
+  if (
+    value.length > 1 &&
+    (first === '"' || first === "'") &&
+    value.endsWith(first)
+  ) {
+    return value.slice(1, -1);
+  }
+  return value;
 }
 
 /*
@@ -258,6 +276,20 @@ function readSkills(): Found[] {
   по-английски объяснено модели, а не читателю.
 */
 const RU: Record<string, SkillText> = {
+  openmontage: {
+    title: "OpenMontage: видео из описания",
+    summary:
+      "Агент сам исследует тему, пишет сценарий, добывает материал, монтирует и рендерит готовый ролик.",
+    what: [
+      "Срабатывает на «сделай видео о…», «создай ролик», «смонтируй», «сгенерируй анимацию» — и на просьбы про озвучку и субтитры.",
+      "Двенадцать сценариев работы: анимационный explainer, документальный монтаж из архивов, кинематографический тизер, говорящая голова, нарезка длинного видео на клипы, дубляж и субтитры.",
+      "Каждый проходит один и тот же путь: исследование, замысел, сценарий, план сцен, материалы, монтаж, сборка. Не «сгенерировать и склеить».",
+      "Работает и без единого платного ключа: офлайн-озвучка Piper, архивы Archive.org, NASA и Wikimedia, сборка на FFmpeg. С ключами подключаются генераторы видео, изображений, голоса и музыки.",
+      "Считает деньги до запуска и держит лимит, а перед показом проверяет результат сам: если обещали движение, а вышел слайдшоу из статичных картинок, видео не отдаётся.",
+    ],
+    why: "Собрать ролик из нейросетей поодиночке можно и без всякого скила — и получится «анимированный PowerPoint», потому что каждый инструмент отвечает за свой кусок и ни один не отвечает за целое. Здесь целое собрано в один путь от исследования до рендера, с двумя проверками, которых обычно нет: сметой до запуска и разбором готового файла после. Это не генератор видео, а порядок работы, в котором генераторы — только инструменты.",
+    tags: ["видео", "монтаж"],
+  },
   "smm-producer": {
     title: "SMM-продюсер личного бренда",
     summary:
@@ -341,6 +373,21 @@ const RU: Record<string, SkillText> = {
 };
 
 const EN: Record<string, SkillText> = {
+  openmontage: {
+    title: "OpenMontage: video from a description",
+    summary:
+      "The agent researches the topic, writes the script, sources the footage, edits and renders the finished video.",
+    what: [
+      "Triggers on “make a video about…”, “create a clip”, “edit this”, “generate an animation” — and on requests for voice-over or subtitles.",
+      "Twelve ways of working: animated explainer, documentary montage from public archives, cinematic teaser, talking head, cutting a long video into clips, dubbing and subtitles.",
+      "Each goes through the same route: research, proposal, script, scene plan, assets, edit, compose. Not “generate and stitch”.",
+      "Runs with no paid keys at all: offline Piper voice-over, Archive.org, NASA and Wikimedia footage, FFmpeg for assembly. Keys add video, image, voice and music generation.",
+      "Costs are estimated before the run and capped, and the result is reviewed before you see it: if the promise was motion and the output is a slideshow of stills, the video is not delivered.",
+      "The skill itself is written in Russian.",
+    ],
+    why: "You can wire the models together by hand without any skill — and you get an animated PowerPoint, because each tool owns its own piece and nothing owns the whole. Here the whole is one route from research to render, with two checks you rarely get otherwise: a cost estimate before the run and an inspection of the finished file after. This isn't a video generator; it's an order of work in which generators are only tools.",
+    tags: ["video", "editing"],
+  },
   "smm-producer": {
     title: "Personal brand producer",
     summary:
