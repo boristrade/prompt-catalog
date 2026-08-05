@@ -380,7 +380,6 @@ const ru = {
     privacy: "Политика конфиденциальности",
     terms: "Условия использования",
     agreement: "Пользовательское соглашение",
-    follow: "Следите за нами",
     rights: "Все права защищены.",
   },
 };
@@ -758,7 +757,6 @@ const en: Dictionary = {
     privacy: "Privacy policy",
     terms: "Terms of use",
     agreement: "User agreement",
-    follow: "Follow us",
     rights: "All rights reserved.",
   },
 };
@@ -1142,7 +1140,6 @@ const fr: Dictionary = {
     privacy: "Politique de confidentialité",
     terms: "Conditions d'utilisation",
     agreement: "Accord utilisateur",
-    follow: "Suivez-nous",
     rights: "Tous droits réservés.",
   },
 };
@@ -1520,7 +1517,6 @@ const uk: Dictionary = {
     privacy: "Політика конфіденційності",
     terms: "Умови використання",
     agreement: "Угода користувача",
-    follow: "Стежте за нами",
     rights: "Усі права захищені.",
   },
 };
@@ -1903,7 +1899,6 @@ const de: Dictionary = {
     privacy: "Datenschutzerklärung",
     terms: "Nutzungsbedingungen",
     agreement: "Nutzervereinbarung",
-    follow: "Folgen Sie uns",
     rights: "Alle Rechte vorbehalten.",
   },
 };
@@ -2282,7 +2277,6 @@ const pl: Dictionary = {
     privacy: "Polityka prywatności",
     terms: "Warunki korzystania",
     agreement: "Umowa użytkownika",
-    follow: "Obserwuj nas",
     rights: "Wszelkie prawa zastrzeżone.",
   },
 };
