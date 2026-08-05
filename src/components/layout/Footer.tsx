@@ -1,8 +1,8 @@
 import Link from "next/link";
-import { Instagram, Send, Youtube } from "lucide-react";
+import { Instagram, Mail, Send, Youtube } from "lucide-react";
 import { CATEGORIES } from "@/lib/categories";
 import { LogoMark, LogoWord } from "@/components/layout/Logo";
-import { activeSocials, type SocialKey } from "@/lib/contact";
+import { SUPPORT_EMAIL, activeSocials, type SocialKey } from "@/lib/contact";
 import type { Locale } from "@/lib/i18n/config";
 import type { Dictionary } from "@/lib/i18n/dictionaries";
 
@@ -51,6 +51,57 @@ export default function Footer({
             <p className="mt-3.5 max-w-[32ch] text-[13.5px] leading-relaxed text-muted">
               {t.footer.tagline}
             </p>
+
+            {/*
+              Почта поддержки прямо в подвале: её ищут именно здесь, а
+              до этого она жила только на отдельной странице.
+
+              Ведём на страницу обратной связи, а не в mailto. mailto
+              срабатывает, только если в системе назначен почтовый клиент;
+              с телефона, где почтой пользуются через сайт, и внутри
+              встроенных браузеров нажатие не делает ничего — человек
+              решает, что связаться не с кем. На странице адрес показан
+              текстом, который можно скопировать.
+
+              break-all для адреса: на 360px длинная почта иначе
+              распирает колонку и уводит страницу вбок.
+            */}
+            <Link
+              href={`/${locale}/contact`}
+              className="group mt-4 flex items-start gap-2 text-[13.5px] text-muted transition-colors duration-200 hover:text-accent"
+            >
+              <Mail
+                size={15}
+                className="mt-0.5 shrink-0 text-accent"
+                aria-hidden
+              />
+              <span className="min-w-0 break-all">{SUPPORT_EMAIL}</span>
+            </Link>
+
+            {/*
+              Значки соцсетей — здесь, а не отдельной колонкой: их два-три
+              штуки, и колонка ради трёх значков смотрелась пустой. Пока
+              ни одного адреса не задано, блока нет вовсе.
+            */}
+            {socials.length > 0 && (
+              <div className="mt-5 flex items-center gap-2.5">
+                {socials.map(({ key, href }) => {
+                  const { label, Icon } = SOCIAL_ICONS[key];
+                  return (
+                    <a
+                      key={key}
+                      href={href}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      aria-label={label}
+                      className="flex h-9 w-9 items-center justify-center rounded-chip border border-line bg-surface text-muted transition-[color,border-color,transform] duration-200 hover:-translate-y-0.5 hover:border-violet hover:text-accent"
+                    >
+                      <Icon size={15} />
+                    </a>
+                  );
+                })}
+              </div>
+            )}
           </div>
 
           {/* Навигация */}
@@ -109,32 +160,6 @@ export default function Footer({
               ))}
             </ul>
           </div>
-
-          {/* Соцсети. Ни одного адреса не задано — колонки нет вовсе. */}
-          {socials.length > 0 && (
-            <div>
-              <div className="text-[13px] font-semibold text-ink">
-                {t.footer.follow}
-              </div>
-              <div className="mt-4 flex items-center gap-2.5">
-                {socials.map(({ key, href }) => {
-                  const { label, Icon } = SOCIAL_ICONS[key];
-                  return (
-                    <a
-                      key={key}
-                      href={href}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      aria-label={label}
-                      className="flex h-9 w-9 items-center justify-center rounded-chip border border-line bg-surface text-muted transition-[color,border-color,transform] duration-200 hover:-translate-y-0.5 hover:border-violet hover:text-accent"
-                    >
-                      <Icon size={15} />
-                    </a>
-                  );
-                })}
-              </div>
-            </div>
-          )}
         </div>
 
         <div className="mt-12 border-t border-line pt-6 text-center text-[12.5px] text-faint">
