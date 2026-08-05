@@ -64,6 +64,12 @@ export interface DisplayCard {
   градуса — по разметке всё правильно, а глазом на телефоне не отличить
   от простого списка. Стопка должна читаться как стопка.
 
+  Поворот записан через transform, а не через утилиту rotate-*. Tailwind
+  выдаёт для неё отдельное свойство rotate: — оно новее и в старых Safari
+  просто игнорируется. Тогда нахлёст работает, а наклона нет, и со
+  стороны это выглядит как «ничего не поменялось». transform понимают
+  все браузеры без исключения.
+
   Поля по бокам разные у каждой карточки: одинаковые края выдают список,
   разные — кучу карточек. Заодно они дают запас под поворот: повёрнутая
   карточка занимает чуть больше своей ширины, и на 360px без запаса
@@ -80,9 +86,9 @@ export interface DisplayCard {
   распирала колонку на два десятка пикселей.
 */
 const LAYERS = [
-  "z-[1] min-w-0 mr-7 -rotate-[3deg] lg:mr-0 lg:rotate-0 lg:[grid-area:stack] lg:-translate-x-36 lg:-translate-y-3 lg:opacity-70 lg:hover:z-10 lg:hover:-translate-y-9 lg:hover:opacity-100",
-  "z-[2] min-w-0 mx-3 -mt-7 rotate-[2.2deg] lg:mx-0 lg:mt-0 lg:rotate-0 lg:[grid-area:stack] lg:translate-y-7 lg:opacity-85 lg:hover:z-10 lg:hover:translate-y-1 lg:hover:opacity-100",
-  "z-[3] min-w-0 ml-7 -mt-7 -rotate-[1.4deg] lg:ml-0 lg:mt-0 lg:rotate-0 lg:[grid-area:stack] lg:translate-x-36 lg:translate-y-[4.25rem] lg:hover:z-10 lg:hover:translate-y-10",
+  "z-[1] min-w-0 mr-7 [transform:rotate(-3deg)] lg:mr-0 lg:[transform:none] lg:[grid-area:stack] lg:-translate-x-36 lg:-translate-y-3 lg:opacity-70 lg:hover:z-10 lg:hover:-translate-y-9 lg:hover:opacity-100",
+  "z-[2] min-w-0 mx-3 -mt-7 [transform:rotate(2.2deg)] lg:mx-0 lg:mt-0 lg:[transform:none] lg:[grid-area:stack] lg:translate-y-7 lg:opacity-85 lg:hover:z-10 lg:hover:translate-y-1 lg:hover:opacity-100",
+  "z-[3] min-w-0 ml-7 -mt-7 [transform:rotate(-1.4deg)] lg:ml-0 lg:mt-0 lg:[transform:none] lg:[grid-area:stack] lg:translate-x-36 lg:translate-y-[4.25rem] lg:hover:z-10 lg:hover:translate-y-10",
 ];
 
 export default function DisplayCards({ cards }: { cards: DisplayCard[] }) {
