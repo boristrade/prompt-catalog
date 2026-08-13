@@ -22,6 +22,8 @@ import { pageLocale } from "@/lib/i18n";
 import { templatesFor } from "@/lib/templates";
 import { pageMeta } from "@/lib/seo";
 import Reveal from "@/components/Reveal";
+import Constellation from "@/components/Constellation";
+import CountUp from "@/components/CountUp";
 import DisplayCards from "@/components/DisplayCards";
 import TemplateMarquee from "@/components/TemplateMarquee";
 import HeroVisual from "@/components/HeroVisual";
@@ -73,14 +75,10 @@ export default async function HomePage({
   const { locale, t } = await pageLocale(params);
 
   const stats = [
-    { icon: FileText, value: `${PROMPTS.length}`, label: t.home.statPrompts },
-    { icon: Sparkles, value: `${freeCount}`, label: t.home.statFree },
-    {
-      icon: Layers,
-      value: `${CATEGORIES.length}`,
-      label: t.home.statCategories,
-    },
-    { icon: Zap, value: `${TOOLS.length}`, label: t.home.statTools },
+    { icon: FileText, value: PROMPTS.length, label: t.home.statPrompts },
+    { icon: Sparkles, value: freeCount, label: t.home.statFree },
+    { icon: Layers, value: CATEGORIES.length, label: t.home.statCategories },
+    { icon: Zap, value: TOOLS.length, label: t.home.statTools },
   ];
 
   /*
@@ -122,6 +120,7 @@ export default async function HomePage({
     <>
       {/* Hero */}
       <section className="glow relative pt-14 pb-14 md:pt-20 md:pb-16">
+        <Constellation />
         <div className="relative z-10 grid items-center gap-12 lg:grid-cols-[1fr_minmax(0,520px)]">
           <div>
             {/*
@@ -147,7 +146,7 @@ export default async function HomePage({
             <div className="rise rise-3 mt-8 flex flex-wrap items-center gap-3">
               <Link
                 href={`/${locale}/prompts/${CATEGORIES[0].slug}`}
-                className="grad-fill group inline-flex items-center gap-2 rounded-chip px-5 py-3 text-[14px] font-semibold shadow-[0_10px_30px_-10px_var(--glow)] transition-[opacity,transform] duration-200 hover:opacity-90 active:scale-[0.97]"
+                className="grad-fill shine group inline-flex items-center gap-2 rounded-chip px-5 py-3 text-[14px] font-semibold shadow-[0_10px_30px_-10px_var(--glow)] transition-[opacity,transform] duration-200 hover:opacity-90 active:scale-[0.97]"
               >
                 {t.home.ctaFind}
                 <ArrowRight
@@ -212,7 +211,7 @@ export default async function HomePage({
                 </span>
                 <div>
                   <div className="font-display text-[24px] leading-none text-ink">
-                    {value}
+                    <CountUp value={value} />
                   </div>
                   <div className="mt-1.5 text-[12.5px] text-muted">{label}</div>
                 </div>
@@ -414,7 +413,7 @@ export default async function HomePage({
               <div className="shrink-0">
                 <Link
                   href={`/${locale}/prompts/${CATEGORIES[0].slug}`}
-                  className="grad-fill group inline-flex items-center gap-2 rounded-chip px-5 py-3 text-[14px] font-semibold shadow-[0_12px_30px_-12px_var(--glow)] transition-[opacity,transform] duration-200 hover:opacity-90 active:scale-[0.97]"
+                  className="grad-fill shine group inline-flex items-center gap-2 rounded-chip px-5 py-3 text-[14px] font-semibold shadow-[0_12px_30px_-12px_var(--glow)] transition-[opacity,transform] duration-200 hover:opacity-90 active:scale-[0.97]"
                 >
                   {t.home.finalCta}
                   <ArrowRight
