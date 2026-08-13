@@ -45,7 +45,7 @@ export default function Footer({
           {/* Бренд */}
           <div className="col-span-2 md:col-span-1">
             <div className="flex items-center gap-2">
-              <LogoMark className="h-8 w-8 shrink-0" />
+              <LogoMark id="footer" className="h-8 w-8 shrink-0" />
               <LogoWord className="text-[17px]" />
             </div>
             <p className="mt-3.5 max-w-[32ch] text-[13.5px] leading-relaxed text-muted">

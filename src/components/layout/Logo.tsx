@@ -35,21 +35,35 @@ const STREAKS = [
   { y: 29, x: 9, opacity: 0.7 },
 ];
 
-export function LogoMark({ className = "" }: { className?: string }) {
+export function LogoMark({
+  id,
+  className = "",
+}: {
   /*
-    Градиент объявляется внутри каждого знака, поэтому id обязан быть
-    уникальным: два одинаковых id на странице — и второй знак возьмёт
-    чужой градиент. useId здесь нельзя, компонент серверный.
+    Различающая часть id — своя у каждого знака на странице.
+
+    Градиент и маска объявляются внутри самого svg, а ссылка url(#id)
+    ищется по всему документу. Знак стоит и в шапке, и в подвале: с
+    одинаковыми id вторая ссылка в Safari не разрешается вовсе, маска не
+    применяется — и в подвале вместо «P» был сплошной фиолетовый
+    квадрат. В Chrome при этом всё выглядело правильно, поэтому ошибку
+    видно только с телефона.
+
+    Параметр обязательный: с необязательным про него забыли бы у
+    третьего знака, и квадрат вернулся бы. Уникальность стережёт
+    logo-id.test.ts.
   */
+  id: string;
+  className?: string;
+}) {
+  const gradientId = `promptom-grad-${id}`;
+  const maskId = `promptom-mask-${id}`;
+
   return (
-    <svg
-      viewBox="0 0 48 48"
-      className={className}
-      aria-hidden
-    >
+    <svg viewBox="0 0 48 48" className={className} aria-hidden>
       <defs>
         <linearGradient
-          id="promptom-grad"
+          id={gradientId}
           x1="0"
           y1="48"
           x2="48"
@@ -60,7 +74,7 @@ export function LogoMark({ className = "" }: { className?: string }) {
           <stop offset="1" stopColor="#a855f7" />
         </linearGradient>
 
-        <mask id="promptom-mask">
+        <mask id={maskId}>
           {/* Силуэт «P» без внутреннего просвета — просвет вырежет пузырь */}
           <path d="M20 5 H30 A11 11 0 0 1 30 27 V43 H20 Z" fill="#fff" />
           {/* Пузырь речи: круг с хвостом вниз-влево */}
@@ -76,8 +90,8 @@ export function LogoMark({ className = "" }: { className?: string }) {
       <rect
         width="48"
         height="48"
-        fill="url(#promptom-grad)"
-        mask="url(#promptom-mask)"
+        fill={`url(#${gradientId})`}
+        mask={`url(#${maskId})`}
       />
 
       {STREAKS.map(({ y, x, opacity }) => (
@@ -88,14 +102,26 @@ export function LogoMark({ className = "" }: { className?: string }) {
           width={STREAK_END - x}
           height="4"
           rx="2"
-          fill="url(#promptom-grad)"
+          fill={`url(#${gradientId})`}
           opacity={opacity}
         />
       ))}
 
       {/* Две точки — самые дальние брызги, без них штрихи выглядят строем */}
-      <circle cx="5" cy="10" r="1.8" fill="url(#promptom-grad)" opacity="0.45" />
-      <circle cx="12" cy="37" r="1.8" fill="url(#promptom-grad)" opacity="0.55" />
+      <circle
+        cx="5"
+        cy="10"
+        r="1.8"
+        fill={`url(#${gradientId})`}
+        opacity="0.45"
+      />
+      <circle
+        cx="12"
+        cy="37"
+        r="1.8"
+        fill={`url(#${gradientId})`}
+        opacity="0.55"
+      />
     </svg>
   );
 }
@@ -125,7 +151,7 @@ export default function Logo({
       className={`flex items-center gap-2 ${className}`}
       aria-label="PrompTom"
     >
-      <LogoMark className="h-8 w-8 shrink-0" />
+      <LogoMark id="header" className="h-8 w-8 shrink-0" />
       <LogoWord className="text-[17px]" />
     </Link>
   );
