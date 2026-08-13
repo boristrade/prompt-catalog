@@ -20,12 +20,28 @@ export default function Footer({
   locale: Locale;
   t: Dictionary;
 }) {
-  const support = [
+  /*
+    В «Каталоге» — всё, куда ходят за содержимым: разделы промтов, гайды,
+    скилы, а следом свои страницы — тарифы, кабинет, партнёрская.
+
+    В «Поддержке» осталось ровно то, что ею и является: ответы на
+    вопросы и способ написать. Раньше туда сваливалось всё подряд, и
+    человек, которому нужны были гайды, искал их под заголовком
+    «Поддержка», где искать не станет никто.
+  */
+  const catalog = [
+    ...CATEGORIES.map((c) => ({
+      label: t.categories[c.slug].nav,
+      href: `/${locale}/prompts/${c.slug}`,
+    })),
     { label: t.guides.nav, href: `/${locale}/guides` },
     { label: t.skills.nav, href: `/${locale}/skills` },
     { label: t.footer.pricing, href: `/${locale}/pricing` },
     { label: t.footer.account, href: `/${locale}/account` },
     { label: t.partner.nav, href: `/${locale}/partner` },
+  ];
+
+  const support = [
     { label: t.footer.faq, href: `/${locale}/faq` },
     { label: t.footer.feedback, href: `/${locale}/contact` },
   ];
@@ -110,13 +126,13 @@ export default function Footer({
               {t.footer.catalog}
             </div>
             <ul className="mt-4 space-y-2.5">
-              {CATEGORIES.map((c) => (
-                <li key={c.slug}>
+              {catalog.map((c) => (
+                <li key={c.href}>
                   <Link
-                    href={`/${locale}/prompts/${c.slug}`}
+                    href={c.href}
                     className="text-[13.5px] text-muted transition-colors duration-200 hover:text-accent"
                   >
-                    {t.categories[c.slug].nav}
+                    {c.label}
                   </Link>
                 </li>
               ))}
