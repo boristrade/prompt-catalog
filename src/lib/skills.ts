@@ -69,6 +69,11 @@ const PRO_SKILLS: readonly string[] = [
   "openmontage",
   "smm-producer",
   "carousel-conveyor",
+  "debug-root-cause",
+  "db-migration",
+  "webapp-test",
+  "page-speed",
+  "mcp-server",
 ];
 
 export interface Skill extends SkillText {
@@ -476,6 +481,164 @@ const RU: Record<string, SkillText> = {
     why: "Мёртвый код опаснее, чем кажется: его читают при разборе, на него ориентируются, его правят вместе с живым. А удалять на глаз рискованно — поэтому скил требует показать доказательство, а не догадку.",
     tags: ["уборка", "рефакторинг"],
   },
+  "debug-root-cause": {
+    title: "Поиск причины, а не удачной правки",
+    summary:
+      "Заставляет сначала воспроизвести ошибку и назвать причину, и только потом трогать код.",
+    what: [
+      "Срабатывает на «сломалось», «вчера работало», «тест падает через раз», «на проде не так, как локально».",
+      "Требует сформулировать ошибку одной фразой: при таком входе в таком состоянии код делает X вместо Y. Пока фразы нет — любая правка остаётся угадыванием.",
+      "Ищет последнюю рабочую версию раньше, чем читает код: коммит, после которого сломалось, обычно называет причину сам и стоит дешевле чтения.",
+      "Разрешает менять по одной вещи за раз. Две правки сразу — и непонятно, какая из них сказала правду.",
+      "Знает обычные укрытия: значение не то, что вы думаете; общее состояние между запросами; порядок выполнения; проглоченная ошибка в пустом catch.",
+      "Не даёт закрыть задачу словами «поменял и перестало». Это не причина, а перемещение ошибки в другое место.",
+    ],
+    why: "Правка, подобранная наугад, иногда срабатывает — и это хуже, чем если бы она не сработала: ошибка никуда не делась, а стала тише и всплывёт там, где её никто не ждёт. Скил разворачивает работу в обратную сторону: сначала воспроизведение, потом гипотеза, потом одна проверка. Дольше на первых десяти минутах и заметно короче на всей задаче.",
+    tags: ["отладка", "ошибки"],
+  },
+  "webapp-test": {
+    title: "Проверка приложения в браузере",
+    summary:
+      "Открывает страницу по-настоящему и смотрит, что видит человек, а не что написано в разметке.",
+    what: [
+      "Срабатывает на «проверь, работает ли», «сделай скриншот», «посмотри на телефоне».",
+      "Ищет уже установленный браузер, прежде чем что-то скачивать: playwright install тянет сотни мегабайт ради того, что обычно уже лежит на диске.",
+      "Проверяет продакшен-сборку, а не режим разработки: тот прячет ошибки гидратации и раздаёт стили с другой очередью применения.",
+      "Меряет горизонтальную прокрутку числом и находит элемент, который вылезает, — а не полагается на глаз.",
+      "Нажимает на кнопку, а не только смотрит: перекрывающие друг друга элементы воруют нажатия так, что на скриншоте этого не видно.",
+      "Проверяет обе темы, включая состояние, когда выбор темы не сделан вовсе, — в нём и оказывается большинство.",
+    ],
+    why: "Классы на месте, а правило проиграло по специфичности; элемент есть, а лежит под другим — разметка об этом не расскажет. Проверка кода и проверка того, что видит человек, — разные действия, и первое регулярно выдают за второе. Скил требует скриншота с указанием ширины и темы, на которых он снят, и запрещает описывать разметку так, будто вы смотрели на страницу.",
+    tags: ["браузер", "проверка"],
+  },
+  "regression-test": {
+    title: "Тест, который поймал бы эту ошибку",
+    summary:
+      "После починки пишет проверку на тот самый вход, который ломал, — и доказывает, что она не пустая.",
+    what: [
+      "Срабатывает после исправления дефекта, на «напиши тесты», и особенно когда ошибка вернулась второй раз.",
+      "Называет тест поведением, а не функцией: через полгода имя должно объяснять, что именно сломалось.",
+      "Берёт ровно тот вход, на котором упало: пустой список, имя в сорок символов, второй вызов, отсутствующая переменная окружения. Не аккуратный типовой случай.",
+      "Ломает код нарочно и смотрит, что тест краснеет. Тест, который проходит на сломанном коде, хуже, чем его отсутствие: за ним никого нет, а доверие есть.",
+      "Отдельно предупреждает про проверки на пустоту: ожидание пустого списка проходит и тогда, когда функциональность пропала целиком.",
+      "Отговаривает от тестов на фреймворк, снимков больших структур и всего, что зависит от сети и часов.",
+    ],
+    why: "Починка без теста живёт до следующего человека, открывшего этот файл. Но и тест бывает декоративным: половина проверок в проектах проходит на любом коде, включая полностью удалённый, — и никто этого не замечает, потому что зелёное. Скил требует доказательства обратного: сломать код и увидеть падение.",
+    tags: ["тесты", "регрессия"],
+  },
+  "db-migration": {
+    title: "Миграция без потери данных",
+    summary:
+      "Меняет схему так, чтобы старый и новый код пережили её оба — и откат тоже.",
+    what: [
+      "Срабатывает на «добавь колонку», «переименуй поле», «поменяй тип», «нужна миграция».",
+      "Исходит из того, что старый и новый код какое-то время работают одновременно, а при откате — долго. Отсюда всё остальное.",
+      "Переименование разбивает на четыре выката: добавить, писать в обе, перенести, переключить чтение, потом удалить. Переименование одним шагом ломает все запущенные копии старого кода разом.",
+      "Удаление ставит отдельным выкатом позже кода, который перестал этим пользоваться. Иначе откат оставляет код, ждущий несуществующую колонку.",
+      "Спрашивает число строк до, а не после: перенос на десять тысяч — это команда, на десять миллионов — пакетная работа, иначе блокировка кладёт сайт.",
+      "Требует написать и прочитать обратную миграцию, а если данные не вернуть — сказать об этом прямо в файле, чтобы человек в три часа ночи знал заранее.",
+      "Проверяет на копии боевых данных: пустая база доказывает только то, что синтаксис разобрался.",
+    ],
+    why: "Миграции ломаются не на синтаксисе, а на том, что кто-то забыл про пять минут, когда работают обе версии кода. Дубликаты, мешающие уникальному индексу, пустые значения в колонке, которая становится обязательной, блокировка на большой таблице — всё это видно только на настоящих данных и только если задать вопрос заранее.",
+    tags: ["база данных", "миграции"],
+  },
+  "webhook-handler": {
+    title: "Приём вебхуков без двойных списаний",
+    summary:
+      "Подпись, повторы и идемпотентность — четыре правила, из-за которых один платёж не продлевает доступ дважды.",
+    what: [
+      "Срабатывает на «добавь обработчик уведомлений», «подключи платежи», «пришло дважды».",
+      "Исходит из того, что отправитель пришлёт одно и то же событие несколько раз, не по порядку и иногда сильно позже.",
+      "Требует проверять подпись по сырым байтам, а не по разобранному и заново собранному JSON: пересборка меняет порядок ключей, и подпись перестаёт сходиться по причине, которую ищут неделю.",
+      "Хранит идентификатор события с уникальным ограничением и делает проверку и работу одной транзакцией — двумя отдельными запросами они гонятся, а под повторами гонятся обязательно.",
+      "Отвечает двухсотым как можно раньше и работает после: работа до ответа съедает таймаут отправителя, а таймаут — это ещё один повтор.",
+      "Требует отвечать двухсотым и на события, которые вы не обрабатываете: четырёхсотый заставляет отправителя повторять их вечно и в итоге отключить адрес.",
+      "В логах при неудачной подписи оставляет только идентификатор события: ни тела, ни заголовка, ни вычисленной подписи.",
+    ],
+    why: "Уведомление приходит на каждую смену статуса, и провайдер повторяет его, пока не увидит успешный ответ. Без ключа по идентификатору события один платёж продлевает подписку дважды, а человек об этом даже не узнает — узнает бухгалтерия через месяц. Проверка подписи по пересобранному JSON и работа до ответа — две другие ошибки, которые повторяют почти все.",
+    tags: ["вебхуки", "платежи"],
+  },
+  "page-speed": {
+    title: "Почему страница медленная",
+    summary:
+      "Сначала меряет, потом чинит — и в том порядке, в котором это вообще имеет смысл.",
+    what: [
+      "Срабатывает на «сайт тормозит», «низкий балл», «проверь скорость».",
+      "Запрещает трогать что-либо до замера: догадки о том, что тормозит, обычно неверны, а оптимизация не того стоит дня и не двигает ничего.",
+      "Меряет на медленном устройстве и медленной сети: замер на быстрой машине по проводу ничего не говорит о телефоне, с которого и заходят.",
+      "Читает три числа и знает, кого винит каждое: самая крупная отрисовка — картинку или шрифт, сдвиг вёрстки — опоздавший элемент без размеров, задержка отклика — почти всегда JavaScript.",
+      "Чинит по порядку: не отправлять, отправить меньше, отправить позже, отправить раньше. И запрещает откладывать загрузку главной картинки — от этого число становится хуже.",
+      "Требует назвать число до, число после и устройство, на котором мерили. Процент без основания не значит ничего.",
+      "Возвращает назад правку, которая не сдвинула число: сложность, купленная зря, оплачивается следующим читателем кода.",
+    ],
+    why: "Скорость чинят по советам из статей — и получают неделю работы без изменений в числах. Порядок здесь важнее приёмов: самый быстрый ресурс тот, который не запросили, и удаление лишней библиотеки почти всегда даёт больше, чем любая настройка сжатия. А главная ошибка — откладывать загрузку той самой картинки, по которой и считается результат.",
+    tags: ["скорость", "оптимизация"],
+  },
+  "secret-scan": {
+    title: "Проверка на утёкшие ключи",
+    summary:
+      "Смотрит и историю репозитория, и собранный бандл: это две разные утечки, и вторую замечают позже.",
+    what: [
+      "Срабатывает перед первым пушем, перед открытием репозитория и на любое упоминание ключей и переменных окружения.",
+      "Ищет по истории, а не только в рабочих файлах: удалённая строка остаётся в git и достаётся одной командой.",
+      "Проверяет, что .gitignore вообще действует: на файл, который git уже отслеживает, он не влияет никак.",
+      "Отдельно смотрит собранный бандл. Всё с приставкой для клиента — NEXT_PUBLIC_, VITE_, REACT_APP_ — публично по определению и ничем не защищено.",
+      "Различает ключи по последствиям: публикуемый ключ платёжной системы задуман открытым, а ключ, обходящий политики доступа базы, открывает данные всех пользователей.",
+      "При найденной утечке требует сначала отозвать ключ, а не удалить строку: попавшее в публичный репозиторий, в переписку или в бандл нужно считать известным чужим людям, и переписывание истории этого не отменяет.",
+      "Никогда не просит прислать ключ для проверки и не печатает найденное значение в ответ — только файл и строку.",
+    ],
+    why: "Про утечку в истории знают все, про утечку в бандл — реже: ключ с клиентской приставкой попадает в файл, который отдаётся каждому открывшему страницу, и выглядит при этом как обычная переменная окружения. Порядок действий тоже обычно неверный: строку удаляют, ключ оставляют рабочим — а он уже у того, кто читал репозиторий раньше вас.",
+    tags: ["безопасность", "ключи"],
+  },
+  "skill-writer": {
+    title: "Как написать свой скил",
+    summary:
+      "Разбирает, почему скил не срабатывает и чем он отличается от пересказа того, что модель делает и так.",
+    what: [
+      "Срабатывает на «напиши скил», «мой скил не подхватывается», «как упаковать процесс».",
+      "Объясняет, что описание в шапке — это не аннотация, а условие срабатывания: только его читают до загрузки скила.",
+      "Требует писать в описании те слова, которыми человек говорит на самом деле: «сделай, чтобы на телефоне не разъезжалось», а не «выполнить адаптивную проверку».",
+      "Называет две причины, по которым скил молчит: описание не про те ситуации, либо рядом есть второй скил, который выигрывает.",
+      "Требует правил с обоснованием: правило без причины перестаёт работать в первой же ситуации, которой автор не предвидел.",
+      "Держит длину под двести строк: скил грузится в рабочий контекст и длинным вытесняет то, ради чего его позвали. Подробности — в отдельный файл рядом.",
+      "Проверяет честно: свежая сессия, живая формулировка, и три вопроса — сработал ли, изменился ли ответ, не перехватывает ли чужие задачи.",
+    ],
+    why: "Большинство самодельных скилов не срабатывают ни разу, и автор об этом не узнаёт: ошибок нет, просто ничего не происходит. Вторая по частоте беда — скил, который срабатывает и пересказывает то, что модель сделала бы сама: он не вредит ответу, но тратит контекст. Оба случая проверяются за пять минут, если знать, что проверять.",
+    tags: ["скилы", "claude code"],
+  },
+  "mcp-server": {
+    title: "Сборка MCP-сервера",
+    summary:
+      "Не обёртка над каждой ручкой API, а набор инструментов, которым модель может пользоваться без подсказок.",
+    what: [
+      "Срабатывает на «подключи сервис к Claude», «нужен MCP», «отдай наше API агенту».",
+      "Требует проектировать инструменты по намерениям, а не по ручкам: у API из двенадцати ручек обычно выходит три хороших инструмента, а перенос один в один даёт поверхность, из которой модель собирает сценарий и собирает неверно.",
+      "Считает описание инструмента документацией: модель выбирает по нему одному, и там должно быть сказано, чем этот инструмент отличается от соседнего.",
+      "Требует ограничений прямо в схеме: перечисления, форматы, обязательные поля. Каждое ограничение — класс ошибок, который модель уже не сможет совершить.",
+      "Запрещает возвращать сырой дамп из сотни полей: он тратит контекст и хоронит ответ. Возвращать надо то, что понадобится следующему вызову.",
+      "В ошибках требует причину и способ исправить: «нет доступа» даёт цикл повторов, «токену не хватает области orders:read» даёт следующий шаг.",
+      "Отдельно предупреждает про вывод в stdout: при stdio-транспорте stdout — это сам протокол, и один случайный print убивает сервер.",
+    ],
+    why: "Протокол сам по себе несложный, его закрывает библиотека. Ломается всё на дизайне: инструменты, повторяющие ручки API, требуют, чтобы кто-то знал порядок вызовов, а модель его не знает и придумывает. Плюс два молчаливых убийцы — печать в stdout и ответ без ограничения размера, который заканчивает разговор раньше задачи.",
+    tags: ["mcp", "интеграции"],
+  },
+  "error-triage": {
+    title: "Разбор ошибок с боевого сервера",
+    summary:
+      "Из четырёхсот открытых issue делает список из трёх — и объясняет, почему остальные не в счёт.",
+    what: [
+      "Срабатывает на присланные логи, список issue из трекера, «что чинить первым», «трекер забит мусором».",
+      "Сортирует по двум числам сразу: сколько людей задело и во что им это обошлось. Один человек в цикле повторов даёт десять тысяч событий и значит меньше, чем ошибка, задевшая сорок человек по разу.",
+      "Разделяет четыре вида: настоящий дефект, чужой злонамеренный или кривой запрос, чужая недоступность и шум, который вы создали сами.",
+      "Для чужой недоступности переводит вопрос: не как её прекратить, а что делает ваш код, пока она длится, — повторяет, падает закрыто или врёт человеку.",
+      "Требует прочитать одно настоящее событие целиком, а не сводку: в сводке не видно того, чем этот запрос отличался от десяти тысяч успешных.",
+      "Смотрит, что было прямо перед: исключение часто второе, а первым было предупреждение, которое сгруппировали отдельно.",
+      "Требует сказать вслух, что вы решили не чинить, и убрать это из ошибок — иначе список снова становится нечитаемым.",
+      "Запрещает вставлять в отчёт токены, почты и тела запросов из логов.",
+    ],
+    why: "Трекер с четырьмя сотнями открытых issue равен трекеру с нулём: не читают ни тот, ни другой. Сортировка по числу событий делает только хуже — наверх всплывает один человек с включённым повтором. Считать надо людей и последствия, а остальное переводить из ошибок в шум, иначе через месяц всё повторится.",
+    tags: ["ошибки", "продакшен"],
+  },
 };
 
 const EN: Record<string, SkillText> = {
@@ -644,6 +807,164 @@ const EN: Record<string, SkillText> = {
     ],
     why: "Dead code is more dangerous than it looks: people read it while investigating, orient by it, and maintain it alongside the live code. Deleting on a hunch is risky — so this demands evidence, not a guess.",
     tags: ["cleanup", "refactoring"],
+  },
+  "debug-root-cause": {
+    title: "Finding the cause, not a fix that happens to work",
+    summary:
+      "Forces you to reproduce the bug and name the cause before touching any code.",
+    what: [
+      "Triggers on “it broke”, “it worked yesterday”, “the test fails intermittently”, “production behaves differently”.",
+      "Demands the bug stated in one sentence: given this input, in this state, the code does X where it should do Y. Without that sentence, every edit is a guess.",
+      "Finds the last working version before reading the code: the commit that introduced it usually names the cause outright and costs less than reading.",
+      "Allows one change at a time. Two at once and you cannot tell which one told you the truth.",
+      "Knows the usual hiding places: a value that is not what you assume, shared state between requests, ordering, an error swallowed by an empty catch.",
+      "Will not let you close with “I changed it and it stopped”. That is not a cause, it is the bug moved somewhere quieter.",
+    ],
+    why: "A guessed fix sometimes works, and that is worse than failing outright: the bug has not gone anywhere, it has gone quiet and will surface where nobody is looking. This runs the work backwards — reproduce, then believe something, then test that one belief. Slower for the first ten minutes and markedly shorter over the whole job.",
+    tags: ["debugging", "bugs"],
+  },
+  "webapp-test": {
+    title: "Checking the app in a browser",
+    summary:
+      "Opens the page for real and looks at what a person sees, not at what the markup says.",
+    what: [
+      "Triggers on “does it work”, “take a screenshot”, “check it on mobile”.",
+      "Looks for a browser already installed before downloading anything: playwright install pulls hundreds of megabytes for what is usually already on disk.",
+      "Tests the production build rather than the dev server, which hides hydration errors and applies styles on a different schedule.",
+      "Measures sideways scroll as a number and finds the element that overflows, instead of trusting the eye.",
+      "Clicks the thing rather than only looking at it: overlapping elements steal clicks in ways no screenshot reveals.",
+      "Checks both themes, including the state where no theme was ever chosen — which is where most viewers are.",
+    ],
+    why: "The class can be present and the rule still lose on specificity; the element can exist and sit behind another one. Markup will not tell you. Checking the code and checking what a person sees are different acts, and the first is routinely passed off as the second. This one demands a screenshot with the width and theme it was taken at, and forbids describing markup as though you had looked at the page.",
+    tags: ["browser", "verification"],
+  },
+  "regression-test": {
+    title: "The test that would have caught it",
+    summary:
+      "After a fix, writes the check on the exact input that broke — and proves the check is not hollow.",
+    what: [
+      "Triggers after fixing a defect, on “write tests”, and especially when a bug has returned a second time.",
+      "Names the test after the behaviour rather than the function: six months on, the name must explain what broke.",
+      "Takes the exact input that failed: the empty list, the 40-character name, the second call, the missing environment variable. Not a tidy representative case.",
+      "Breaks the code on purpose and watches the test fail. A test that passes against broken code is worse than none: everyone trusts it and nothing is behind it.",
+      "Warns specifically about emptiness assertions: expecting an empty list also passes when the feature is gone entirely.",
+      "Argues you out of testing the framework, snapshotting large structures, and anything depending on the network or a real clock.",
+    ],
+    why: "A fix without a test lasts until the next person opens that file. But tests can be decorative too: plenty of suites pass against code that has been deleted, and nobody notices, because green. This demands the opposite proof — break the code and watch it fail.",
+    tags: ["testing", "regression"],
+  },
+  "db-migration": {
+    title: "Migrating without losing data",
+    summary:
+      "Changes a schema so both the old and new code survive it — and so does a rollback.",
+    what: [
+      "Triggers on “add a column”, “rename this field”, “change the type”, “write a migration”.",
+      "Starts from the fact that old and new code overlap in production for minutes, and on a rollback for much longer. Everything else follows.",
+      "Splits a rename into four deploys: add, write to both, backfill, switch reads, drop later. A rename in one step breaks every running instance of the old code at once.",
+      "Puts a drop in a later deploy than the code that stopped using it. Otherwise a rollback leaves code expecting a column that is gone.",
+      "Asks the row count before, not after: a backfill over ten thousand rows is a statement, over ten million it is a batched job, or the lock takes the site down.",
+      "Requires the down migration to be written and read, and if the data cannot come back, to say so in the file itself — so the person at 3am knows before running it.",
+      "Verifies against a copy of production data: an empty database proves only that the syntax parsed.",
+    ],
+    why: "Migrations do not break on syntax. They break because somebody forgot the five minutes when both versions of the code are live. Duplicates blocking a new unique constraint, nulls in a column about to be required, a lock on a large table — all of it is visible only on real data, and only if the question was asked in advance.",
+    tags: ["database", "migrations"],
+  },
+  "webhook-handler": {
+    title: "Receiving webhooks without double charges",
+    summary:
+      "Signature, retries and idempotency — the four rules that stop one payment extending access twice.",
+    what: [
+      "Triggers on “add a callback endpoint”, “integrate payments”, “it was processed twice”.",
+      "Starts from the fact that the sender will deliver the same event more than once, out of order, and sometimes much later.",
+      "Requires verifying the signature over raw bytes rather than reparsed and reserialised JSON: reserialising changes key order, and the signature stops matching for a reason nobody finds quickly.",
+      "Stores the provider's event id under a unique constraint and does the check and the work in one transaction — two statements race, and under retries they will.",
+      "Answers 200 as early as possible and works afterwards: work before the response eats the sender's timeout, and a timeout is another retry.",
+      "Requires 200 even for event types you ignore: a 4xx makes the sender retry forever and eventually disable the endpoint.",
+      "On a failed signature check, logs the event id and nothing else — not the body, not the header, not the computed digest.",
+    ],
+    why: "A provider sends a notification on every status change and retries until it sees success. Without a key on the event id, one payment extends a subscription twice and nobody notices — until accounting does, a month later. Verifying the signature against reserialised JSON, and working before answering, are the two other mistakes almost everyone makes.",
+    tags: ["webhooks", "payments"],
+  },
+  "page-speed": {
+    title: "Why the page is slow",
+    summary:
+      "Measures first, then fixes — and in the order that actually makes a difference.",
+    what: [
+      "Triggers on “the site is slow”, “bad Lighthouse score”, “check the speed”.",
+      "Forbids touching anything before a measurement: guesses about what is slow are usually wrong, and optimising the wrong thing costs a day and moves nothing.",
+      "Measures on a slow device and a slow connection: a run on a fast machine over fibre says nothing about the phone people actually browse on.",
+      "Reads three numbers and knows what each blames: largest paint blames an image or a font, layout shift blames something that arrived late without dimensions, interaction delay is almost always JavaScript.",
+      "Fixes in order: do not send it, send it smaller, send it later, send it sooner. And forbids lazy-loading the largest paint element — that makes the number worse.",
+      "Requires the number before, the number after, and the device they were measured on. A percentage with no baseline says nothing.",
+      "Reverts a change that moved nothing: complexity bought for nothing is paid for by whoever reads the code next.",
+    ],
+    why: "Speed usually gets fixed by following listicles, which produces a week of work and unchanged numbers. Order matters more than technique here: the fastest asset is the one never requested, and deleting an unused library almost always beats any compression setting. And the classic own goal is lazy-loading the very image the score is computed from.",
+    tags: ["performance", "optimisation"],
+  },
+  "secret-scan": {
+    title: "Scanning for exposed secrets",
+    summary:
+      "Looks at both the git history and the built bundle: two different leaks, and the second is noticed later.",
+    what: [
+      "Triggers before a first push, before making a repository public, and on any mention of keys or environment variables.",
+      "Searches the history, not only the working tree: a deleted line stays in git and comes back with one command.",
+      "Checks that .gitignore is doing anything at all: it has no effect on a file git is already tracking.",
+      "Looks separately at the built bundle. Anything with a client prefix — NEXT_PUBLIC_, VITE_, REACT_APP_ — is public by definition and protected by nothing.",
+      "Ranks keys by consequence: a publishable payment key is meant to be public; a key that bypasses row-level security exposes every user's data.",
+      "On a real leak, demands rotation first rather than deletion: anything that reached a public repository, a chat or a bundle must be treated as known to others, and rewriting history does not un-know it.",
+      "Never asks for a key to be pasted for checking, and never echoes a found value — only the file and the line.",
+    ],
+    why: "Everyone knows about leaks in git history; fewer think about the bundle, where a client-prefixed key ships to every visitor while looking like an ordinary environment variable. The response order is usually wrong too: the line gets deleted and the key left working — while it is already held by whoever read the repository before you.",
+    tags: ["security", "secrets"],
+  },
+  "skill-writer": {
+    title: "Writing your own skill",
+    summary:
+      "Works out why a skill never fires, and what separates one from a restatement of what the model already does.",
+    what: [
+      "Triggers on “write a skill”, “my skill is being ignored”, “how do I package this workflow”.",
+      "Explains that the front-matter description is not a summary but the trigger: it is the only part read before the skill loads.",
+      "Requires the description to use the words people actually type: “make it not fall apart on mobile”, not “perform responsive verification”.",
+      "Names the two reasons a skill stays silent: the description is not about those situations, or a neighbouring skill wins.",
+      "Demands rules with reasons: a rule without one stops working in the first situation its author did not foresee.",
+      "Keeps it under about two hundred lines: a skill is loaded into working context, and a long one crowds out the thing being worked on. Detail goes into a file beside it.",
+      "Tests honestly: a fresh session, real phrasing, and three questions — did it fire, did the answer change, does it hijack unrelated work.",
+    ],
+    why: "Most homemade skills never fire once, and their author never finds out: there is no error, nothing simply happens. The second most common failure is a skill that fires and restates what the model would have done anyway — harmless to the answer, expensive in context. Both take five minutes to detect, if you know what to check.",
+    tags: ["skills", "claude code"],
+  },
+  "mcp-server": {
+    title: "Building an MCP server",
+    summary:
+      "Not a wrapper around every endpoint, but a set of tools a model can use without being coached.",
+    what: [
+      "Triggers on “connect this service to Claude”, “we need MCP”, “expose our API to an agent”.",
+      "Requires designing tools around intentions rather than endpoints: a twelve-endpoint API usually makes three good tools, and a one-to-one mapping produces a surface the model has to assemble a workflow from — and assembles wrong.",
+      "Treats the tool description as the documentation: the model chooses on that alone, so it must say how this tool differs from its neighbour.",
+      "Demands constraints in the schema: enums, formats, required fields. Every constraint is a class of mistake the model can no longer make.",
+      "Forbids returning a raw dump of a hundred fields: it spends context and buries the answer. Return what the next call will need.",
+      "Requires errors to carry the reason and the fix: “not authorised” produces a retry loop, “the token lacks the orders:read scope” produces a next step.",
+      "Warns separately about stdout: under stdio transport, stdout is the protocol, and one stray print kills the server.",
+    ],
+    why: "The protocol itself is not hard; the SDK covers it. Design is where it breaks: tools that mirror endpoints require somebody to know the call order, and the model does not — so it invents one. Plus two quiet killers: printing to stdout, and unbounded output that ends the conversation before the task.",
+    tags: ["mcp", "integrations"],
+  },
+  "error-triage": {
+    title: "Triaging production errors",
+    summary:
+      "Turns four hundred open issues into a list of three — and explains why the rest do not count.",
+    what: [
+      "Triggers on pasted logs, an issue list from a tracker, “what do we fix first”, “the tracker is full of noise”.",
+      "Sorts by two numbers together: how many people were hit and what it cost them. One user in a retry loop generates ten thousand events and matters less than an error that hit forty people once.",
+      "Separates four kinds: a real defect, a hostile or malformed request, somebody else's outage, and noise you created yourself.",
+      "For an outage it changes the question: not how to stop it, but what your code does while it lasts — retry, fail closed, or lie to the user.",
+      "Requires reading one real occurrence in full rather than the aggregate: the aggregate hides what made this request different from the ten thousand that worked.",
+      "Looks at what happened just before: the exception is often the second event, and the first was a warning grouped separately.",
+      "Requires saying out loud what you are choosing not to fix, and removing it from the error level — otherwise the list becomes unreadable again.",
+      "Forbids pasting tokens, emails or request bodies from the logs into the report.",
+    ],
+    why: "A tracker with four hundred open issues is the same as one with zero: nobody reads either. Sorting by event count makes it worse — it floats one user with retries to the top. Count people and consequences instead, and demote the rest out of the error level, or the same pile returns within a month.",
+    tags: ["errors", "production"],
   },
 };
 
