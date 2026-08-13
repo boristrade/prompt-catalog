@@ -426,6 +426,425 @@ Product colour is not a matter of taste: it is what returns are made of.`,
 Do not touch: the saturation of the product itself — on a marketplace that is the first cause of returns…
 Acceptance: cut-out edges with no halo, shadows intact, product not mushy at 100%.`,
   },
+  "color-system-extend": {
+    title: "Palette: states and dark mode",
+    summary:
+      "Two or three brand colours turned into a working set: success, error, hover, dark mode.",
+    bestFor: "Claude / ChatGPT",
+    tags: ["palette", "design system", "dark mode"],
+    prompt: `You are a product designer. Expand a set of brand colours into a working palette.
+
+Brand colours: {hex codes}
+Product: {what it is}
+Primary theme: {light or dark}
+
+Deliver:
+1. A neutral ramp: background, surface, sunken surface, two border weights, three text levels. The neutral is not grey — bias it toward the accent hue, or the interface looks assembled from other people's parts.
+2. Semantic colours: success, warning, error, info — and why these rather than their neighbours on the wheel.
+3. Accent states: hover, pressed, disabled, focus.
+4. The same roles again for the opposite theme. Not an inversion: the same colours read brighter on a dark ground, so saturation has to come down.
+5. Text-to-background contrast for every pair, as a number.
+
+Name each colour by its role, not its look: violet-500 will be blue in six months and the name will start lying.`,
+    example: `Background #09090F is not pure black: it carries 4% of the accent's violet.
+Error #F0616D rather than pure red: next to violet, pure red vibrates.
+Dark theme: the accent lightens from #6D28D9 to #A78BFA — dark violet on black reads as grey.
+Text on background: 14.8:1. Muted text: 5.2:1 — never go below 4.5.`,
+  },
+  "dark-mode-mapping": {
+    title: "Porting a screen to dark mode",
+    summary:
+      "What cannot simply be inverted: shadows, images, illustrations, borders.",
+    bestFor: "Claude / ChatGPT",
+    tags: ["dark mode", "interface", "porting"],
+    prompt: `You are a product designer. Port a light screen to dark mode.
+
+Screen: {what is on it}
+Light palette: {hex codes by role}
+Where it lives: {web, app, both}
+
+Work through it layer by layer:
+1. Backgrounds: how many levels are needed and how they differ. A 3% step is invisible on dark, so the step has to grow.
+2. Shadows: they do not work on dark at all. What lifts a card off the background instead.
+3. Borders: where they become mandatory in place of shadows.
+4. Text: pure white on black cuts the eye — how far to bring it down.
+5. Images and illustrations: what to do about white backgrounds inside PNGs and screenshots of the light interface.
+6. What cannot be ported and has to be redrawn — as a list.
+
+Point 6 is mandatory: dark mode falls apart not on colour but on the three images nobody redid.`,
+    example: `Three backgrounds, 6-8% apart: #09090F to #101019 to #16162A. At 3% the card vanishes into the ground.
+Shadows become a 1px #1C1C2B border plus a faint glow under the primary button.
+Text #F5F5FA, not #FFFFFF: pure white on black haloes around the letterforms.
+Redraw: the hero illustration (white background baked in), three screenshots in the guide, the partner logo PNG.`,
+  },
+  "brand-prompt-prefix": {
+    title: "A brand prefix for image prompts",
+    summary:
+      "One paragraph appended to every prompt — and the images stop drifting apart.",
+    bestFor: "Midjourney / ChatGPT (vision)",
+    tags: ["generation", "brand", "consistency"],
+    prompt: `You are an art director. Build a standing prefix for image-generation prompts.
+
+Brand: {name and what it does}
+Mood: {three or four words}
+Brand colours: {hex or names}
+Examples you like: {links or descriptions}
+What must never appear: {what grates}
+
+Deliver:
+1. A 40-60 word prefix: light, materials, palette, optics, composition. It gets appended to any request.
+2. A "never" list of explicit exclusions. Without one the model folds in stock cliches — lens flare, perfect smiles, glass spheres.
+3. Three complete example prompts: a cover, a product, a background.
+4. What changes from image to image and what is never touched.
+
+The prefix must work without the brand name inside it: the generator does not know the brand and will start guessing from the sound of it.`,
+    example: `Prefix: soft diffused daylight, matte surfaces, deep violet and near-black palette, 50mm lens, shallow depth, generous negative space, calm composition, no text.
+Never: lens flare, glossy 3D spheres, stock smiles, neon grid, cluttered background.
+Never touch: light and palette. Change: subject and angle.`,
+  },
+  "ui-screens-brief": {
+    title: "Screen brief for a UI generator",
+    summary:
+      "The text Figma Make or Stitch needs to build a coherent flow, not a pile of pictures.",
+    bestFor: "Claude / ChatGPT",
+    tags: ["interface", "figma", "flow"],
+    prompt: `You are a product designer. Describe a screen flow so a generator builds it as one connected thing.
+
+Product: {what it is}
+User's goal: {what they came to do}
+Platform: {web, iOS, Android}
+Style: {two or three words}
+
+For every screen give:
+1. A name and a one-line job: what the person does right here.
+2. The blocks top to bottom with real content — not "heading" and "text".
+3. Exactly one primary action. Secondary ones sit apart and quieter.
+4. States: empty, loading, error. Generators draw the happy path only; the rest has to be asked for outright.
+5. What carries over to the next screen.
+
+Finish with the shared parts: header, spacing, radii, type. Without them the screens come out of different products.`,
+    example: `Screen 2, "Choose a plan". Job: see the difference and pick.
+Blocks: heading "Two plans, no asterisks" then two cards (Free / PRO $6 a month) then a line reading "Cancel any time".
+Primary action: "Get PRO". Secondary: "Stay on Free", as a text link.
+No empty state exists here. Error: payment declined — the card stays, a bar above it gives the reason.`,
+  },
+  "empty-states": {
+    title: "Empty screens and errors",
+    summary:
+      "What to show when there is nothing to show — and how to explain a failure without apologising.",
+    bestFor: "ChatGPT / Claude",
+    tags: ["interface", "copy", "states"],
+    prompt: `You are a product designer. Write the empty states and errors.
+
+Product: {what it is}
+Screen: {where it is empty}
+Why it is empty: {not started yet / deleted everything / search found nothing}
+What the person can do next: {available actions}
+
+For each case give:
+1. A heading under six words: what is happening, with no "oops".
+2. One line of explanation — why it is empty right now.
+3. One action with the exact button text.
+4. Whether an illustration is needed. Usually not: a drawing on an empty screen substitutes mood for an answer.
+5. Separately, the error: what happened, what to do, whose fault it is. Own faults are stated plainly.
+
+A newcomer's empty screen and a post-deletion empty screen are different screens. The first teaches; the second confirms it worked.`,
+    example: `First run: "Your prompts will live here" / "Save the ones you like and they collect here" / button "Open the catalogue".
+After search: "Nothing for 'carousel'" / "There are 4 prompts containing 'card'" / button "Show those".
+Error: "Could not save" / "This is on our side and we are fixing it. Your text is still in the field" / button "Try again".`,
+  },
+  "microcopy-ui": {
+    title: "Interface microcopy",
+    summary:
+      "Buttons, hints, confirmations — the short lines a product is actually felt through.",
+    bestFor: "Claude / ChatGPT",
+    tags: ["copy", "interface", "buttons"],
+    prompt: `You are a UX writer. Rewrite the microcopy on a screen.
+
+Screen: {what is on it}
+Current text: {as it stands}
+Who reads it: {these people}
+Tone: {how you speak}
+
+For each line deliver:
+1. The new version and one line on what changed and why.
+2. Buttons: a verb and an object, not "OK" and "Done". A button must answer the heading's question.
+3. Delete confirmation: exactly what disappears and whether it comes back.
+4. Field hints: an example of input, not a restatement of the label.
+5. The message after the action, in the same word the button used. Press "Publish", read "Published".
+
+Count length in characters: German runs about a third longer than English, and a button that only just fits will break there.`,
+    example: `Was "Save changes" then "Save". The second word adds nothing and costs width.
+Delete: was "Are you sure?" then "Delete the prompt 'SEO card'? It leaves your saved list. This cannot be undone."
+Field: was "Enter your email" then "ivan@example.com".
+After: button "Copy" then message "Copied", not "Success".`,
+  },
+  "research-synthesis": {
+    title: "Interview notes into conclusions",
+    summary:
+      "Eight conversations turned into decisions you can make tomorrow, not a retelling.",
+    bestFor: "Claude",
+    tags: ["research", "interviews", "synthesis"],
+    prompt: `You are a researcher. Turn interview notes into conclusions.
+
+What you studied: {research question}
+How many people and who: {the sample}
+Notes: {paste them, raw is fine}
+
+Deliver:
+1. Five to seven observations. Each with a number: how many people out of how many. "Many found it awkward" is not an observation.
+2. A direct quote for each. A paraphrase loses exactly the phrasing the interview existed to capture.
+3. What contradicts what, and why. Do not smooth it over: a split usually means two different segments.
+4. Three decisions these data can carry.
+5. Three questions the data cannot answer, and how to collect what is missing.
+6. What is absent from the notes although it should have come up. Silence is a finding too.
+
+Do not bend the conclusions toward the hypothesis you walked in with. If it failed, say so — that is the most valuable outcome available.`,
+    example: `6 of 8 could not find search: they looked in the header, where it is not. Quote: "I assumed the magnifier is always up top."
+Contradiction: two asked for more filters, four for fewer. Two segments: people hunting something specific, and people browsing.
+Missing: whether the people who reach pricing actually pay. Nobody raised money unprompted — it has to be asked directly.`,
+  },
+  "stakeholder-rebuttal": {
+    title: "Answering client feedback",
+    summary:
+      "How to push back on the bigger-logo note and be heard rather than filed as difficult.",
+    bestFor: "Claude / ChatGPT",
+    tags: ["negotiation", "feedback", "clients"],
+    prompt: `You are an art director. Help answer a client's note.
+
+The note: {their exact words}
+The work: {context}
+What the work is for: {the business goal}
+The relationship: {first project or years in}
+
+Deliver:
+1. What is actually behind the note. "Make the logo bigger" almost always means "I do not stand out against competitors" — and size is not the fix.
+2. A five to seven line reply: agree with the goal first, then offer another way to reach it.
+3. What to show instead of arguing: two versions side by side where both outcomes are visible.
+4. When to simply accept the note. If it is taste on a small thing, arguing costs more than doing it.
+5. The red line: what must not change, explained through the client's money rather than your taste.
+
+Do not defend the layout. Defend the goal it was made for — that, the client will not argue with.`,
+    example: `Behind the note: fear the brand will not be remembered. Size will not fix it — the logo is already the second thing the eye lands on.
+Reply: "Agreed, recognition is thin. Size will not lift it: the eye goes to the face first either way. Let me put the brand colour behind the block — same logo, but the brand reads from two metres away."
+Show: two banners side by side, photographed from that distance.
+Red line: no non-proportional stretching. That is not taste, it breaks your own brand book.`,
+  },
+  "handoff-spec": {
+    title: "Design handoff spec",
+    summary:
+      "Everything a developer will ask later, written down before they start.",
+    bestFor: "Claude / ChatGPT",
+    tags: ["handoff", "engineering", "spec"],
+    prompt: `You are a product designer. Write the handoff spec for a screen.
+
+Screen: {what is on it}
+What already exists in code: {components, tokens, if any}
+Platform: {web, mobile}
+
+Cover:
+1. What comes from existing components and what is genuinely new. Justify the new: somebody maintains every new component forever.
+2. Behaviour as width changes: what compresses, what wraps, what hides. Not "responsive" — block by block.
+3. Edge data: a 40-character name, an empty list, a seven-digit number, a missing image.
+4. States for every interactive element: rest, hover, pressed, keyboard focus, disabled, loading.
+5. What the keyboard does: tab order, what Esc closes, what Enter submits.
+6. Animation: what moves, how many milliseconds, what happens under reduced motion.
+7. Open questions for product, as a list, before work starts.
+
+Point 3 matters most: layouts are drawn on convenient data and break on inconvenient data.`,
+    example: `New: only the cover card. Button, chip and field already exist.
+Width: below 640 the cards go single-column, the counter moves under the heading, filters collapse into a scrolling row.
+Edge: a 40-character title truncates on line two; a 7-digit price does not wrap — drop one type step instead.
+Keyboard: Esc closes the filter, Enter in the field runs the search, focus is always visible.`,
+  },
+  "illustration-style": {
+    title: "A consistent illustration style",
+    summary:
+      "Rules that make ten drawings read as one set rather than ten discoveries.",
+    bestFor: "Midjourney / ChatGPT (vision)",
+    tags: ["illustration", "style", "set"],
+    prompt: `You are an art director. Define an illustration style for a product.
+
+Product: {what it is}
+Where the drawings go: {empty states, blog, email, social}
+Mood: {three words}
+Palette: {colours}
+
+Set the rules:
+1. Stroke weight, whether there is an outline, fill — flat or textured.
+2. People: present or not. If present, how abstracted. Realistic faces age fastest and date the work first.
+3. Perspective: front-on, isometric, top-down. One for the whole set.
+4. How many colours per drawing — as a ceiling, not a preference.
+5. What the drawing does: explains, decorates, or leads the eye. Detail level follows from that.
+6. Three ready prompts showing the range: simple, medium, complex scene.
+7. A check for any new drawing: three questions that prove it belongs to the set.
+
+Another person must be able to apply these rules. "Friendly and modern" cannot be applied.`,
+    example: `2px stroke, no outline, flat fill with 6% grain.
+People abstracted: the head is a circle with no features. Realistic faces look like clip art within a year.
+Isometric, 30 degrees, one angle for the set. No more than four colours plus the ground.
+Check: one stroke weight? Same angle? Four colours or fewer?`,
+  },
+  "social-templates": {
+    title: "Branded post templates",
+    summary:
+      "Five layouts that make posts assemble in minutes and stay recognisable.",
+    bestFor: "ChatGPT / Claude",
+    tags: ["social", "templates", "brand"],
+    prompt: `You are a designer. Build a set of post templates for a brand.
+
+Brand: {name and subject}
+Platforms: {where you publish}
+What you post most: {post types}
+Brand assets: {colours, type, mark}
+
+For each of five templates describe:
+1. Its job: quote, number, list, announcement, before-after.
+2. The layout: what sits where, how many lines of text fit, where the mark goes.
+3. A character limit. A template that fits "as much as needed" becomes small type within a month.
+4. What changes post to post and what is fixed forever.
+5. How it reads in a feed beside its neighbours — at thumbnail size only the large thing survives.
+
+Five is the ceiling. More will not be remembered, and people start laying out every post from scratch.`,
+    example: `"Number" template: the figure fills the frame, a line under it up to 40 characters, mark bottom right.
+Limit: 40 characters, not "whatever fits". At 60 the type halves and dies in the feed.
+Fixed: mark position and 48px margin. Variable: the figure, the caption, one of three prepared grounds.
+In feed: only the figure reads — that is enough; the rest gets read by whoever opened it.`,
+  },
+  "email-design-brief": {
+    title: "Email structure and build",
+    summary:
+      "An email layout that accounts for mail clients ignoring half your CSS.",
+    bestFor: "Claude / ChatGPT",
+    tags: ["email", "build", "newsletter"],
+    prompt: `You are an email designer. Describe the structure of an email.
+
+Type: {welcome, digest, product news, win-back}
+Audience: {who}
+Primary action: {what they should do}
+Brand: {colours, type, mark}
+
+Deliver:
+1. Blocks top to bottom with real content.
+2. What is visible in the first screen of a phone mail app — roughly 300 pixels — and the primary action either lands there or is clearly promised there.
+3. Build constraints: one column, 600 wide, system fonts only, background images fail in Outlook, buttons are filled tables rather than divs.
+4. Dark mode in mail: what inverts on its own, and how not to lose a logo on a transparent background.
+5. Copy: subject line under 40 characters, preheader, button as a verb.
+6. What the reader sees if images do not load. Check the email still makes sense — plenty of people have images off.
+
+Point 6 is not a formality. An email that is one big image is an empty rectangle for half its recipients.`,
+    example: `First screen: logo, heading "Your access is open", button. Everything else sits below.
+Button as a filled table, #7C3AED with white text; Outlook will not paint a background div.
+Dark mode: ship the logo as a PNG with an opaque ground, or the violet mark merges into black.
+Images off: heading, two lines and the button survive — enough to click.`,
+  },
+  "design-self-check": {
+    title: "Self-check before you present",
+    summary:
+      "Twenty minutes down a list, and half the client's notes never happen.",
+    bestFor: "ChatGPT (vision) / Claude",
+    tags: ["review", "layout", "quality"],
+    prompt: `You are an art director. Review a layout the way you would before showing a client.
+
+Layout: {describe or attach}
+What it is for: {the goal}
+Who sees it: {client, team, public}
+
+Walk the list and say where it does not hold:
+1. What is seen first. Whether that matches what should be primary.
+2. Alignment: what is almost on the grid — almost is worse than plainly off.
+3. Spacing: how many distinct values are in use. More than five means some are accidental.
+4. Type sizes: how many. More than six means there is no scale.
+5. Legibility: where text sits on an image with no plate, where contrast drops under 4.5.
+6. What happens to the longest name, the biggest number, the missing image.
+7. The one place where you chose pretty over clear. There always is one.
+
+Do not compliment. The job is to find what the client will catch, before they do.`,
+    example: `The image is seen first, but the price is the point. The eye goes the wrong way.
+Nine spacing values: 12, 14, 16, 20, 24, 28, 32, 40, 48. Fourteen and twenty-eight are accidents — fold them into the scale.
+Text over the photo at the bottom: contrast 3.1. On a light frame it will not read at all.
+Pretty over clear: the caption is letter-spaced and reads as a heading.`,
+  },
+  "pitch-deck-visual": {
+    title: "The visual half of a pitch deck",
+    summary:
+      "What to show on each slide so an investor gets the business without your voice.",
+    bestFor: "Claude / ChatGPT",
+    tags: ["deck", "investors", "slides"],
+    prompt: `You are a presentation designer. Describe the visual half of a pitch deck.
+
+Product: {what it is}
+Stage: {idea, first revenue, growing}
+Audience: {investor, partner, competition}
+Slide count: {number}
+
+For every slide give:
+1. The single idea of the slide in one line. If there are two ideas, that is two slides.
+2. What to show: chart, screenshot, diagram, photo, text alone. And why that.
+3. A headline that asserts rather than labels. "Market" says nothing; "700,000 sellers, no tools built for them" says something.
+4. How many numbers are on the slide. Nobody holds more than three.
+5. What to cut: "trusted by" logo walls, stock handshakes, five-slice pie charts.
+
+The deck is read without you: half of investors open the file in email and never take the meeting. The slide has to work in silence.`,
+    example: `Slide 3, idea: "A seller spends 4 hours on a listing, 3 of them on text."
+Show: two time bars side by side, before and after. A chart, not a list.
+Headline: "Three of the four hours go to text."
+Numbers: two — 4 hours and 3 hours. Cut the third, it pulls focus.`,
+  },
+  "landing-hero-variants": {
+    title: "Five hero screens to choose from",
+    summary:
+      "One product, five different promises — to find out which one lands.",
+    bestFor: "Claude / ChatGPT",
+    tags: ["landing", "hero", "testing"],
+    prompt: `You are a landing page designer and writer. Build five versions of the hero screen.
+
+Product: {what it is}
+Audience: {who}
+Main benefit: {what they get}
+What sets you apart: {versus the nearest alternative}
+
+Each version takes a different run-up:
+1. From the pain: what they are struggling with.
+2. From the result: where they are in a week.
+3. From a number: a specific figure in the headline.
+4. From the objection: "this is not for me, because…".
+5. From the mechanism: how it works, in one line.
+
+For each give a headline, subhead, button, what the visual is, and one line on who the version is aimed at. Finish by saying which to test first and how you will know it won.
+
+Do not write the same thing five times in different words. If the versions differ only in verbs, there is nothing to test.`,
+    example: `From the pain: "Rewritten the prompt twenty times, still the wrong answer" / "117 ready ones, tested on real work" / "Open the catalogue".
+From a number: "117 prompts, 61 of them free" / "One-click copy, example output beside each" / "See the free ones".
+Test first: the pain version — it asks for no trust in a figure. It won if the share reaching the catalogue is a quarter higher.`,
+  },
+  "designer-automation-audit": {
+    title: "What to automate in your own work",
+    summary:
+      "An audit of a designer's routine: what goes to a script, what to a model, what stays manual.",
+    bestFor: "Claude",
+    tags: ["automation", "routine", "process"],
+    prompt: `You lead a design team. Audit a routine and say what to automate.
+
+What I do: {types of task in a week}
+Where the time seems to go: {your sense of it}
+Tools: {what you use}
+Team size: {solo or how many}
+
+Deliver:
+1. The tasks with estimates: how many times a week and how many minutes each. Count in weeks, not instances — a two-minute task ten times a day costs more than an hour once a month.
+2. What becomes a template or a component — decided once, by hand.
+3. What goes to a model: where mistakes are cheap and immediately visible.
+4. What does not go to a model: where a mistake surfaces a month later and costs a lot.
+5. Where to start: the one task with the best ratio of time saved to time spent setting it up.
+6. When it pays back, in weeks.
+
+Do not propose automating something done once a quarter: the setup will eat more than the task.`,
+    example: `Exporting covers at three sizes: 12 times a week, 6 minutes each — 72 minutes. First candidate.
+Give to a model: microcopy drafts. Mistakes are visible on reading.
+Do not: choosing the type pairing. A miss surfaces a month later and everything gets relaid out.
+Start with covers: about two hours to set up, pays back in week two.`,
+  },
   // ─────────────────────────── Marketers ───────────────────────────
   "ad-angles-10": {
     title: "10 ad angles in one go",
@@ -926,6 +1345,411 @@ The range is mandatory: a single number in a forecast reads as a promise.`,
 Threshold: if after 14 days cost per enquiry exceeds the average order value, switch off — not "give it another week"…
 Forgotten: creative production, platform fees, advertising tax.`,
   },
+  "geo-ai-citations": {
+    title: "Getting cited by AI assistants",
+    summary:
+      "How to make ChatGPT and Perplexity point at you instead of a competitor.",
+    bestFor: "Claude / ChatGPT",
+    tags: ["geo", "visibility", "ai search"],
+    prompt: `You work on visibility inside AI assistants. Work out how to get into their answers.
+
+Product: {what it is}
+Questions you want to appear for: {three to five in plain speech}
+What the site already has: {pages, articles, docs}
+Who appears now: {competitors, if known}
+
+Deliver:
+1. How those questions sound when typed at an assistant. People do not phrase them like search queries: not "buy prompts" but "where do I get ready-made prompts for a marketplace listing".
+2. Which pages are missing so there is something to cite. Assistants cite an answer to a question, not marketing copy.
+3. How to rewrite existing pages: the direct answer in the first paragraph, detail after. An answer buried mid-page is not found.
+4. What earns citation: numbers, dates, names, comparison tables. Generalities are not cited — there is nothing to stand behind.
+5. Where else you must be mentioned: directories, reviews, forums. Assistants do not pull from your site alone.
+6. How to check: three questions and exactly what to look for in the answer.
+
+Do not confuse this with Google SEO: there you fight for the click, here for the mention. There may be no clicks at all and still be sales.`,
+    example: `Plain-speech question: "are there ready prompts for marketplace listings or do I write my own".
+Missing page: a comparison of your prompts against writing your own, with time figures.
+Rewrite: the section page answers outright in paragraph one — "20 marketplace prompts, 9 of them free" — instead of "Welcome to the section".
+Check: ask three assistants and see whether you are in the list, and which page they cite.`,
+  },
+  "winback-sequence": {
+    title: "A win-back sequence",
+    summary: "Three emails to people who drifted away — no guilt, no begging.",
+    bestFor: "ChatGPT / Claude",
+    tags: ["email", "win-back", "retention"],
+    prompt: `You are an email marketer. Write a win-back sequence.
+
+Product: {what it is}
+Who left: {stopped visiting, did not renew, dropped off mid-way}
+How long ago: {timeframe}
+What changed since: {new in the product}
+What you can offer: {discount, extension, nothing}
+
+Three emails:
+1. The first carries no offer. Only a reminder of what they came for and one honest line: we noticed you are gone.
+2. The second is what changed. Specifically, not "we got better": two or three changes that touch this person.
+3. The third is the offer and a direct question: come back or unsubscribe. Keeping someone on the list in silence is worse than losing them.
+
+For each give a subject under 40 characters, a preheader, under 120 words of body, and one button. Plus how many days apart to send.
+
+Do not apologise for their leaving. They owe you nothing, and an apology makes the email cling.`,
+    example: `Email 1, subject "You were after listing prompts". Body: "Three weeks ago you took two Wildberries prompts. Nothing since — maybe they did not fit. If so, tell me how and I will answer personally." Button "Write back".
+Email 3, subject "Stay or unsubscribe". A direct question, two buttons, no discount on the third email — it would cheapen the first two.`,
+  },
+  "story-post-social": {
+    title: "A story post with a soft ask",
+    summary: "A real case told so the sale does not stick out.",
+    bestFor: "ChatGPT / Claude",
+    tags: ["social", "storytelling", "linkedin"],
+    prompt: `You are an editor. Build a story post around a real piece of work.
+
+What happened: {the case, in your words}
+Who was involved: {you, client, team}
+How it ended: {result, better with a number}
+What you sell: {service or product}
+Platform: {LinkedIn, Facebook, Telegram}
+
+Build:
+1. A first line that is a moment, not a conclusion. "At 7:40pm on Friday the client wrote that launch was tomorrow" works; "I want to share a case study" does not.
+2. The middle: what went wrong, what you tried, where you were wrong. Without the mistake there is no story, only a report.
+3. The result, with a number and a timeframe.
+4. A one-line lesson that applies beyond your case.
+5. A soft ask on the last line: a question to the reader or an invitation to write. A hard sell kills both halves of a story post.
+
+Length: under 200 words. Paragraphs of one or two lines. No bullet lists — they break the narrative.`,
+    example: `First line: "At 7:40pm on Friday the client wrote: launch is Monday, there is no copy."
+Middle: wrote it over the weekend, realised on Sunday it was aimed at the wrong audience, rewrote half.
+Result: launch held, 34 enquiries in week one.
+Lesson: urgency is rarely about the deadline; it is about the task being set late.
+Ask: "Had one of these? Tell me how you got out of it.`,
+  },
+  "brand-voice-guide": {
+    title: "Brand voice: rules and bans",
+    summary:
+      "A guide everyone writes by, models included — and the copy stops sounding like strangers.",
+    bestFor: "Claude",
+    tags: ["brand voice", "copy", "guidelines"],
+    prompt: `You are an editor-in-chief. Write a brand voice guide.
+
+Company: {what it does}
+Who you write for: {audience}
+How you want to sound: {three or four words}
+Samples of your writing: {paste two or three}
+Writing you admire elsewhere: {examples}
+
+Deliver:
+1. Three rules and three bans. Each with a before-and-after pair.
+2. How you address people, and what to do in the awkward cases.
+3. Sentence and paragraph length, as numbers. "Write simply" is not a rule; it cannot be applied.
+4. Words you never use: officialese, jargon, cliches like "unique offering".
+5. How an apology, a refusal and bad news sound. That is where voice is tested — everyone sounds the same on good days.
+6. A ready block for a model: a paragraph appended to any copy request.
+
+Point 6 matters most. A guide sitting in a document does not work; the one pasted into a prompt does.`,
+    example: `Rule: write from the reader. Was "We have launched a new section" then "You can now download the guide on your phone."
+Never: "in the shortest possible time", "team of professionals", exclamation marks.
+Sentences under 15 words, paragraphs under 3 lines.
+Refusal: "That will not work: we have no access to your reports. Here is what I can do instead."
+Model block: "Write to the reader, sentences under 15 words, no officialese, no exclamation marks.`,
+  },
+  "landing-teardown": {
+    title: "Tearing down a competitor's landing page",
+    summary:
+      "What works on their page and what you can take without copying it.",
+    bestFor: "ChatGPT (vision) / Claude",
+    tags: ["competitors", "landing", "teardown"],
+    prompt: `You are a marketer. Tear down someone else's landing page.
+
+Link or screenshots: {what we are looking at}
+Your product: {what you do}
+What you want to learn: {why people buy / how they explain price / something else}
+
+Work through it:
+1. Who it sells to. Not "everyone": the words in the hero almost always reveal the segment.
+2. The hero's promise in one line. If you cannot phrase it, that is already a finding.
+3. The block order and the job of each. Look for where a specific objection gets answered.
+4. How price is explained and what is done to stop it frightening people.
+5. Proof: numbers, testimonials, logos. Which of it is checkable and which is decoration.
+6. Three things worth taking — and how to rework them for you rather than copy them.
+7. Two mistakes they make. Do not repeat those.
+
+Do not judge the looks. Judge what was done here in service of the sale, and which of it would work on your audience.`,
+    example: `Not for everyone: "for teams of 5+" in the hero cuts out solo users.
+Promise: "set up in a day, no developer".
+Objection handled in block 4: "what if it does not fit" — refund terms, not testimonials.
+Take: the refund block. Rework: we have no refund, but half the catalogue is free — same reassurance.
+Mistake: 11 "trusted by" logos and not one person's name.`,
+  },
+  "offer-builder": {
+    title: "Building the offer",
+    summary: "Turning a list of what you do into a proposition people answer.",
+    bestFor: "ChatGPT / Claude",
+    tags: ["offer", "sales", "proposition"],
+    prompt: `You are a marketer. Build the offer.
+
+What you do: {service or product}
+For whom: {segment}
+What they end up with: {the result}
+Price: {amount}
+What they fear: {the main doubt}
+
+Build:
+1. The offer in one sentence: for whom, what they get, in what time, for how much. No adjectives.
+2. Three versions for different segments — they fear different things.
+3. What strengthens it: a deadline, a guarantee, a limit, a bonus. Take one, not all — four amplifiers read as a clearance sale.
+4. What to cut from the current description: anything the buyer cannot verify before paying.
+5. A test: retell the offer in the customer's words. If it runs longer than one sentence, it will not be remembered or repeated to a friend.
+
+Do not promise what you do not control. "We will get you to the top" promises someone else's decision; "we will build the keyword set and rewrite your listings in 5 days" promises yours.`,
+    example: `Offer: "For marketplace sellers — 20 listing prompts, 9 free, one-click copy."
+For a beginner: "Your first listing done in an evening, without a copywriter."
+One amplifier: half the catalogue is free — you can check before paying.
+Cut: "professional approach" and "individual attention" — neither can be verified.`,
+  },
+  "behaviour-emails": {
+    title: "Behaviour-triggered emails",
+    summary:
+      "Not a schedule, but an email answering what the person did or failed to do.",
+    bestFor: "Claude / ChatGPT",
+    tags: ["email", "automation", "retention"],
+    prompt: `You work on lifecycle. Build a set of behaviour-triggered emails.
+
+Product: {what it is}
+The key action: {what they must do to get value}
+What analytics shows: {events you track}
+Typical time to first value: {duration}
+
+Deliver:
+1. Five moments that need an email: signed up and did nothing, took the first step and stalled, reached value, came back after a gap, about to leave.
+2. For each, the trigger condition and the delay. An email a minute after the action reads as surveillance; a week later, as coincidence.
+3. The copy: subject, one idea, one button. Under 90 words.
+4. What must not be in it: product news, if they have not taken the first step yet.
+5. Which email cancels which. Without that, people get three in an hour and unsubscribe.
+6. How to tell the sequence works: one metric per email.
+
+Rule: the email only sends if the person did not take the next step on their own. Congratulating someone for what they already did spends attention for nothing.`,
+    example: `Moment 2: opened a prompt, did not copy it. Delay 2 hours.
+Subject "You left a prompt open". Body: one line that copying is one click, button "Back to the prompt".
+Cancelled by: copying it — then the email never sends.
+Metric: share who copy among those who opened, before and after.`,
+  },
+  "referral-program": {
+    title: "A referral mechanic",
+    summary: "What to pay referrers and how much, without eating the revenue.",
+    bestFor: "Claude / ChatGPT",
+    tags: ["referrals", "growth", "partners"],
+    prompt: `You work on growth. Design a referral mechanic.
+
+Product: {what it is}
+Price and cadence: {one-off, subscription}
+Margin: {what is left}
+Who can refer: {customers, creators, partners}
+What you tried before: {if anything}
+
+Deliver:
+1. What to pay for: signup, first payment, renewal. Paying for signups always brings bots — budget for that up front.
+2. How much: a share or a sum, and how it sits on the margin. Work out the refund rate at which the mechanic goes negative.
+3. What the referred person gets. One-sided rewards work worse: inviting is awkward when the friend gets nothing.
+4. How to track: link, code, both. And what happens when someone arrives by link and buys a week later on another device.
+5. What stops abuse: self-referral, second accounts, refunds after payout.
+6. How people learn about it: where in the product and at what moment. The best moment is right after they got value, not at signup.
+7. When to switch it off: three signs it is bringing the wrong people.
+
+Count in money, not in referrals: a hundred referrals who never pay is an expense.`,
+    example: `Pay on first payment, not signup. Signups would bring half of Telegram.
+25% of the first payment. At 70% margin and 8% refunds it stays positive up to 35%.
+The referred person gets a week of PRO. Without that the link is awkward to post.
+Shown on the fifth copied prompt, not at signup: before first value there is nothing to recommend.`,
+  },
+  "weekly-marketing-report": {
+    title: "A weekly marketing report",
+    summary: "Half a page that shows what to do next, not how much happened.",
+    bestFor: "Claude / ChatGPT",
+    tags: ["reporting", "analytics", "weekly"],
+    prompt: `You are a marketer. Write the weekly report.
+
+This week's numbers: {paste}
+Last week's: {for comparison}
+What you did: {launches, posts, ads}
+Who reads it: {yourself, your boss, a client}
+
+Build:
+1. A first line naming the week's main change and its cause. Not a metric list: those get read later, if at all.
+2. Three numbers that moved and why. If the cause is unknown, say so — a guess is worse than a gap.
+3. What worked and what did not, with timeframes: an article's effect is not visible in a week, and writing it off is premature.
+4. One decision for next week. One, not six: six produces none.
+5. What stopped making sense: where sources disagree.
+
+Do not compare week to week blindly: holidays, a competitor's launch and plain weekends move numbers more than your work does. Mark those weeks in the report itself.`,
+    example: `Main thing: visits up a third, cause was a mention in someone else's newsletter on Tuesday. Not our doing, not repeatable.
+Did not work: ads for the new section, 40 clicks, 0 payments. Stopping them.
+Too early: the article went up Thursday, search has not seen it yet.
+Decision: rewrite the skills section hero, 70% leave there.`,
+  },
+  "objection-bank": {
+    title: "An objection bank",
+    summary:
+      "What you say to too expensive, let me think, and we already have one — written once.",
+    bestFor: "ChatGPT / Claude",
+    tags: ["sales", "objections", "scripts"],
+    prompt: `You lead sales. Build an objection bank.
+
+What you sell: {product}
+To whom: {segment}
+Price: {amount}
+What you hear most: {objections in your words}
+
+For each objection give:
+1. What is actually behind it. "Too expensive" means either "I do not see the value", or "no money right now", or "I found it cheaper" — three different answers.
+2. The clarifying question that tells those apart. Answering before asking is firing blind.
+3. An answer for each case, under five lines.
+4. What not to say: how bad the competitors are, "but we have", "it is only twenty cents a day".
+5. When to agree and let go. Not every objection dissolves, and trying to dissolve them all costs you your reputation.
+
+Add the objection nobody says out loud but everyone thinks. Usually it is "will you still exist next year".`,
+    example: `"Let me think" usually means "it is not my call". Question: "Who else looks at this decision?"
+If it is not their call: give them something forwardable — one page with price and outcome.
+Do not say: "what is there to think about".
+Let go: if the quarter's budget is closed, agree on a reminder date instead of pushing.
+Unspoken: "you are new". Answer: half the catalogue is free, checkable without paying.`,
+  },
+  "partner-outreach": {
+    title: "A partnership outreach email",
+    summary:
+      "A first message to a stranger's project that gets answered instead of deleted.",
+    bestFor: "ChatGPT / Claude",
+    tags: ["partnerships", "outreach", "email"],
+    prompt: `You handle partnerships. Write the first email.
+
+Who you are writing to: {project, person}
+What you know about their work: {specifics}
+What you propose: {the substance}
+What they get: {benefit on their side}
+What you already have: {audience, product, numbers}
+
+The email:
+1. A first line about them, and not a compliment. "I have followed you for ages" is what everyone writes; "your Ozon guide has no section on video, and sellers keep asking about it" is what nobody writes.
+2. The proposal in two lines: what you do and what they do.
+3. Their benefit, as a number or a timeframe. Without one it reads as a favour request.
+4. The smallest possible first step. Not "let us jump on a call" — a call is already a commitment.
+5. A graceful out: one line permitting them not to reply.
+
+The whole email under 120 words. Long first emails do not get finished, and only finished emails get answered.`,
+    example: `First line: "Your Ozon guide has no section on listing video — it is asked three times in the comments."
+Proposal: "We have 20 listing prompts; I can hand over the video part as a ready insert. Your name on it, a link to us at the bottom."
+Benefit: "Closes a question you keep getting, without costing you time."
+First step: "Want the draft insert? Five minutes to read."
+Out: "If it is not your thing, just leave this — no hard feelings.`,
+  },
+  "survey-questions": {
+    title: "A survey that does not lie",
+    summary: "Questions people answer honestly instead of pleasantly.",
+    bestFor: "Claude",
+    tags: ["survey", "research", "questions"],
+    prompt: `You are a researcher. Write a customer survey.
+
+What you want to learn: {the decision that depends on it}
+Who you ask: {segment and how many}
+Where: {email, in-app, chat}
+
+Deliver:
+1. Eight to ten questions. About the past, not the future: "what did you pay last time" gets honest answers, "what would you be willing to pay" does not.
+2. Rewrite the leading ones. "How much did you enjoy the new section" already contains its answer.
+3. Order: easy and concrete first, sensitive near the end. A money question first ends the survey.
+4. Where an open answer is needed and where a choice is. No more than two open ones: not everyone writes them and you read them by hand.
+5. What you will do with each answer. A question whose answer changes nothing must go — it spends other people's time.
+6. How to invite people and how to thank them without skewing the sample. A gift for answering brings gift hunters.
+
+Do not ask what someone needs. Ask what they did — the need shows through that, and rarely through the first question.`,
+    example: `Instead of "which features do you need" then "what did you do last time you could not find the right prompt".
+Leading: "how convenient is the new search" then "walk me through how you looked for a prompt last time".
+Money question eighth, not first.
+What we will do: if more than half go to search after the third screen, search moves to the top.`,
+  },
+  "segment-rewrite": {
+    title: "One text, three segments",
+    summary:
+      "The same product explained to a beginner, a professional, and the person paying.",
+    bestFor: "ChatGPT / Claude",
+    tags: ["copy", "segments", "rewriting"],
+    prompt: `You are an editor. Rewrite a text for different segments.
+
+Original text: {paste}
+Product: {what it is}
+Segments: {three groups, who they are}
+What matters to each: {if you know}
+
+For each segment deliver:
+1. The rewritten text at the same length.
+2. What changed: which word became which, and why. Not "made simpler" — which word.
+3. Words this segment does not know, and what replaced them.
+4. The objection this version answers.
+5. What stayed the same across all three. The shared part is your product; if nothing is shared, you have described three.
+
+Do not substitute tone for segmentation. "Friendly for beginners, serious for professionals" is intonation, not segments. What changes is what you talk about, not how.`,
+    example: `Beginner: "Not sure where to start — take a ready prompt and change only what is in braces."
+Professional: "Role-input-format structure, adapted to your process in a minute."
+The person paying for a team: "Five people stop writing prompts five different ways."
+Shared by all three: a ready structure nobody has to invent.`,
+  },
+  "launch-plan": {
+    title: "A launch plan",
+    summary:
+      "What to do two weeks before, on the day, and after — by day, not in generalities.",
+    bestFor: "Claude / ChatGPT",
+    tags: ["launch", "plan", "product"],
+    prompt: `You run launches. Write the plan.
+
+What launches: {product, feature, section}
+Date: {when}
+Who you announce to: {your list, new people, partners}
+What is ready: {site, copy, emails}
+Team: {how many people}
+
+Deliver:
+1. A countdown by day: what happens at 14, 7, 3, 1 day out and on the day.
+2. What must be finished before the announcement rather than "in progress". The list without which the launch is postponed.
+3. Three waves: your channels, other people's, paid. Days apart — all at once spends the news in an hour.
+4. What to say to each group: an existing customer and a stranger have different questions.
+5. What to measure in the first 48 hours and which number counts as failure. Agree before launch, or any number gets called a success.
+6. A plan for going unnoticed: what to do on day three with no reaction.
+7. What not to do: a first-day discount, a promised date for the next feature.
+
+Point 6 is needed more often than you would think: launches rarely fail, they mostly go unnoticed.`,
+    example: `7 days out: email the list that something is coming, no date. Verify payment works on a phone.
+Launch day: post at 10am, email at 2pm, answer comments until evening.
+Failure is under 20 payments in 48 hours. Agreed in advance.
+Quiet on day three: write to ten customers personally and ask whether they saw it. Usually not.`,
+  },
+  "ad-creative-brief": {
+    title: "An ad creative brief",
+    summary: "A brief for a designer or editor that does not end in a redo.",
+    bestFor: "Claude / ChatGPT",
+    tags: ["advertising", "brief", "creative"],
+    prompt: `You are a marketer. Write a brief for an ad creative.
+
+What is advertised: {product}
+Where it runs: {platform and format}
+For whom: {segment}
+What the viewer should do: {action}
+What you tried: {what worked and what did not}
+
+The brief:
+1. One idea. One. Two ideas do not fit in six seconds.
+2. The first three seconds: what is seen and what is heard. Fewer than half make it past second three.
+3. What must be in frame: product, price, a face, text.
+4. On-screen text: under seven words, works with sound and without. Most people watch muted.
+5. Three versions of one idea, differing in the run-up rather than the colour of a box.
+6. Technical requirements: aspect ratio, duration, the safe area under the platform's own interface.
+7. What counts as a result: completion, clicks, payments. And after how many impressions you decide.
+
+Do not describe a mood. Describe what happens on screen second by second — the mood assembles itself.`,
+    example: `Idea: "the prompt is already written for you".
+Seconds 0-3: hands scrolling a phone, an empty input field, voice: "twentieth rewrite".
+Must be in frame: the screen with a finished prompt and a copy button.
+Text: "117 ready prompts" — three words, readable muted.
+Decide after 10,000 impressions, not earlier.`,
+  },
   // ─────────────────────────── UGC ───────────────────────────
   "ugc-script-30s": {
     title: "A 30-second UGC video script",
@@ -1403,6 +2227,419 @@ Do not repeat the same thing in different wrapping: people share one feed and se
     example: `Mon — Reels, 0:12–0:38, rewrite the hook for a cold audience. Goal: reach.
 Wed — a carousel of the key points, nothing to film, text only. Goal: saves…
 Fri — a story answering the most common comment. Goal: trust.`,
+  },
+  "ugc-retention-edit": {
+    title: "Keeping people to the end",
+    summary:
+      "Where viewers leave and what to change in the edit so they finish.",
+    bestFor: "Claude / ChatGPT",
+    tags: ["editing", "retention", "reels"],
+    prompt: `You edit short video. Work out why a clip is not finished.
+
+The clip: {subject and length}
+Retention graph: {where it dips, if visible}
+What is on screen second by second: {describe}
+Platform: {Reels, TikTok, Shorts}
+
+Work through:
+1. The first 2 seconds: what is visible before the viewer decides to stay. If it opens with a greeting, that is the drop.
+2. Every dip in the graph: what is on screen at that second. Usually a pause, a long take, or a switch into explaining.
+3. Where to add a change: shot, angle, sound, caption. Every 2-3 seconds in short form.
+4. What to cut entirely. There are always 4-6 seconds that add nothing.
+5. The last 3 seconds: how to end so the finisher does something.
+6. An open loop at the start: a promise closed at the end. Without one there is no reason to stay.
+
+Do not stretch a clip to hit a length: 18 seconds finished beats 40 abandoned halfway.`,
+    example: `First 2 seconds: logo and "hey everyone". A third leaves here — replace with the finished result on screen.
+Dip at 7s: a long static shot of hands. Cut to one second.
+Cut entirely: the list of what the video will cover. Five seconds of promises instead of doing.
+Loop: show the outcome in second one, explain only at the end.`,
+  },
+  "ugc-hook-rewrite": {
+    title: "Rewriting a weak hook",
+    summary: "The opening line that stops the scroll, in eight versions.",
+    bestFor: "ChatGPT / Claude",
+    tags: ["hook", "opening line", "reels"],
+    prompt: `You write short video. Rewrite the opening line.
+
+Current hook: {as it sounds now}
+What the clip is about: {the substance}
+For whom: {audience}
+What is on screen in second one: {describe}
+
+Deliver:
+1. Why the current one fails, in one line, without generalities.
+2. Eight versions on different mechanics: question, number, mistake, disagreement, confession, before-after, warning, cut-off sentence.
+3. For each, what must be on screen in that same second. A hook is not only words: a strong line over an empty frame holds nobody.
+4. Two versions that work with no sound at all, as on-screen text.
+5. Which to try first and why.
+
+Every hook under 8 words. Longer and they are already scrolling.`,
+    example: `Fails: "Let me tell you how I shoot reels" — promises a talk, not a result.
+Mistake: "I shot vertical for three years. Wrongly."
+Number: "40 clips, two worked. One difference."
+Cut-off: "Never open a video with…"
+On screen: a hand covering the lens — movement in second one holds better than a face.`,
+  },
+  "ugc-ai-video-brief": {
+    title: "A video prompt for a product clip",
+    summary:
+      "A scene description for Sora, Veo or Kling that yields a clip rather than loose frames.",
+    bestFor: "ChatGPT / Claude",
+    tags: ["generation", "video", "product"],
+    prompt: `You direct product films. Build a prompt for a video generator.
+
+Product: {what it is, how it looks}
+What to show: {in use, in hand, before-after}
+Mood: {two or three words}
+Length: {seconds}
+Where it goes: {listing, Reels, ads}
+
+Deliver:
+1. The prompt in parts: framing, camera move, light, materials, pace. Generators read these literally and ignore vague adjectives.
+2. What not to write: words about emotion, brand, "high-converting". There is nothing to draw there.
+3. Three versions of one scene: different angle, light, movement.
+4. What the generator will certainly ruin: packaging text, hands, fine detail, logos. How to dodge it — by framing, angle, or shooting that part yourself.
+5. What to film on a phone and cut in. A mixed clip looks more alive than a fully generated one.
+6. How to check before publishing: three tells that give a fake away.
+
+Do not ask a generator to show your exact product: it will draw a lookalike. The exact product comes from a camera.`,
+    example: `Prompt: slow push-in on a matte ceramic mug on a wooden table, morning window light from the left, steam rising, shallow depth of field, 4 seconds, no text.
+Do not write: "cosy", "premium", "builds trust".
+Will ruin: the text on the mug. Dodge by angle — turn it away.
+Film yourself: a hand lifting the mug. Three phone seconds, cut in at second two.`,
+  },
+  "ugc-product-demo": {
+    title: "A 20-second product demo",
+    summary:
+      "Showing how the thing works, without the words quality and convenient.",
+    bestFor: "ChatGPT / Claude",
+    tags: ["demo", "product", "script"],
+    prompt: `You write product films. Write a demo.
+
+Product: {what it is}
+Key property: {what sets it apart}
+Buyer: {who}
+The doubt: {what stops the purchase}
+
+Script it by second:
+1. 0-2: the property in action, with no introduction. Not "today I will show you a flask" but a flask being dropped.
+2. 3-8: how it works, in one unbroken take. A cut here reads as a swap.
+3. 9-14: the doubt and the answer to it. The exact reason people do not buy.
+4. 15-18: scale or comparison — next to a hand, a coin, a familiar object.
+5. 19-20: what to do next.
+
+For each second: what is in frame, what is said, what is on screen.
+
+The words quality, convenient, stylish and unique are banned. Each has to become an action: convenient means it opens one-handed, and that is visible.`,
+    example: `0-2: the flask falls off a table onto tile, the lid holds, nothing spills.
+3-8: one take — open one-handed, pour, close. No cuts.
+9-14: the doubt is "it will taste of plastic". Pour water, smell it, cut to the steel interior.
+15-18: beside a 500ml bottle — it fits the cup holder.
+On screen: "drops, does not leak", four words.`,
+  },
+  "ugc-media-kit": {
+    title: "A media kit for brands",
+    summary:
+      "One page that makes brands want to work with you and know the price.",
+    bestFor: "Claude / ChatGPT",
+    tags: ["media kit", "brands", "collaboration"],
+    prompt: `You manage creators. Build a media kit.
+
+Who you are: {what you do, what you film}
+Platforms and numbers: {followers, reach, completion}
+Past work: {brands or topics}
+What you offer: {formats}
+Prices: {if you are willing to state them}
+
+Fit it on one page:
+1. First block: who you are and who you film for. The audience, not the follower count: brands care who watches.
+2. Numbers that mean something: completion, saves, click-throughs. Followers is the weakest number, shown when there is nothing else.
+3. Formats and what each includes: how many clips, how many revisions, whose rights, timelines.
+4. Prices or a range. A kit without prices produces a five-email thread about nothing.
+5. Two examples and what they achieved: not "it looked good" but a number.
+6. Terms: deposit, lead time, what you need from the brand.
+7. What you do not do. A refusal in the kit saves both sides a week.
+
+Do not write about yourself in the third person and do not collage screenshots of your stats. One screen, read in a minute.`,
+    example: `Audience: marketplace sellers, 25-40, shooting their own listings.
+Numbers: 62% average completion, 4.1% saves — both outrank follower count.
+Format "clip plus stories": one 20-second clip, 2 revisions, 3 months of social rights, 5 working days.
+Do not do: giveaways or loan advertising.`,
+  },
+  "ugc-brief-decode": {
+    title: "Decoding a brand brief",
+    summary: "What the brand actually wants and what to ask before you shoot.",
+    bestFor: "Claude / ChatGPT",
+    tags: ["brief", "brands", "process"],
+    prompt: `You are a producer. Decode a brand brief.
+
+The brief: {paste it as sent}
+The product: {if the brief does not say}
+What is on offer: {format and money}
+
+Work through:
+1. What the brand actually wants: awareness, sales, or footage for their own ads. Everything follows from that, and briefs rarely say it.
+2. What contradicts itself inside the brief. "Natural, like you would for yourself" and "must say these five points" do not coexist.
+3. What is unstated but will surface: rights, usage period, revisions, who approves.
+4. Five questions for the brand before you start. Each one asked now is one redo that never happens.
+5. What is unrealistic and what to offer instead.
+6. Red flags: unlimited revisions, payment after publication, perpetual rights at the same price.
+
+If the brand says "however you like", ask what specifically they liked in your work: usually one clip, and that is the logic to shoot in.`,
+    example: `Actually want: footage for their own ads — hence the horizontal requirement.
+Contradiction: "lively and natural" plus an approved script word for word.
+Unstated: the usage period. Ask — "perpetual" costs double.
+Question: "Which of our clips did you like?" The answer sets the tone better than any brief.`,
+  },
+  "ugc-negotiation": {
+    title: "Negotiating revisions and extra pay",
+    summary: "How to say this is the third redo without losing the client.",
+    bestFor: "Claude / ChatGPT",
+    tags: ["negotiation", "revisions", "money"],
+    prompt: `You are a producer. Help negotiate revisions.
+
+The job: {project}
+What was agreed: {revisions, deadline, money}
+What is being asked now: {their exact words}
+Which revision this is: {number}
+Do you want to keep the client: {yes, no, depends}
+
+Deliver:
+1. Whether this is a revision or a new job. The line is simple: a revision fixes a departure from what was agreed; a new job changes the agreement.
+2. A five-line reply: willingness first, then the condition.
+3. How to name a price without apologising. A price is not a complaint.
+4. What to offer instead of refusing, if the client matters: do it now, set the rule for next time.
+5. Contract wording for next time: how many revisions are included and what counts as one.
+6. When to walk. Signs: revisions change the substance, deadlines never move, and nobody intends to pay for them.
+
+Do not argue taste. Argue the agreement — that one is written down.`,
+    example: `This is a new job: they asked to change the presenter, not fix the lighting.
+Reply: "Happy to. Changing the presenter is a reshoot, not a revision: lighting and script start over. A reshoot is 60% of the fee, three days. Confirm and I start tomorrow."
+For the contract: "Two revisions to lighting, sound and edit are included. Changing script, presenter or location is a new shoot.`,
+  },
+  "ugc-trend-audit": {
+    title: "Take this trend or skip it",
+    summary: "A two-minute check: will it work for you or look forced.",
+    bestFor: "ChatGPT / Claude",
+    tags: ["trends", "decision", "content"],
+    prompt: `You are a short-form strategist. Judge whether to take a trend.
+
+The trend: {describe or link}
+Your subject: {what the channel is about}
+Audience: {who watches}
+What you posted last month: {examples}
+
+Check:
+1. How old the trend is. Past two weeks and you arrive at an empty table.
+2. What actually works in it: the sound, the edit, the phrasing, or the situation. That is what you copy, not the whole clip.
+3. Whether it fits your subject without strain. Strain shows instantly and costs more trust than it earns reach.
+4. What must change so it is your clip rather than a repeat.
+5. Who in your niche already did it. Five means late; zero means check whether there is a reason.
+6. The call: take it, take it changed, skip. With one line of why.
+
+Skip is a normal answer. A channel that takes every trend is about nothing within a month.`,
+    example: `Five days old — in time.
+What works is not the sound but the phrasing: "things I stopped doing".
+Fits: "prompts I stopped writing by hand".
+Two in the niche did it, both on other subjects.
+Call: take it changed — keep the phrasing, drop the sound, it is not ours.`,
+  },
+  "ugc-batch-month": {
+    title: "A month of clips in one shoot day",
+    summary:
+      "What to film back to back so the rest of the month is only editing.",
+    bestFor: "Claude / ChatGPT",
+    tags: ["shooting", "planning", "batching"],
+    prompt: `You produce content. Plan one shoot day to cover a month.
+
+Channel subject: {what it is}
+Clips needed: {number per month}
+What you have: {camera, light, location, helper}
+Hours available: {realistically}
+Already shot: {existing material}
+
+Deliver:
+1. The clip list grouped not by topic but by setup: one outfit, one location, one lighting state shoot together.
+2. Shooting order: what needs fresh energy first, faceless shots last.
+3. What to shoot spare: cutaways, hands, details. Those are what run out in the edit, and reshooting costs a separate day.
+4. What cannot be shot ahead: reactions to news, answers to comments. Leave slots for them.
+5. An hour-by-hour timing with breaks. After four hours on camera the face tires, and it shows.
+6. What to check before starting: sound, battery, card space, how the window light dies by evening.
+7. How to name and store files so you can find a take two weeks later.
+
+Do not shoot 30 clips identically: in the feed they run back to back, and the repeated outfit reads as a warehouse.`,
+    example: `Group 1, blue shirt, kitchen, daylight: 6 clips about tools.
+Order: talking pieces first, hands and screen by evening.
+Spare: 10 phone cutaways and 5 hand shots. Always short of those.
+Slots: two clips a month left unshot, for comment replies.
+Files: date_topic_take, or you will not find it in two weeks.`,
+  },
+  "ugc-story-poll": {
+    title: "A story poll that moves sales",
+    summary:
+      "Not yes/no for engagement, but a question whose answer changes something.",
+    bestFor: "ChatGPT / Claude",
+    tags: ["stories", "poll", "sales"],
+    prompt: `You produce social. Build a story series around a poll.
+
+What you sell: {product}
+What you want to learn or nudge: {goal}
+Audience: {who watches}
+How many stories you will shoot: {number}
+
+Deliver:
+1. The chain: the story before the poll, the poll, what shows after each answer. A poll with no follow-up is a wasted contact.
+2. The question with two options people genuinely choose between. "Do you like it?" with "yes" and "very" tells you nothing.
+3. What to show the people who picked option one and what for option two. Different answers mean different doubts.
+4. Where the link goes and why there: right after the answer, while the person is in contact.
+5. How to use the result in the next post. A number from your own poll is the strongest argument: it is about these very people.
+6. What not to do: polls for view counts, three polls in a row, questions with an obvious right answer.
+
+The question must be one whose result you actually want to see. If you already know the answer, it is decoration, not a poll.`,
+    example: `Before: a frame with two listings, one with video, one without.
+Poll: "What do you look at first in a listing?" — "photos" / "video".
+Photo voters: a story on building the infographic. Video voters: the generation prompt.
+Link right after the answer, not at the end of the series.
+Next post: "68% of you look at photos first — so video at the bottom of the listing will not save it.`,
+  },
+  "ugc-face-to-camera": {
+    title: "A talking head people finish",
+    summary:
+      "What to do on camera when you have no product and no pretty location.",
+    bestFor: "ChatGPT / Claude",
+    tags: ["shooting", "camera", "delivery"],
+    prompt: `You are a director. Help shoot a clip that is just a person on camera.
+
+Subject: {what you talk about}
+Length: {seconds}
+Location: {where}
+What gets in the way: {stiffness, reading off paper, monotone}
+
+Deliver:
+1. The script broken into 6-8 second chunks. Long paragraphs cannot be held in the head, and reading off a page shows in the eyes.
+2. What to do between chunks: change framing, step, turn, gesture. A still face holds nobody for 30 seconds.
+3. Where to place a pause. A pause before the main point beats volume.
+4. What to cut from the speech: filler, "actually", "sort of", apologies for the recording quality.
+5. Where to stand and where to look. Into the lens, not the screen — otherwise the gaze drops and reads as uncertainty.
+6. What to put behind you and what to remove. The background must not be more interesting than you.
+7. Three takes with different delivery: calm, fast, with pauses. Cut the best one.
+
+Do not memorise the words. Memorise the order of the thoughts — memorised text is audible and sounds like an advert.`,
+    example: `Chunk 1 (7s): "I shot forty clips. Two worked." Pause. Change framing.
+Chunk 2 (8s): "The difference was not the lighting or the edit."
+Cut: "so", "basically", "sorry about the audio".
+Background: close the open wardrobe — the eye goes there.`,
+  },
+  "ugc-usage-rights": {
+    title: "Usage rights and terms",
+    summary:
+      "What exactly you sell a brand, and what the word perpetual costs.",
+    bestFor: "Claude",
+    tags: ["rights", "contract", "money"],
+    prompt: `You are a producer who explains legal terms plainly. Work through the rights on a clip.
+
+What you shoot: {format}
+For whom: {brand}
+What they ask for: {the wording from the brief}
+Your rate: {per clip}
+You are on camera: {yes or no}
+
+Work through:
+1. What is actually sold: the file, the right to show it, the right to alter it, the right to use your face. Four different things, usually collapsed into one in the brief.
+2. Where it runs: their own social only, paid ads, marketplace listings, out of home. Each is its own line and its own money.
+3. Term: 3 months, a year, perpetual. Perpetual is never free — offer a multiplier.
+4. Whether the brand may re-edit and re-voice your clip, and whether that needs approval.
+5. Your face separately: the right to your likeness does not transfer with the file.
+6. What to write on the invoice or contract — three or four plain lines.
+7. What to do if the clip is still running after the term ends.
+
+Do not hand over everything forever at the price of one clip: that clip can run in paid ads for a year and you will not be paid for it.`,
+    example: `Selling: the right to show on the brand's own social, 6 months. Not selling: paid ads or marketplace listings.
+Multipliers: paid ads +60%, perpetual +100%.
+Re-edit: by approval only — otherwise the meaning changes and the face stays yours.
+On the invoice: "20-second clip. Rights: brand social, 6 months, no paid promotion. Re-edits by approval.`,
+  },
+  "ugc-hooks-from-reviews": {
+    title: "Hooks pulled from reviews",
+    summary:
+      "Opening lines written not by you but by people who already bought.",
+    bestFor: "ChatGPT / Claude",
+    tags: ["reviews", "hooks", "content"],
+    prompt: `You write short video. Mine hooks out of reviews.
+
+Reviews: {paste, unsorted is fine}
+Product: {what it is}
+Platform: {where you post}
+
+Deliver:
+1. Ten lines from the reviews that work as a first second. Verbatim: a buyer phrases it better than marketing, because they use their own words.
+2. Five doubts that repeat. Each is a clip: the doubt in second one, the answer in second two.
+3. Three negative reviews that make good clips. An objection you name yourself lands better than one you avoid.
+4. The words buyers use for the product. Often not yours — and they will search with theirs.
+5. What reviews praise that you never mention. Usually that is the main thing.
+
+Do not tidy the quotes. A review hook works precisely because it sounds like a person rather than copy.`,
+    example: `From a review: "bought it for the cottage, turns out I use it more at home" — a ready first line.
+Repeating doubt: "it is probably heavy". Clip: put it on the kitchen scale.
+Negative review: "the instructions are useless" — shoot your own in 20 seconds.
+They call it something else: you write "insulated tumbler", buyers write "cup with a lid".`,
+  },
+  "ugc-fail-analysis": {
+    title: "Post-mortem on a clip that flopped",
+    summary: "Why it did not land, in order, rather than by feel.",
+    bestFor: "Claude / ChatGPT",
+    tags: ["analysis", "stats", "mistakes"],
+    prompt: `You analyse short video. Do a post-mortem on a clip that flopped.
+
+The clip: {subject, length}
+Numbers: {impressions, completion, saves, follows}
+Your usual numbers: {for comparison}
+When and where posted: {day, time, platform}
+What you did differently: {if anything}
+
+Work out where exactly it broke:
+1. Few impressions with normal completion — the platform did not distribute it. The cause is not the clip: check the audio, the tags, a link in the description, the posting time.
+2. Normal impressions, low completion — the first second or the middle lost them. Find where.
+3. Normal completion, no saves — it was watched but is of no use to anyone. Applicability is missing.
+4. Everything normal, no follows — the clip does not say what the channel is about next.
+5. One cause, not a list. Five named causes means none of them is testable.
+6. One change for the next clip. And the number that will prove that was it.
+
+Do not default to blaming the algorithm. The algorithm explains the first occurrence; after three, it is the clips.`,
+    example: `400 impressions against a usual 6,000 — not distributed. Completion 71%, above normal.
+Likely not the clip: there is an external link in the description, which is unusual.
+Change one thing: next clip with no link, link in the pinned comment instead.
+Test: if impressions return to 6,000 at the same completion, that was it.`,
+  },
+  "ugc-brand-match": {
+    title: "Which brands to approach",
+    summary:
+      "A list of the ones you genuinely fit, instead of a blast to everybody.",
+    bestFor: "Claude / ChatGPT",
+    tags: ["brands", "prospecting", "collaboration"],
+    prompt: `You handle partnerships. Build a brand list for a creator.
+
+What you film: {subject}
+Who watches: {audience in detail}
+What you have advertised: {if anything}
+Your format: {clips, stories, reviews}
+Geography: {country, city}
+
+Deliver:
+1. Twenty brands in three groups: obvious, non-obvious, and those already working with creators your size.
+2. Why each fits — one line about audience overlap, not about the product being good.
+3. Who decides inside those companies and how to reach them: a specific role, not a general inbox.
+4. What to say in the first message to that particular brand: a hook from their current work.
+5. Who not to write to and why: too large, agency-only, recently burned by creators.
+6. The order: who to start with so the first reply arrives sooner. Starting with your dream brand is a reliable way to be disheartened by week two.
+
+Twenty specific emails beat two hundred identical ones. Two hundred identical ones do not work at all.`,
+    example: `Non-obvious: analytics tools for sellers. Same audience, and they barely hire creators — no competition.
+Decides: the marketer, not procurement. Search the company name plus "marketing".
+Hook: they published a teardown last month that is missing video.
+Do not write: large marketplaces directly — their vendor is booked a year out.
+Start: with the non-obvious ones. They reply faster, and then you have something to show the obvious ones.`,
   },
   // ─────────────────────────── Marketplaces ───────────────────────────
   "mp-product-card": {
@@ -1895,6 +3132,428 @@ On a listing the sound is off almost always: narration the video cannot be under
     example: `0–3 s: a hand sets it on wet tile and presses — it does not slip. Text: "On a wet floor"
 12–18 s: next to a phone — the size is obvious…
 Ending: folded into a drawer, the drawer closes. Text: "It fits".`,
+  },
+  "mp-ai-video-listing": {
+    title: "Listing video from a generator",
+    summary:
+      "A Sora, Veo or Kling prompt for your product — and what to film on a phone.",
+    bestFor: "ChatGPT / Claude",
+    tags: ["video", "generation", "listing"],
+    prompt: `You direct product video for marketplaces. Build a prompt for a video generator.
+
+Product: {what it is, material, colour}
+Platform: {which marketplace}
+What the clip must make clear: {the key property}
+Existing footage: {photos, video, nothing}
+
+Deliver:
+1. The prompt in parts: framing, camera move, light, surface, duration. Be concrete — adjectives like "premium" are ignored.
+2. What the generator will ruin: packaging text, hands, small hardware, the logo. How to dodge it by angle or framing.
+3. What you must film yourself: the product in close-up. A generated product resembles yours but is not it — the buyer notices on delivery, and that is a return.
+4. A 15-second storyboard: what is in each shot and where the cuts fall.
+5. Platform requirements: aspect ratio, length, file size, first frame.
+6. What is forbidden: other brands in frame, promises of results, medical claims.
+7. How to check before upload: three tells that reveal generation.
+
+Do not build the whole clip from generation. A mix — generated environment, filmed product — looks more expensive and does not lie about the goods.`,
+    example: `Prompt: slow orbit around a matte black thermos on wet stone, cold morning light, steam, shallow depth, 5 seconds, no text, no hands.
+Will ruin: the logo on the body — turn it away from camera.
+Film yourself: 4 seconds of the lid and thread on a phone. That is what people study before buying.
+Storyboard: 0-5 generated, 5-9 the lid, 9-15 in hand, cuts on movement.`,
+  },
+  "mp-photo-prep": {
+    title: "Preparing photos to platform specs",
+    summary:
+      "Resolution, background, margins and shot order — before upload, not after rejection.",
+    bestFor: "ChatGPT / Claude",
+    tags: ["photos", "requirements", "listing"],
+    prompt: `You manage marketplace content. Build the photo requirements.
+
+Product: {what it is}
+Platforms: {where you list}
+What you have: {a shoot, supplier photos, renders}
+Category: {clothing, electronics, cosmetics, other}
+
+Deliver:
+1. Each platform's technical specs: size, aspect ratio, weight, format, background. One photo does not fit all — some demand white, some do not.
+2. Shot order: what comes first, second, third. The first frame decides whether the listing is opened at all.
+3. The minimum number of shots and what each shows. Empty slots damage trust more than mediocre photos do.
+4. What to add: scale beside a familiar object, the underside, what is in the box, the product in use.
+5. What is not allowed: other brands' logos, price tags, text collages where text is banned, watermarks.
+6. What to do with supplier photos: where they are usable, and where a hundred other sellers already run them and they work against you.
+7. A pre-upload check: how the first frame looks as a 200-pixel thumbnail. That is how it will be seen.
+
+Point 7 outweighs the rest: listings are chosen in a grid where the photo is the size of a fingernail.`,
+    example: `First frame: the whole product, 10% margins, white ground. The silhouette reads at thumbnail size — that is enough.
+Second: scale beside a hand. "How big is it" is the most common question.
+Do not use the supplier photo as the first frame: they currently sit on 40 other listings.
+Add: the underside and the box contents — those cut returns most.`,
+  },
+  "mp-main-image": {
+    title: "The main image: what must be visible",
+    summary:
+      "The frame you get chosen by, in a grid of forty near-identical products.",
+    bestFor: "ChatGPT (vision) / Claude",
+    tags: ["main image", "search results", "listing"],
+    prompt: `You design listings. Review or design the main image.
+
+Product: {what it is}
+What the photo shows now: {describe or attach}
+Competitors in the grid: {how their photos look}
+What sets you apart: {the property}
+
+Work through:
+1. What survives at 200 pixels: the silhouette, the colour, one detail. Nothing more fits, and that is where the choice happens.
+2. How your frame differs from its neighbours in the grid. If everyone is on white from the same angle, difference beats beauty.
+3. Whether the product fills the frame. A small object in a large field looks cheaper than it is.
+4. Whether text belongs on the photo and which text. One word or one number at most, and only where the platform allows it.
+5. What to remove: props, shadows, a distracting background, a second product in frame.
+6. Three versions to test: different angle, different scale, with and without text.
+7. How to compare honestly: screenshot the grid, paste your versions into it, and look from across the room.
+
+Point 7 is mandatory. A photo judged alone always looks fine; it has to be judged in a row of other people's.`,
+    example: `At thumbnail size it is a dark rectangle — no silhouette. Rotate 20 degrees and it gains volume.
+Everyone in the grid is on white. Use light grey: it separates without looking foreign.
+Remove: the branch and the stones. Props become dirt at thumbnail size.
+Text: "500ml" in the corner — that is the question asked most often in chat.`,
+  },
+  "mp-negative-reviews": {
+    title: "A wave of bad reviews",
+    summary: "What to do when the rating slides: in order, without panic.",
+    bestFor: "Claude / ChatGPT",
+    tags: ["reviews", "rating", "crisis"],
+    prompt: `You handle quality on a marketplace. Work through a wave of bad reviews.
+
+Product: {what it is}
+What they say: {paste the reviews}
+When it started: {timeframe}
+What changed: {batch, supplier, packaging, price}
+Current rating: {score and review count}
+
+Work through:
+1. Whether it is one cause or several. Sort the reviews by theme and count: usually 80% of complaints are about one thing.
+2. Whether the start coincides with a batch or packaging change. The dates almost always line up, and it is the fastest check.
+3. What can be fixed today: an insert in the packaging, the description, the photos, the contents. What takes a month: the product itself.
+4. Review replies: three templates by theme, each under five lines. You are not writing to the author but to the next buyer, who reads them.
+5. What to remove from the listing: promises the product does not keep. Half of bad reviews are about the mismatch, not the goods.
+6. Whether to pull the product. Signs: safety complaints, defect rate above 5%, returns above margin.
+7. How to know you recovered: which number to watch and after how many weeks.
+
+Do not buy reviews to dilute it. Ratings recover through shipping decent goods; bought reviews are visible to you and to the platform.`,
+    example: `80% on one theme: "the lid leaks". Started on the 12th — matches the new batch.
+Today: add a photo of the gasket and a line on fitting it. Part of the complaints are about assembly, not defects.
+Reply aimed at the next buyer: "In the 12 August batch the gasket ships separately. Fitting is shown in photo five. If it leaks assembled, write to us and we replace it."
+Watch: share of leak complaints among new reviews, after 3 weeks.`,
+  },
+  "mp-stock-planning": {
+    title: "How much to order without running dry",
+    summary:
+      "Sizing a batch between two disasters: out of stock and dead on the shelf.",
+    bestFor: "Claude / ChatGPT",
+    tags: ["purchasing", "inventory", "maths"],
+    prompt: `You plan inventory. Size the next batch.
+
+Product: {what it is}
+Weekly sales over recent months: {numbers}
+Production and shipping time: {days}
+Supplier minimum: {units}
+Storage cost: {if any}
+Cash available: {amount}
+
+Work out:
+1. Average weekly sales and the spread. You cannot plan on the average: one week at double will empty the shelf.
+2. The reorder point: the stock level at which you must order to avoid running out. Driven by lead time, not the calendar.
+3. Safety stock for the spread and for the supplier being late. They are late; budget for it.
+4. Batch size: the supplier's minimum against the cost of frozen cash. Sometimes overpaying for a small batch beats holding six months of stock.
+5. What errors cost in each direction: a week out of stock costs how much; 300 spare units is how much money and clears when.
+6. Seasonality: which weeks are not representative.
+7. Three numbers to check weekly.
+
+Count in money, not units. A warehouse full of fast-moving goods still stops the business when the cash is gone.`,
+    example: `Sales 40 a week, spread 25 to 78. Ordering on the average empties on the first strong week.
+Lead time 35 days. Reorder point: 40 x 5 weeks plus 120 safety = 320 units on hand.
+Batch of 600 instead of the 1,000 minimum: 8% more per unit, but $1,800 is not sitting still for three months.
+Weekly: stock on hand, 7-day sales, days to zero.`,
+  },
+  "mp-promo-decision": {
+    title: "Join the promotion or not",
+    summary:
+      "The maths before you click: what survives the discount, the fees and the return spike.",
+    bestFor: "Claude / ChatGPT",
+    tags: ["promotions", "maths", "margin"],
+    prompt: `You do marketplace economics. Work out whether to join a promotion.
+
+Product and price: {current}
+Cost of goods: {delivered to the warehouse}
+Commission and logistics: {percentages and sums}
+Promotion terms: {discount, duration, requirements}
+Normal sales: {units per week}
+Return rate: {percentage}
+
+Work out:
+1. Margin now and margin in the promotion — in currency per unit, not percentages. Percentages hide the case where every sale loses money.
+2. How many units you must sell in the promotion to earn what you earn without it.
+3. Whether that volume is realistic: compare with normal sales and with past promotions.
+4. What happens after: buyers remember the promotional price, and going back drops conversion for weeks.
+5. Returns: they run higher in promotions because buying is impulsive. Add the increase and redo the maths.
+6. Hidden terms: a mandatory price-hold period, all sizes included, penalties for leaving.
+7. The decision: join, join with part of the range, or decline. With a number, not a feeling.
+
+Cost out "decline" separately: it usually means losing grid position, which is also money and should be named.`,
+    example: `Margin now $2.40 a unit, in the promotion $0.73. To earn the same you must sell 3.3 times more.
+The last promotion produced 2.1 times. So this earns less.
+Returns rise from 6% to roughly 9% — margin falls to $0.47.
+Decision: join with two of seven lines, the ones above $3.40 margin. The rest stay out.`,
+  },
+  "mp-rank-drop": {
+    title: "The listing dropped in the grid",
+    summary:
+      "A check in order: what actually happened and which of it is fixable.",
+    bestFor: "Claude / ChatGPT",
+    tags: ["ranking", "drop", "diagnosis"],
+    prompt: `You work on marketplace visibility. Diagnose a listing that dropped.
+
+Product: {what it is}
+Before and after: {positions, impressions, orders}
+When it dropped: {date}
+What you did those days: {price, stock, ads, listing edits}
+Rating and reviews: {any change}
+
+Check in order, without skipping:
+1. Stock. Zero or near-zero stock removes a listing from the grid, and it is cause number one. Check it first.
+2. Price. A sharp rise drops conversion, and position follows. Compare with competitors' prices that same day.
+3. Listing edits. Changing the title or category recalculates relevance, and the listing sinks for a few days.
+4. Rating and recent reviews.
+5. Competitors: a new one priced lower, or neighbours entering a promotion.
+6. Season and day of week. Compare with the same period last year, not last week.
+7. Ads: did they stop, did the budget run out.
+
+Name one main cause, not a list. And say what is fixable in a day, what in a week, and what does not come back — lost position after a long stockout has to be rebuilt.`,
+    example: `First thing that matches: stock was 0 for three days, the 8th to the 10th. Everything else is secondary.
+Price unchanged, reviews unchanged, ads running.
+Fixable in a day: get stock to the warehouse. Position returns slowly — usually 2 to 3 weeks.
+So it does not repeat: reorder at 320 units on hand, not "when we notice".`,
+  },
+  "mp-cross-platform": {
+    title: "The same listing on another platform",
+    summary:
+      "Porting without copy-paste: different rules, different buyers, different titles.",
+    bestFor: "ChatGPT / Claude",
+    tags: ["porting", "platforms", "listing"],
+    prompt: `You manage listings. Port a listing to another platform.
+
+Current listing: {title, description, attributes}
+From: {platform}
+To: {platform}
+Product: {what it is}
+
+Deliver:
+1. A title under the new platform's rules: some weight the first 60 characters, some expect "brand + type + attribute". A copied title almost always breaks the new rules.
+2. The description: what to rewrite, what to delete. Links to the other platform, its promotions and its terminology have to go — listings get hidden for those.
+3. Attributes: which fields are mandatory here that did not exist there. Empty fields cost position.
+4. Category: where it belongs. The same object sits on different branches per platform, and the whole grid depends on it.
+5. Photos: what to reshoot or recrop for a different aspect ratio and background rule.
+6. Price: how to absorb different commission and logistics so margin holds.
+7. What is forbidden here that was allowed there: text on images, claims, comparisons.
+
+Do not try to port reviews and rating — they cannot move. Assume the first weeks carry no social proof, and decide what replaces it.`,
+    example: `Title was "Thermos 500ml black matte stainless for tea and coffee". Here the first 60 characters decide: "Thermos 500ml stainless steel, matte black".
+Delete from the description: "on promotion" and the other platform's name.
+Fill the mandatory fields: capacity, liner material, heat retention hours. Absent there, required here.
+Photos: recrop the main one to 3:4 and widen the margins.`,
+  },
+  "mp-brand-page": {
+    title: "A seller page and brand blurb",
+    summary:
+      "The text people read before buying from a shop they have never heard of.",
+    bestFor: "ChatGPT / Claude",
+    tags: ["brand", "shop", "trust"],
+    prompt: `You are an editor. Write the brand blurb for a seller page.
+
+What you sell: {range}
+Who you are: {manufacturer, distributor, reseller}
+How long you have traded: {duration}
+What sets you apart: {actually, not as a slogan}
+What matters to the buyer: {delivery, warranty, sizing}
+
+Deliver:
+1. A first paragraph under three lines: who you are and what you sell. No founding story, no "mission".
+2. What answers the main doubt about an unknown seller: where it is made, what the warranty is, how you handle defects.
+3. Three concrete facts with numbers. "Trading since 2019" is checkable; "years of experience" is not.
+4. The range in one line: what else you carry. Second purchases come from there.
+5. How to reach you and when you answer. A stated response time removes more doubt than a promise of quality.
+6. What not to write: "dynamically developing company", "team of professionals", "individual approach".
+
+Write it so it could not be pasted onto another seller's page. If it could, you described anyone, not yourself.`,
+    example: `First paragraph: "We sew bags in Tver, since 2019. We sell only our own — what you see in the photos is in our warehouse."
+Doubt: "One-year warranty on hardware. Zip broken? Send a photo in chat, we ship a new bag and you keep the old one."
+Facts: trading since 2019, 11 models, average chat reply 40 minutes on weekdays.
+Do not write: "we value every customer".`,
+  },
+  "mp-question-answers": {
+    title: "Answering questions on a listing",
+    summary:
+      "Public answers read not by the asker but by the hundred people after them.",
+    bestFor: "ChatGPT / Claude",
+    tags: ["questions", "listing", "conversion"],
+    prompt: `You manage a marketplace shop. Answer the questions on a listing.
+
+Product: {what it is}
+Questions: {paste}
+What the listing is missing: {if you know}
+
+For each question:
+1. An answer under four lines, with a number or a fact. "Yes, it fits" is not an answer; "It fits, inner diameter 74mm" is.
+2. What to add to the listing so the question stops being asked. A repeated question is a hole in the description, not curiosity.
+3. If the answer is no, say so plainly and say who the product does suit. An evasive "depends" produces a return.
+4. Separately: the three most frequent questions and exactly where the answers belong — attributes, description, photos.
+5. One question nobody asks but should: the thing that most often causes returns.
+
+Write answers that still read in six months. "Currently in stock" expires in a week and starts lying.`,
+    example: `Question: "Will it fit a cup holder?" Answer: "Base diameter 68mm, fits a standard holder. Narrow car holders at 65mm, no."
+Add to the listing: base diameter in the attributes and on photo five beside a ruler.
+Not asked but should be: dishwasher safe. It causes a third of returns.`,
+  },
+  "mp-abc-analysis": {
+    title: "Which products feed you and which eat you",
+    summary:
+      "A range review by money: what to keep, what to reprice, what to drop.",
+    bestFor: "Claude / ChatGPT",
+    tags: ["range", "analysis", "profit"],
+    prompt: `You analyse product ranges. Rank the products by contribution.
+
+Product list: {name, price, cost, sales for the period, returns}
+Period: {duration}
+Cash tied up in each: {if known}
+
+Work through:
+1. Group by profit, not revenue. Revenue lies: a high-turnover, zero-margin line looks like the leader.
+2. What produces most of the profit. Usually two or three of ten — that is where attention goes.
+3. What eats: negative margin after returns and logistics, frozen cash, warehouse space.
+4. What is held for reasons other than profit: brings traffic, sells in bundles, completes a size range. Legitimate, but it must be a decision rather than an accident.
+5. What to do with each group: raise price, cut purchasing, discontinue, leave alone.
+6. What happens if you cut the tail: how much cash frees up and whether shop visibility suffers.
+7. Three lines to check by hand: the numbers look odd and may be an accounting error.
+
+Compute margin after returns. A line with 12% returns and 15% margin earns less than it appears — sometimes nothing at all.`,
+    example: `Two of nine lines produce 71% of all margin.
+Eating: line 6, margin 18%, returns 22%. After returns and reverse logistics it is minus $0.45 a unit.
+Held deliberately: line 3, near-zero margin, but it is what gets put in the basket first. Keep, do not reprice.
+Check by hand: line 8, 0% returns for a quarter. That does not happen — likely an export error.`,
+  },
+  "mp-price-watch": {
+    title: "Reacting to competitors' prices",
+    summary:
+      "When to follow down, when to hold, when to raise — by rules rather than nerves.",
+    bestFor: "Claude / ChatGPT",
+    tags: ["pricing", "competitors", "rules"],
+    prompt: `You do pricing. Write the rules for reacting to competitors.
+
+Your product and price: {current}
+Cost and commission: {numbers}
+Competitors and their prices: {list}
+Your differences: {delivery, reviews, contents}
+What happened: {who cut, and by how much}
+
+Deliver:
+1. The floor you cannot go below. Computed from cost plus commission, logistics and returns — not from what you would like to earn.
+2. When to follow down and when not. A competitor with 40 reviews against your 900 is not selling the same thing, and the price gap is justified.
+3. What to do instead of cutting: a bundle, a larger size, faster delivery, work on the main photo.
+4. When to raise: stock running out, competitors out of stock, seasonality.
+5. Three automatic rules: on which event you do what, so you are not deciding fresh every time.
+6. What to measure after a price change and after how many days. The grid reacts slowly; a hasty reversal blurs the picture.
+7. When not to enter a price war: signs the competitor is clearing stock and will leave on their own.
+
+Do not price a penny under your neighbour. It is visible, repeatable, and ends with both of you working for nothing.`,
+    example: `Floor: $7.10. Below that we lose money after returns.
+A competitor cut to $7.60 with 12 reviews. We hold: 900 reviews and a higher rating justify a 70-cent gap.
+Instead of cutting: bundle with a sleeve, +$2.10 price, +90 cents margin.
+Rule: follow down only if a competitor with a comparable rating holds a lower price for more than 5 days.`,
+  },
+  "mp-new-launch": {
+    title: "Launching a new product",
+    summary:
+      "The first thirty days, week by week, so the listing does not die without reviews.",
+    bestFor: "Claude / ChatGPT",
+    tags: ["launch", "new product", "plan"],
+    prompt: `You launch products on marketplaces. Write the first 30 days.
+
+Product: {what it is}
+Niche and competitors: {who is there}
+Price and cost: {numbers}
+Promotion budget: {amount}
+Stock on hand: {units}
+
+Week by week:
+1. Before launch: what must be ready. A listing with empty attributes and no fifth photo starts worse, and fixing it later costs more — edits reset relevance.
+2. Week 1: the goal is first orders at any price except a losing one. No reviews, no trust, low conversion — that is normal and budgeted.
+3. Week 2: first reviews. How to get them honestly: an insert in the packaging, chat replies, working with people who already bought.
+4. Week 3: edits from data. What to look at: which queries bring people, where they leave, what they ask.
+5. Week 4: the decision — invest further or stop. State the numbers that mean stop, in advance.
+6. What not to do in month one: change the title repeatedly, run ads at a listing with no reviews, raise the price on a spike.
+7. Three numbers to check daily.
+
+Write point 5 before you start. Once money is spent, "stop" is never chosen — the spend feels too costly to waste.`,
+    example: `Before launch: 8 photos, video, every attribute, and answers to 5 likely questions already in the description.
+Week 1: price 8% under plan, no ads — on a listing with no reviews they burn money.
+Week 2: an insert asking for a review plus a QR to the instructions. Not "leave us five stars" but "tell us what is wrong".
+Stop if 30 days produce fewer than 25 orders on 40,000 impressions.`,
+  },
+  "mp-title-formula": {
+    title: "A formula for listing titles",
+    summary: "Building a name that search finds and a person understands.",
+    bestFor: "ChatGPT / Claude",
+    tags: ["title", "seo", "listing"],
+    prompt: `You build marketplace listings. Write the title.
+
+Product: {what it is}
+Platform: {which}
+Keywords: {if collected}
+What distinguishes it: {size, colour, material, purpose}
+Brand: {yes or no}
+
+Deliver:
+1. The formula for this platform: the order of type, brand and attributes. It differs by platform, and both search and legibility depend on it.
+2. Three titles of different lengths: short, medium, at the limit.
+3. What lands in the first 60 characters. Those are visible in the grid and weigh more than the rest.
+4. Which words to drop: "buy", "cheap", "bestseller", repeated stems. They do not help search and eat space.
+5. How to fit secondary keywords without turning the title into soup. Platforms demote soup.
+6. A check: read it aloud. If it is a word list rather than the name of an object, search may find it but a person scrolls past.
+
+A title is written for two readers at once: the search engine and the human. The second is usually sacrificed — which produces impressions without orders.`,
+    example: `Formula: type + capacity + material + colour + purpose.
+Short: "Thermos 500ml stainless steel black".
+First 60 characters: type, capacity, material — that is the click decision.
+Drop: "buy", "thermos thermos", "for tea coffee water drinks" — four words for one thing.
+Aloud: reads as the name of an object, not a list. It passes.`,
+  },
+  "mp-supplier-quality": {
+    title: "Vetting a supplier and receiving a batch",
+    summary:
+      "What to ask before paying and what to check once the boxes arrive.",
+    bestFor: "Claude / ChatGPT",
+    tags: ["suppliers", "receiving", "quality"],
+    prompt: `You buy goods. Build a supplier check and a receiving procedure.
+
+Product: {what it is}
+Supplier: {where from, how found}
+Batch size: {units and value}
+What you already know: {correspondence, samples}
+
+Deliver:
+1. Ten questions before paying. Production, lead times, defects, packaging, documents, what happens if they are late.
+2. What to check in the sample and how: what to measure, what to pull, what to wash, what to leave for a week.
+3. How to agree on defects in advance: what rate counts as normal, who pays for returns, how it is recorded.
+4. Receiving: how many units to open from a batch of 100, 500, 1,000. Checking everything is impossible; checking three is pointless.
+5. What to inspect, in order: contents, dimensions, function, packaging, labelling.
+6. What to photograph immediately. A claim without photos taken at opening is refused almost everywhere.
+7. Red flags in correspondence: dodging defect questions, rushing payment, refusing a sample, changing price after agreement.
+
+A sample from the batch and a sample "to look at" are different things. Ask for one from the batch being shipped to you.`,
+    example: `Before paying: "What defect rate do you consider normal, and what happens above it?" Dodging is itself an answer.
+Sample: fill with boiling water, leave 24 hours, then check the smell and the gasket.
+Receiving 500 units: open 20, from different cartons, not off the top.
+Photograph: carton labels, the packing layer, and every defect with a ruler in frame.`,
   },
   // ─────────────────────────── SaaS ───────────────────────────
   "saas-idea-validation": {
@@ -2442,6 +4101,436 @@ Publish the "not doing" list alongside the plan: otherwise the same request arri
 Not included: dark mode — often requested, does not move the goal. Answer: "It is in next quarter's plan"…
 Mid-quarter check: if the number has not moved by week six, we cut the third item.`,
   },
+  "saas-activation-metric": {
+    title: "The moment after which people stay",
+    summary:
+      "Find the action after which users stop leaving, and start counting it.",
+    bestFor: "Claude",
+    tags: ["activation", "metrics", "retention"],
+    prompt: `You are a product analyst. Find the activation metric.
+
+Product: {what it is}
+What people do inside: {main actions}
+Data: {which events exist, over what period}
+First-month churn: {if known}
+
+Work through:
+1. Candidates for the aha moment: three or four actions after which the value becomes obvious. Not signup, not a completed profile — those are work, not value.
+2. How to test each against the data: compare retention of those who did it with those who did not. The gap should be a multiple, not a couple of points.
+3. The causation caveat: active people do more of everything. Check the action leads to retention rather than accompanying it.
+4. The metric with a number and a window: how many times, within how many days. "Uses the product" is not a metric.
+5. The current value and where it should be by the end of the quarter.
+6. What stops people reaching the moment — three places where they fall out.
+7. One product change that shortens the path.
+
+There must be one metric. Three activation metrics means the team will push whichever grows easiest.`,
+    example: `Candidates: copied a prompt, saved a favourite, opened a third section.
+In the data: people who copy at least 3 prompts in a week stay 4.7 times more often. The other candidates differ within noise.
+Metric: 3 prompts copied in the first 7 days. Currently 19% get there.
+Blockers: search is invisible on phones, the category is picked blind, half the prompts show no example output.`,
+  },
+  "saas-cancel-flow": {
+    title: "The cancellation flow",
+    summary:
+      "How to ask why and offer a way out without holding people hostage.",
+    bestFor: "Claude / ChatGPT",
+    tags: ["churn", "cancellation", "retention"],
+    prompt: `You work on retention. Design the cancellation flow.
+
+Product: {what it is}
+Plans: {which}
+Why people usually leave: {if known}
+What you can offer: {pause, discount, downgrade, nothing}
+
+Design:
+1. The reason step: five or six options plus "other". The wording must separate different problems: "too expensive" and "not using it" need different answers.
+2. What to show for each reason. One offer, appropriate to that reason: not using it means a pause; too expensive means a lower plan; could not figure it out means a short conversation.
+3. Where an offer is inappropriate: if they are leaving over a missing feature, a discount reads as mockery.
+4. Pause instead of cancel: for how long, and what happens to their data.
+5. Cancellation in two clicks. A hidden button does not return money, it returns complaints and card disputes.
+6. The email afterwards: confirmation, access until when, how to come back, how to delete data.
+7. What to measure: save rate per reason. Above 25% you are not retaining, you are obstructing — and it returns as refunds.
+
+Cancelling must work without contacting support. Everything else is about leaving calmly and being able to return.`,
+    example: `Reasons: not using it, too expensive, could not figure it out, found something else, one-off job finished, other.
+"Not using it" then a 2-month pause, access frozen, data kept.
+"Found something else" then no offer. Ask which one, in a single field, and let them go.
+Cancellation: two buttons, no calls, no chat.
+Measure: save rate by reason. "Too expensive" saves 31% today — too high; the discount is hitting people who would have paid.`,
+  },
+  "saas-dunning": {
+    title: "Recovering failed payments",
+    summary:
+      "Half of lost subscriptions are not a decision to leave but an expired card.",
+    bestFor: "Claude / ChatGPT",
+    tags: ["payments", "subscriptions", "revenue"],
+    prompt: `You run subscriptions. Set up failed-payment recovery.
+
+Product and price: {what and how much}
+How people pay: {card, invoice}
+What happens today on failure: {as it is}
+How many cases a month: {if known}
+
+Deliver:
+1. The retry schedule: when to try again. An hour later is pointless; three days later can land on payday — different probabilities entirely.
+2. Splitting by cause: expired card, insufficient funds, bank decline, blocked card. The emails differ because the actions differ.
+3. Copy for three emails: the first calm, the second with the exact thing to do, the third with the cut-off date.
+4. What to show inside the product: a bar with one action, not a lockout. A locked-out person does not pay, they leave.
+5. How many days to keep access. Too few loses people who are simply on holiday; too many teaches people not to pay.
+6. What to do with the ones who never recover: an email a month later, separate from the newsletter.
+7. What to measure: recovery rate. Below 25% means the schedule or the copy is bad.
+
+Do not write "your payment was declined" with no explanation. People assume the fault is yours and never check their card.`,
+    example: `Schedule: immediately, after 3 days, after 7. Put the third retry on a weekday.
+Expired card: an email linking straight to the replacement form, one action.
+Insufficient funds: same copy, but retry after 5 days — odds improve after payday.
+Access held for 10 days. Top bar: "Payment failed, access until 14 September" and a button.
+Currently recovering 12% — the schedule is a single same-day retry.`,
+  },
+  "saas-inapp-guidance": {
+    title: "In-app hints instead of a tour",
+    summary:
+      "Help at the moment someone is stuck, not seven modals on first login.",
+    bestFor: "Claude / ChatGPT",
+    tags: ["onboarding", "hints", "interface"],
+    prompt: `You are a product designer. Replace the product tour with contextual hints.
+
+Product: {what it is}
+Current onboarding: {tour, video, nothing}
+Where people get stuck: {if known}
+The key action: {what they must do}
+
+Deliver:
+1. Three or four moments that need a hint. A moment is not a screen but a state: empty, first time, after an error, before something irreversible.
+2. For each: what to show, in one sentence, and where. A hint lives beside its element, not in the middle of the screen.
+3. The show condition and the condition for never showing again. A hint that returns on the tenth visit is an irritant.
+4. What the interface should solve instead of a hint. If a field needs explaining, renaming the field is usually cheaper.
+5. What to delete from the tour entirely. First-login tours are watched by 20% and remembered by nobody: the person does not yet know why they would care.
+6. How not to obstruct experienced users: one way to dismiss everything.
+7. What to measure: share reaching the key action, before and after.
+
+Rule: a hint appears once the person is already trying to do something. Before the attempt there is nothing to explain — they do not need it yet.`,
+    example: `Moment: an empty favourites list. Hint by the heart button: "Tap to keep a prompt here."
+Gone for good: after the first save.
+Solved by interface, not a hint: rename the "Slug" field to "Page address" and the hint becomes unnecessary.
+Cut from the tour: 5 of 7 steps. Keep one — where the sections are.
+Measure: share who copy their first prompt within the session.`,
+  },
+  "saas-first-30-days": {
+    title: "A user's first thirty days",
+    summary:
+      "Most churn happens in the first month — here is what happens week by week.",
+    bestFor: "Claude",
+    tags: ["onboarding", "retention", "plan"],
+    prompt: `You are a product manager. Map a user's first 30 days.
+
+Product: {what it is}
+Type: {self-serve or assisted}
+Key action: {what delivers value}
+What happens after signup today: {as it is}
+
+Map it week by week:
+1. Day 0: what they must accomplish in the first session. One action, not profile setup.
+2. Days 1-7: what has to happen for a second visit. The second visit is the fork; after it the odds of staying change several times over.
+3. Days 8-14: turning one-off use into a habit. What to show someone who used it twice and vanished.
+4. Days 15-30: expansion — a second use case, a second teammate, a second area of the product.
+5. For each week: what the product does, what an email does, what a human does.
+6. Three signals someone is leaving, and the action for each.
+7. What not to do: ask for a review before first value, invite to a webinar on day one, show everything at once.
+
+Separately: what happens if they do nothing for 72 hours. It is the most common case and almost nobody plans for it.`,
+    example: `Day 0: copy one prompt. Everything else waits.
+Days 1-7: a day-two email with a prompt for the job they picked at signup. Not a digest.
+Churn signal: visited three times, copied nothing. They cannot find it — surface search with a hint.
+After 72 hours of nothing: one email with the three shortest prompts. Not "we miss you".`,
+  },
+  "saas-pricing-change": {
+    title: "Raising prices without a revolt",
+    summary:
+      "Who to tell, when, and in what words, so a handful leaves rather than half.",
+    bestFor: "Claude",
+    tags: ["pricing", "subscriptions", "communication"],
+    prompt: `You are a product manager. Plan a price change.
+
+Current price and plans: {as they are}
+New price: {to what}
+Why: {the real reason}
+Paying customers: {number and mix}
+What was added to the product this year: {list}
+
+Plan:
+1. Who the change does not touch at all: grandfathered customers, annual plans until renewal. Decide this first — the whole message depends on it.
+2. How much notice. Under 30 days reads as a trick, even where the contract allows it.
+3. The email: reason, new price, date, what to do if they disagree. A real reason — "infrastructure costs rose" sounds more honest than "we got better".
+4. What not to write: a long list of improvements as justification. It reads as trying to sell what they already paid for.
+5. What to offer the unhappy: a year at the old price paid now, a downgrade, a pause.
+6. Announcement order: large customers personally first, then everyone by email. A large customer who learns from a newsletter calls to complain.
+7. What to measure and when: churn at 30 and 90 days, not at one week. The first week always looks frightening.
+
+Offer a way to lock the old price for a year. Some of the unhappy will pay for a year up front — you get the cash and defuse the grievance.`,
+    example: `Not affected: 340 annual subscribers until renewal, and anyone who pays before 1 October.
+45 days notice.
+Reason in the email: "We held the price for three years; infrastructure costs have doubled since."
+Offer: pay for a year at the old price before 1 October.
+Measure: 90-day churn against normal, not the first week's panic.`,
+  },
+  "saas-nps-followup": {
+    title: "What to do with survey answers",
+    summary:
+      "The scores are in — now turn them into decisions rather than a slide with a number.",
+    bestFor: "ChatGPT / Claude",
+    tags: ["survey", "feedback", "decisions"],
+    prompt: `You are a product analyst. Work through survey responses.
+
+What you asked: {the wording}
+Scores and comments: {paste}
+How many answered, out of how many: {numbers}
+Product: {what it is}
+
+Work through:
+1. Who answered. Extremes answer — the delighted and the furious. The middle stays silent and is absent from this data.
+2. Themes in the comments with mention counts. One mention is not a theme.
+3. What you actually intend to fix and what you do not. A list nobody intends to build is worse than no list.
+4. Who to reply to personally and what to say: a low score with a coherent comment is a free interview, if you write the same day.
+5. What to do with high scores: ask for a review or a referral, but not in the same email where you thank them.
+6. One product change for the coming month.
+7. What to ask next time so the data is more useful.
+
+The score itself decides nothing. The comments decide, and so does who wrote them: a complaint from a large customer and one from a free plan are worth different amounts.`,
+    example: `84 of 1,200 answered — 7%. Almost no middling scores; this is not a picture of the base.
+Themes: slow search (19 mentions), no dark mode (11), plan is unclear (9).
+Fixing: search. Dark mode already exists — so it is not being found, which is a different problem.
+Reply personally: the 6 people scoring 3-5 with a coherent comment, today.
+Next time ask: what they did in the product this week.`,
+  },
+  "saas-switch-page": {
+    title: "A switch-from page",
+    summary:
+      "Copy for people already using something else and wondering whether to move.",
+    bestFor: "Claude / ChatGPT",
+    tags: ["competitors", "landing", "migration"],
+    prompt: `You do product marketing. Write a page for people switching from a competitor.
+
+Your product: {what it is}
+Competitor: {who}
+Why you are better for their users specifically: {real differences}
+Where they are better: {honestly}
+What blocks a move: {data, habit, contract}
+
+Write:
+1. A headline with no swipes at the competitor. The reader uses it — criticism reads as calling their choice stupid.
+2. Three differences that matter to their users. Not a feature list but the things their community complains about.
+3. An admission of where they are better. Without it the page is not credible: people know the product they use.
+4. What happens to data in a move: can it transfer, how long, who does it.
+5. The first 15 minutes after switching: what they see and what they get done.
+6. Who should not switch. That filters out the people who would return unhappy and write a review.
+7. A comparison table, if it is honest. A table where you have every tick reads as advertising and does not work.
+
+Do not make price the only argument. Whoever moved for price will move away from you for the same reason.`,
+    example: `Headline: "Moving from X: we transfer your data in a day."
+Differences: works on a phone, you pay for use rather than seats, search across the whole archive.
+Honestly: X has stronger integrations. If you live in their ecosystem, stay.
+Data: CSV export, import on our side, typically 4 hours, we do it.
+Do not switch: if you have 50+ people and configured roles — we do not have those yet.`,
+  },
+  "saas-error-messages": {
+    title: "Error messages",
+    summary:
+      "What happened, what to do, and whose fault it is — three lines instead of a 500.",
+    bestFor: "Claude / ChatGPT",
+    tags: ["errors", "copy", "interface"],
+    prompt: `You are a UX writer. Rewrite the error messages.
+
+Product: {what it is}
+The errors: {how they read now}
+Who uses it: {audience}
+
+For each error:
+1. What happened — with no technical words, if the reader is not technical.
+2. What to do right now. One action. "Contact support" is not an action, it is a hand-off.
+3. Whose fault it is. Own yours plainly: "this is on our side" defuses more than an apology.
+4. What happened to the data they already entered. The most common fear is that it is gone.
+5. Where to show it: at the field, as a top bar, as a dialog. Dialogs are for irreversible things only.
+6. What goes in the log and what goes to the person. An error code helps support, not the reader — put it small at the bottom.
+7. Three errors to remove rather than rewrite: the interface can prevent them.
+
+Do not write "something went wrong". It is the most useless sentence in interfaces: it says nothing and sounds like an excuse.`,
+    example: `Was: "Error 422". Now: "We could not accept that email — it looks like there is a stray space. Check it and send again."
+Our fault: "Could not save, this is on our side. Your text is still in the field, try again in a minute."
+Data: say so always, even when it is safe — otherwise people check themselves and lose it.
+Remove entirely: "file too large" — show the limit before the file picker.`,
+  },
+  "saas-ai-feature": {
+    title: "An AI feature inside the product",
+    summary:
+      "How to build one that solves a job rather than filling space on the landing page.",
+    bestFor: "Claude",
+    tags: ["ai", "features", "product"],
+    prompt: `You are a product manager. Design an AI feature.
+
+Product: {what it is}
+The user's job: {what they do by hand and slowly}
+Data you hold: {what can go in}
+Who uses it: {audience}
+
+Design:
+1. What gets faster and by how much. If the saving is under a minute the feature is unnecessary — it will be ignored.
+2. Where it lives: inside an existing step, or as its own button. A separate "ask AI" button is almost always left unpressed.
+3. What goes in, and what the person can adjust before running it.
+4. What happens on a bad answer. This is the main part: answers will be bad regularly and the product must survive it. Edit, retry, undo.
+5. How you show the answer was generated, and why not to hide it: trust is lost once and permanently.
+6. Cost: per call, calls per user per month, and what happens at ten times the volume.
+7. What is not allowed: deciding for the person without confirmation, irreversible actions, other people's personal data.
+8. The metric: not how many pressed it, but how many outputs were kept unedited.
+
+Point 8 separates a working feature from a decorative one. Curiosity gets one press; keeping the output means it was good enough.`,
+    example: `Faster: finding the right prompt. By hand it is scrolling 200 cards; with the feature it is describing the job in words.
+Lives in search, not a separate button: that is where people already are.
+Bad answer: show three options, not one. One wrong answer reads as broken; one of three reads as a choice.
+Metric: share who copy one of the suggested prompts instead of scrolling on.`,
+  },
+  "saas-usage-limits": {
+    title: "Usage limits in plans",
+    summary:
+      "Where to draw the line so it nudges an upgrade rather than reading as punishment.",
+    bestFor: "Claude / ChatGPT",
+    tags: ["plans", "limits", "monetisation"],
+    prompt: `You are a product manager. Set the usage limits.
+
+Product: {what it is}
+Current plans: {as they are}
+What costs you money: {expenses that grow with usage}
+How people use it: {typical and heavy behaviour}
+
+Deliver:
+1. Which parameter to limit. It must grow with value, not with your costs: people pay for value, not for your servers.
+2. Where the line goes: look at the distribution and find the gap where a normal user never hits it and a heavy user hits it regularly.
+3. What happens on reaching it: a soft stop, an advance warning, an overage charge. A hard block mid-task reads as a trick.
+4. When to warn. At 80% of the limit, not at 100%.
+5. What never to limit: exporting their own data, access to what they already created. Otherwise it reads as hostage-taking.
+6. How to explain the limit on the pricing page in one line, understandable without a calculator.
+7. What to measure: how many hit the limit and how many upgrade. If 40% hit it and 2% upgrade, the limit irritates rather than nudges.
+
+The limit must be clear before payment. Someone who discovers it after buying will refund and tell people.`,
+    example: `Limit on prompts copied per month, not on logins: copying is the value.
+Line at 15: a normal user copies 4-6, a heavy one 30+. The gap between them is the comfortable place.
+At 12 of 15: a bar saying "3 left this month". Not a dialog.
+Never limited: access to saved items — those are already theirs.
+Measure: 18% hit it, 9% upgrade. It works.`,
+  },
+  "saas-quickstart-docs": {
+    title: "A quickstart page",
+    summary: "The page after which something actually works, in ten minutes.",
+    bestFor: "Claude / ChatGPT",
+    tags: ["documentation", "quickstart", "developers"],
+    prompt: `You are a technical writer. Write the quickstart page.
+
+Product: {what it is}
+For whom: {developer, analyst, ordinary user}
+What they end up with: {the result}
+What is needed first: {key, account, install}
+
+Write:
+1. What they will have at the end — the first line, before any preamble. They must be able to judge whether ten minutes is worth it.
+2. Prerequisites, as a list. Not buried where they surface at step four.
+3. The steps. Each is one action and one check: how to know it worked. A step without a check ends with someone continuing from a broken state.
+4. Code or values that can be copied whole and run. Placeholders like your_key are the only thing they change.
+5. What goes wrong for half of them: three common errors and what to do, on this page, not in a troubleshooting section.
+6. What next — three links, no more.
+7. What does not belong here: architecture, explanations of why things are built this way, a full parameter reference.
+
+To test the page: hand it to someone who has never seen the product and watch in silence. Every place they stop is an edit.`,
+    example: `First line: "In 10 minutes you will send your first request and get a prompt back."
+Step 2, check: "The response should be 200 with an id field. A 401 means the key was truncated — it is 40 characters."
+Common error: a test-environment key against the production URL. Everyone does it, including us.
+Next: three links — reference, limits, examples.`,
+  },
+  "saas-churn-interview": {
+    title: "A conversation with a churned customer",
+    summary: "Fifteen minutes that explain churn better than any dashboard.",
+    bestFor: "Claude / ChatGPT",
+    tags: ["churn", "interviews", "customers"],
+    prompt: `You are a researcher. Prepare a call with a churned customer.
+
+Product: {what it is}
+Who left: {segment, how much they paid, how long they stayed}
+What the data says: {their last actions}
+What you want to learn: {the decision that depends on it}
+
+Prepare:
+1. The invitation: a three-line email, with no gift attached. A gift produces polite answers instead of honest ones.
+2. A first question that is not "why did you leave". That gets a rehearsed answer. Start with what they did in the product last month.
+3. Eight questions about facts rather than opinions: what they did, what replaced it, who decided, what the last straw was.
+4. The alternative question: what they use now and what is better there. That answer is worth more than the rest of the call.
+5. What not to ask: will you come back, what should we improve. Both produce polite untruths.
+6. How to take criticism: do not defend, do not fix it live. One objection and they stop talking.
+7. What to do after: what not to promise, and what to write in the thank-you.
+
+Note separately: a churned customer owes you nothing. Fifteen minutes, and not one more without their consent.`,
+    example: `Invitation: "You stopped using us in July. I am not selling anything — I want to understand what went wrong. 15 minutes?"
+First question: "Walk me through how you used it in your last month."
+Last straw: "What happened on the day you decided not to renew?"
+Do not ask: "what should we improve" — the answer will be about buttons, and buttons are not why they left.`,
+  },
+  "saas-billing-emails": {
+    title: "Billing and renewal emails",
+    summary: "The dull emails that cause most of the card disputes.",
+    bestFor: "ChatGPT / Claude",
+    tags: ["email", "billing", "subscriptions"],
+    prompt: `You are an editor. Write the money emails.
+
+Product and price: {what and how much}
+How the subscription works: {period, auto-renewal}
+What you send today: {as it is}
+
+Write five emails:
+1. Payment succeeded: what was bought, for how long, the amount, where the receipt is. Short but complete — people keep it.
+2. Renewal coming: 3 to 5 days ahead, with the amount and date. This email prevents more card disputes than any terms page.
+3. Renewal succeeded: same as the first, without congratulations.
+4. Subscription ending and not renewing: what stops working and what remains.
+5. Refund: confirmation, amount, when it lands, what happens to access.
+
+For each: subject under 40 characters, body under 100 words, one button.
+
+Rules: amount and date in the first two lines; a cancellation link in every money email; no upsells in a charge notification — it reads as trading on someone else's wallet.
+
+The upcoming-charge email matters most. It gets skipped so as not to "scare people off", and then come the refunds and disputes.`,
+    example: `Subject: "Renewing 14 September, $6".
+Body: "Your PRO subscription renews automatically on 14 September and we will charge $6 to card ending 4417. If you would rather not renew, cancel and access stays until the 14th."
+Button: "Manage subscription".
+Not included: the annual plan offer. Not in this email.`,
+  },
+  "saas-demo-script": {
+    title: "A demo script",
+    summary:
+      "Twenty minutes of showing that leaves a decision rather than an impression.",
+    bestFor: "Claude / ChatGPT",
+    tags: ["sales", "demo", "b2b"],
+    prompt: `You lead sales. Write a product demo script.
+
+Product: {what it is}
+Who you show it to: {role, company size}
+What you know before the call: {form, correspondence}
+Time available: {minutes}
+What must happen after: {next step}
+
+The script:
+1. The first five minutes are questions, not screens. What they do now, how long it takes, what gets in the way. Without that a demo becomes a tour of the menu.
+2. What to show: one workflow, theirs, start to result. Not a feature survey.
+3. Where to stop and ask. Every five minutes: "is that how it looks on your side?"
+4. What not to show: settings, the admin panel, anything in development. Whatever is shown will be asked for later.
+5. Price: when to say it. Before they ask, and not at the end — price at the end turns everything shown into a wind-up.
+6. Three objections this role will raise, and the answers.
+7. A next step with a date. "We will think about it" is not a next step.
+8. What to write down afterwards while you remember: in the customer's words, not yours.
+
+Demo on their data if you can. A demo on invented data leaves "would it work for us" unanswered.`,
+    example: `First 5 minutes: "How does a listing get written now? Who writes the copy? How long does it take?"
+Show one path: from product description to finished listing copy, on their product.
+Price at minute ten, not at the end.
+Objection for this role: "we have a copywriter". Answer: not a replacement, a speed-up — a draft in a minute instead of an hour.
+Next step: "Access today, call Thursday at 3pm.`,
+  },
   // ─────────────────────────── Threads ───────────────────────────
   "threads-hook-lab": {
     title: "20 hooks that fit before the «more» cut",
@@ -2904,5 +4993,419 @@ Point 7 is mandatory: conclusions drawn from insufficient data cost more than no
     example: `Median 1,400, average 2,600 — one post pulled the average up; do not steer by it.
 What the top three share: the opening line names a specific moment in time, not a topic…
 Cannot be said: whether the carousel format works — there were two in a month, that is not a sample.`,
+  },
+  "threads-topics-setup": {
+    title: "Profile topics",
+    summary:
+      "The topics on your profile decide which strangers get shown your posts.",
+    bestFor: "ChatGPT / Claude",
+    tags: ["profile", "topics", "reach"],
+    prompt: `You do social strategy. Pick profile topics for Threads.
+
+What you write about: {topics over the last month}
+Who you write for: {audience}
+What you sell or do: {if anything}
+What the profile says now: {as it is}
+
+Deliver:
+1. Three to five topics you should be found under. Not what interests you, but what strangers will look for you under.
+2. How each topic overlaps with what you actually post. A topic with no posts works against you: arrivals leave.
+3. What to remove: the too broad ("marketing") and the too narrow that nobody searches.
+4. How this fits the first line of the bio. Topic and bio must agree, or the profile reads as somebody else's.
+5. Three opening posts per topic, so an arrival sees this place is about that.
+6. When to check and what to look at: the share of non-followers in your reach.
+
+Topics are not hashtags. They are a claim about which feed you belong in, and the claim is backed by posts, not words.`,
+    example: `Topics: prompts for work, marketplaces, seller tools.
+Remove "AI" — too broad, you are two hundredth there.
+Bio first line: "I break down prompts that save sellers time." Matches the topics.
+Check in 3 weeks: share of impressions from non-followers. Was 40%, should rise.`,
+  },
+  "threads-niche-replies": {
+    title: "Replies under other people's posts",
+    summary:
+      "The fastest growth on Threads is not your posts but your replies in your niche.",
+    bestFor: "Claude / ChatGPT",
+    tags: ["replies", "growth", "niche"],
+    prompt: `You do Threads strategy. Build a practice of replying under other people's posts.
+
+Your subject: {what it is}
+Who your future followers read: {5-10 accounts}
+Time per day: {minutes}
+What you know better than most: {expertise}
+
+Deliver:
+1. The account list in groups: large with busy comments, mid-size with live discussion, peers your own size. Under the large ones you are invisible; under mid-size ones you read best.
+2. When to reply: the first 20-30 minutes after posting. Nobody reads the hundredth comment, the author included.
+3. Three reply types that work: add a fact, offer a counter-case, ask a real question. And why agreeing does not work — it adds nothing.
+4. Reply length: two to four lines. A long comment reads as an attempt to pull people away.
+5. What is banned: links to yourself, "follow me", generic praise, arguing for sport.
+6. How this becomes followers: someone taps your name, lands on your profile, and it must be about the same thing.
+7. A daily quota, and how to keep it from becoming a job: how many replies, in how many minutes.
+
+Do not write a reply that would fit under any post. It brings nobody and costs the same time.`,
+    example: `Large: 3 accounts, reply within 20 minutes. Mid-size: 6 accounts, where your reply lands second or third.
+Reply type: counter-case. "Ours went the other way — the listing without video sold better, because…"
+Do not write: "great post, agreed".
+Quota: 8 replies a day, 25 minutes. More becomes an obligation and gets dropped in a week.`,
+  },
+  "threads-trend-format": {
+    title: "A trending format for your subject",
+    summary:
+      "How to take the format going round the feed and not look like a tourist.",
+    bestFor: "ChatGPT / Claude",
+    tags: ["trends", "format", "feed"],
+    prompt: `You write on Threads. Adapt a trending format to your subject.
+
+The format: {describe it — city lists, five jobs, unpopular opinion, whatever}
+Your subject: {what you write about}
+Audience: {who reads}
+Your last month of posts: {examples}
+
+Deliver:
+1. What works mechanically in the format: enumeration, recognition, disagreement, nostalgia. Copy the mechanism, not the words.
+2. Three versions for your subject. Each must stay yours: if the format would fit any account, it adds nothing to yours.
+3. What to drop in the transfer: whatever was funny only in the original.
+4. The first line of each version. The feed shows that and half of the second.
+5. What to reply in the comments so the discussion continues. For list formats this is the main thing: people come to add their own.
+6. When not to take the format: if your subject offers no recognition, an enumeration reads as a list.
+
+Do not take a format after day seven. By then the feed is tired of it and your post reads as an echo.`,
+    example: `Mechanism: recognition through enumeration. People add their own in the comments.
+Version: "Five prompts I stopped writing by hand." Enumeration plus a confession.
+Drop: the office joke — our audience works from home.
+First line: "Five prompts I no longer write by hand" — enough to open it.`,
+  },
+  "threads-list-post": {
+    title: "A list post that is not an article",
+    summary: "An enumeration people finish and then add to in the comments.",
+    bestFor: "ChatGPT / Claude",
+    tags: ["list", "format", "post"],
+    prompt: `You write short. Build a list post.
+
+Subject: {what about}
+What you enumerate: {mistakes, tools, rules, observations}
+How many items: {number}
+Audience: {who reads}
+
+Build:
+1. A headline with a number and a promise. The number sets the length — the reader knows what they are getting into.
+2. One line per item. Two sentences per item turns it into an article, and articles do not get read in a feed.
+3. Order: the most surprising first, the most useful second. The last item is remembered, but they have to reach it.
+4. One item worth arguing with. Without it there are no comments.
+5. A last line inviting additions: "what would you add". A list without one ends rather than continues.
+6. What to cut: items everyone has, and items you have not tried yourself.
+
+Five to seven items. Ten does not get finished; three looks like a draft of something larger.`,
+    example: `Headline: "6 prompts I deleted after a month of use."
+Argument item: "A prompt longer than one screen is always worse than a short one." People argue, which is the point.
+One line per item, no explanations — those go into the comment replies.
+Last line: "What did you delete?`,
+  },
+  "threads-daily-30": {
+    title: "Thirty minutes a day",
+    summary: "A routine that survives months, instead of weekend sprints.",
+    bestFor: "Claude / ChatGPT",
+    tags: ["routine", "habit", "growth"],
+    prompt: `You do social strategy. Write a 30-minute daily routine.
+
+Subject: {what you write about}
+Follower count: {number}
+What you do now: {as it is}
+When it suits you: {time of day}
+What you are worst at: {ideas, writing, replying}
+
+Write:
+1. The 30 minutes broken into parts: reading the feed, replying elsewhere, your own post, replying at home. With minutes.
+2. What comes first. Not your own post: an empty head writes badly, and replies warm it up.
+3. Where topics come from without extra time: your own replies from yesterday are ready drafts.
+4. What to do on a day with nothing to say. That day comes every week, and the plan for it matters more than the plan for a good day.
+5. What can be skipped with no loss: stories, design, checking analytics more than weekly.
+6. How not to burn out: what to skip when there is nothing left, and what cannot be skipped even then.
+7. After how many weeks to look at results, and at which number.
+
+Rule: replies beat posts. A post with no replies elsewhere is seen by the people already following you.`,
+    example: `30 minutes: 5 reading, 15 replying elsewhere, 7 your post, 3 replying at home.
+First: replies. Your post last, built from a thought that surfaced while replying.
+Nothing to say: take yesterday's own comment longer than three lines and post it.
+Never skipped, even empty: replies at home. An author silent under their own post loses the thread.`,
+  },
+  "threads-photo-post": {
+    title: "A post with an image",
+    summary: "When a picture helps, when it hurts, and what has to be on it.",
+    bestFor: "ChatGPT / Claude",
+    tags: ["image", "post", "attention"],
+    prompt: `You edit social. Build a post with an image.
+
+What the post says: {the substance}
+The image: {screenshot, photo, chart, cover}
+Audience: {who reads}
+
+Deliver:
+1. Whether an image belongs here at all. On Threads text works on its own, and a spare image pulls attention off the first line — say plainly if it is better without.
+2. What must be visible in the preview. Feed images are small: small type on them is never read.
+3. How text and image connect: the text does not narrate the picture, it adds what is not in it.
+4. Screenshots: what to crop and what to redact. Personal data, other people's names, spare interface.
+5. Charts: one idea, axes labelled in words, one highlighted point. A chart with no conclusion in the caption goes unread.
+6. The first line of the post — it still decides. An image will not save a weak first line, and a strong one works without an image.
+
+Do not add a picture "so people notice". They will notice and scroll: the feed has too many images and too few reasons to stop.`,
+    example: `Image belongs: showing the difference between two model outputs — in words it would take three paragraphs.
+Visible in preview: two text blocks side by side, the left one shorter. Nothing else is needed.
+The text adds: what exactly changed in the prompt. That is not in the picture.
+Redact: the client's name in the screenshot header.`,
+  },
+  "threads-hot-take-safe": {
+    title: "A strong opinion without a fight",
+    summary:
+      "How to say it so people argue with the idea rather than with you.",
+    bestFor: "Claude",
+    tags: ["opinion", "debate", "reputation"],
+    prompt: `You are an editor. Help phrase a strong opinion.
+
+The idea: {what you want to say}
+Why you think so: {experience, data}
+Who will dislike it: {who objects}
+What you sell or do: {context}
+
+Deliver:
+1. A phrasing about the approach, not about people. "This is not worth doing" and "people who do this are fools" are one idea and two different reputations.
+2. Your grounds in one line: your experience, a number, a case. An opinion without grounds collects abuse rather than debate.
+3. The caveat where you might be wrong. It does not weaken the position; it removes half the objections in advance.
+4. Three objections that will come, and your answers — prepared before publishing.
+5. What to do if the post travels somewhere unintended: when to reply, when to stay quiet, when to correct.
+6. A red line: subjects not worth an opinion for the sake of reach. Reach from a scandal arrives once and stays with you forever.
+7. A check: read the phrasing as someone who does the opposite. If they feel insulted rather than interested, rewrite it.
+
+Arguing for sport is visible. An opinion with no experience behind it is taken apart in an hour, and then the subject becomes you.`,
+    example: `About the approach: "Long prompts hurt more often than they help" rather than "anyone writing walls of text has not understood it".
+Grounds: "Of our 117 prompts, the best are under 15 lines."
+Caveat: "For complex analysis the length is justified — there it carries structure."
+Objection: "what about context". The answer is ready in advance.
+Red line: no opinions on other people's pricing or other people's layoffs.`,
+  },
+  "threads-ama": {
+    title: "Answering readers' questions",
+    summary: "Collect questions and answer them so it becomes a week of posts.",
+    bestFor: "ChatGPT / Claude",
+    tags: ["questions", "audience", "content"],
+    prompt: `You write on Threads. Run a question round.
+
+Subject: {what you cover}
+Followers: {number}
+What has been asked in comments: {examples}
+How many you will answer: {number}
+
+Deliver:
+1. How to invite questions. Not "ask me anything" — a narrow frame produces more questions than a wide one. People do not know what to ask an open door.
+2. What to do with few followers: where else to get questions — a month of comments, your inbox, search on your subject.
+3. How to select: questions interesting to more than the asker. Answer the rest privately.
+4. Answer format: one post per question, not a ten-part thread. Each answer lives its own life in the feed.
+5. What a good answer looks like: the question on line one, the answer on line two, detail after.
+6. What to do with an awkward question: answer plainly or say you will not — but do not ignore it in public.
+7. How this becomes a week of posts, and what to do with questions that return every month.
+
+A repeating question is not boredom, it is a signal: the answer exists nowhere. That answer belongs pinned.`,
+    example: `Invite: "Ask me about prompts — what is not working" rather than "ask me anything".
+Select: "how do I know a prompt is bad" interests everyone. "Why will the PDF not open" gets a private reply.
+Format: the post opens with the question itself, verbatim. That way people who did not ask recognise it.
+Returns monthly: "where do I start". That needs a pinned post.`,
+  },
+  "threads-instagram-link": {
+    title: "Threads and Instagram together",
+    summary:
+      "What to post in both, what only here, and how not to duplicate yourself.",
+    bestFor: "Claude / ChatGPT",
+    tags: ["instagram", "cross-posting", "content"],
+    prompt: `You do social strategy. Connect Threads and Instagram.
+
+Your subject: {what it is}
+What Instagram already has: {format, audience, reach}
+What Threads has: {as it is}
+Time available: {per week}
+
+Deliver:
+1. What lives only on Threads: thoughts, observations, short opinions, questions. There is no point dragging those to Instagram, where they go unread.
+2. What lives only on Instagram: the visual, the saveable, the finished.
+3. What belongs in both and how to rewrite it in the move. Copied text is visible and devalues both places.
+4. How to send people from Threads to Instagram and back. Not "link in bio" on every post — that stops being noticed within a week.
+5. What to do about shared followers: they see you twice a day, and identical text reads as spam.
+6. How to use Threads to test ideas before spending a day filming for Instagram.
+7. What to measure separately on each, and why comparing the numbers across them is meaningless.
+
+Point 6 is the main benefit. A Threads post costs five minutes; if the thought lands flat, the video is not worth making.`,
+    example: `Threads only: "Noticed that prompts longer than a screen are almost always worse." Five minutes, immediate reaction.
+Instagram only: a carousel breaking down a finished prompt — that gets saved.
+Both: the month's results, as text on Threads and as a numbers graphic on Instagram.
+Idea testing: if the thought draws discussion on Threads, film it. If silence, do not spend the day.`,
+  },
+  "threads-community-20": {
+    title: "Twenty people worth talking to",
+    summary: "A circle that moves an account more than any twenty posts do.",
+    bestFor: "Claude / ChatGPT",
+    tags: ["community", "relationships", "growth"],
+    prompt: `You build communities. Assemble a circle on Threads.
+
+Your subject: {what it is}
+Your size: {followers}
+Who you already read: {accounts}
+What you can give others: {expertise, audience, help}
+
+Deliver:
+1. Twenty accounts in three groups: peers your size, slightly larger, adjacent subjects. Peers matter more than large accounts — with them the exchange is mutual.
+2. Why adjacent subjects work better than direct competitors: different audiences, no fight over the same people.
+3. How to start: not with "let us be friends" but with a useful reply under their post. Three or four times before any direct message.
+4. What to offer in the first direct message. Something from your side, not a request.
+5. How to maintain it: once a week, with no obligations and no scheduled like-swapping. Transactional exchange is visible and cheapens both parties.
+6. Who not to invite: people looking only for gain, and people whose audience you would not want.
+7. What this yields in three months and how to measure it.
+
+Do not build a like-swap group. It lifts the numbers and brings not one person who actually needs you.`,
+    example: `Peers: 8 accounts at 2-5k writing about marketplaces. Real exchange there.
+Adjacent: 6 accounts on logistics and photography. Same audience, different subject — no competition.
+Start: reply substantively under their posts for two weeks, then write.
+First message: "Worked through your question about listing video, here is the prompt. Use it, no link needed.`,
+  },
+  "threads-one-or-thread": {
+    title: "One post or a thread",
+    summary:
+      "When a thought fits one screen, and when it genuinely needs unpacking.",
+    bestFor: "ChatGPT / Claude",
+    tags: ["format", "thread", "length"],
+    prompt: `You are an editor. Decide whether a text is one post or a thread.
+
+The text: {paste}
+Subject: {what it is}
+What the reader should take away: {one thought}
+
+Work through:
+1. How many thoughts are in it. One thought is one post, always. A thread caused by length rather than by count reads as padded.
+2. If there are several: are they sequential. A thread works when point two makes no sense without point one. If the points are independent, that is a list in one post.
+3. How to compress to one screen: what to cut. Usually the preamble, the repetitions, and explaining what was already clear.
+4. If a thread is warranted: how to build the first post. It must work alone — most people read only that.
+5. How to end each node so people continue.
+6. The maximum number of nodes. After the fifth almost nobody follows, and a second thread the next day works better.
+7. What a thread costs: discussion smears across the nodes and the comments stay empty.
+
+The default is one post. A thread has to be justified, not chosen by habit.`,
+    example: `One thought: "short prompts work better." So, one post.
+Cut: two paragraphs on how you got there. They do not fit, and the comments are where you tell it.
+Were it a thread: node one is the conclusion, not the preamble. Everyone reads that, half read the rest.
+Maximum: 4 nodes.`,
+  },
+  "threads-recycle-best": {
+    title: "Reposting your best",
+    summary: "How to bring back what worked without looking like a repeat.",
+    bestFor: "ChatGPT / Claude",
+    tags: ["reposting", "archive", "content"],
+    prompt: `You are an editor. Prepare a repost of old material.
+
+Best posts: {paste several}
+How long ago: {timeframe}
+Followers then and now: {numbers}
+What has changed since: {in the subject, for you}
+
+Deliver:
+1. Which posts are worth repeating: those whose idea has not aged while the audience grew. A post everyone saw is not worth repeating.
+2. What to change first: a new opening line, always. The same run-up over the same text is recognised and scrolled past.
+3. Three ways to repost: with a new occasion, with a correction, with an admission. The last works best: "a year ago I wrote this, now I think otherwise".
+4. What to do with numbers and examples: outdated ones must be refreshed, or the repost reads as carelessness.
+5. How long to wait. Under three months is too soon.
+6. How many such posts to keep in reserve and how to pick them without trawling the archive by hand.
+7. What not to do: repost verbatim, repost more than monthly, repost what caused a fight.
+
+A good repost is not a copy but a continuation. It adds what you did not know a year ago.`,
+    example: `Repost: the short-prompts piece — 900 people saw it, there are 4,000 followers now.
+New opening line: "I wrote this a year ago. A third of my view has changed since."
+Refresh: was "of 69 prompts", now "of 207".
+Do not repost: the pricing argument — a second run collects the same fight, angrier.`,
+  },
+  "threads-launch-product": {
+    title: "Launching a product without ads",
+    summary:
+      "Two weeks of posts that end in sales — with no post saying buy this.",
+    bestFor: "Claude / ChatGPT",
+    tags: ["launch", "sales", "plan"],
+    prompt: `You are a marketer. Plan a product launch through Threads.
+
+Product: {what it is}
+Launch date: {when}
+Followers: {number}
+What you usually write about: {topics}
+What people already know: {nothing, heard of it, waiting}
+
+Plan two weeks:
+1. Days 1-4: the problem the product solves, with no product in frame. People must recognise their problem before they hear about a solution.
+2. Days 5-8: how you solved it yourself. Process, mistakes, what did not work. That is the proof you understand the subject.
+3. Days 9-11: the product as a by-product of that work. Not an announcement but "here is what came out of it".
+4. Launch day: one post. What it is, who it is for, how much, where to get it. No exclamation marks, no countdowns.
+5. The days after: answering questions, handling objections, showing how people use it.
+6. How many of the fourteen posts mention the product. More than three and the feed starts unfollowing.
+7. What to do if launch day is quiet. Silence is likelier than noise, and the plan for it is needed in advance.
+
+You can only sell on Threads with what you already talk about. An account that went silent for two weeks and returned with a sale sells nothing.`,
+    example: `Days 1-4: "A seller spends three of four hours on listing copy." Not a word about the product.
+Days 5-8: how we wrote 20 prompts and threw 7 away. The post about the discarded ones reads best.
+Launch day: one post, four lines, a link.
+Of 14 posts, 3 mention the product. The rest are the subject.
+If quiet: write personally to the ten people who commented during the fortnight.`,
+  },
+  "threads-quiet-week": {
+    title: "Reach dropped",
+    summary:
+      "What to check and what not to do in the week everything went quiet.",
+    bestFor: "Claude / ChatGPT",
+    tags: ["reach", "decline", "diagnosis"],
+    prompt: `You analyse social. Diagnose a drop in reach.
+
+Before and after: {numbers over two or three weeks}
+What you posted those days: {topics and formats}
+What you did differently: {if anything}
+Followers: {number}
+
+Check in order:
+1. How many days the drop has lasted. Two days is not a drop, it is two days. Reacting before a week means fixing something that is not there.
+2. What changed on your side: posted less often, stopped replying, changed subject, started adding links.
+3. Outbound links: almost everywhere they suppress reach. Check whether the start coincides with their appearance.
+4. Format: whether you drifted into one type of post. Feeds tire of sameness faster than of bad.
+5. The calendar: holidays, summer, major events. They move numbers more than your work does.
+6. What to do this week: one change, not five. With five you will not know which worked.
+7. What not to do: delete posts, double your posting rate, buy anything, change subject.
+
+A two or three week dip is normal, not a fault. The problem starts when it lasts a month with your work unchanged.`,
+    example: `Nine days — worth looking at.
+Coincidence: from the 3rd every post carries a link to the site. There were no links before.
+Format: 8 list posts in a row. The feed is tired.
+One change this week: links move to the first comment. Watch for 7 days.
+Not doing: posting more often, deleting anything.`,
+  },
+  "threads-voice-find": {
+    title: "What makes you different in the feed",
+    summary:
+      "Find your angle before you are mistaken for three identical accounts.",
+    bestFor: "Claude",
+    tags: ["voice", "positioning", "difference"],
+    prompt: `You are an editor. Help find someone's own angle.
+
+Their posts: {paste 5-10}
+Subject: {what they write about}
+Who they read: {accounts}
+What they have done that others have not: {experience}
+
+Work through:
+1. What repeats across the posts: words, the shape of the thinking, the kind of examples. That is the raw material of a voice, and it usually goes unnoticed.
+2. How they differ from the accounts they read. If they do not, they are retelling, and it shows.
+3. Experience nobody else in the subject has. Not "ten years in the field" but specific situations lived through.
+4. The angle in one line: not what they write about but where they look from. "About prompts" is a subject. "About prompts as someone selling on a marketplace" is an angle.
+5. Three topics visible only from that angle.
+6. What to stop writing: whatever anyone else in the subject would write. It brings neither followers nor pleasure.
+7. A test: cover the author's name on one of their posts. Are they recognisable?
+
+An angle is not invented. It is found in what is already written — which is why we start from the posts rather than a blank page.`,
+    example: `Repeats: always an example with a number, always what did not work.
+Difference: everyone else in the subject shows successes; you show what was thrown away.
+Angle: "prompts, from someone who binned half of them".
+Topics from that angle: why long prompts look better than they work; what the discarded ones had in common.
+Test: name covered — recognisable from "I binned seven of twenty".`,
   },
 };
