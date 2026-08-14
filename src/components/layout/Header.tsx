@@ -40,6 +40,9 @@ export default function Header({
   const supportItems = [
     { href: `/${locale}/guides`, label: t.guides.nav, wide: true },
     { href: `/${locale}/skills`, label: t.skills.nav, wide: true },
+    // Наверху широкого экрана места нет — ряд и так на пределе. Ссылка
+    // живёт в меню телефона и в подвале, как остальные разделы.
+    { href: `/${locale}/carousel`, label: t.carousel.nav, wide: false },
     { href: `/${locale}/pricing`, label: t.footer.pricing, wide: true },
     // Кабинет и избранное открыты только вошедшему — у него они есть в
     // меню под аватаром, а гостю показывать их наверху незачем.
