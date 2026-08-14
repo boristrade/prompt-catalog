@@ -3,6 +3,7 @@ import { pageLocale } from "@/lib/i18n";
 import { pageMeta } from "@/lib/seo";
 import Reveal from "@/components/Reveal";
 import CarouselBuilder from "@/components/carousel/CarouselBuilder";
+import { niches } from "@/lib/carousel/niches";
 
 export function generateStaticParams() {
   return LOCALES.map((locale) => ({ locale }));
@@ -27,7 +28,7 @@ export default async function CarouselPage({
 }: {
   params: Promise<{ locale: string }>;
 }) {
-  const { t } = await pageLocale(params);
+  const { locale, t } = await pageLocale(params);
 
   return (
     <section className="py-14 md:py-16">
@@ -46,7 +47,7 @@ export default async function CarouselPage({
         телефона. На сервере рисовать нечем, да и незачем: фотография
         туда не попадает вовсе.
       */}
-      <CarouselBuilder t={t} />
+      <CarouselBuilder t={t} niches={niches(locale)} />
     </section>
   );
 }

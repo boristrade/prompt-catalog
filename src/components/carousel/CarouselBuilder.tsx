@@ -4,6 +4,7 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import { Download, Image as ImageIcon, Plus, Share2, Trash2 } from "lucide-react";
 import { FALLBACK, paletteFrom, type Palette } from "@/lib/carousel/palette";
 import { H, W, drawSlide, type Deck, type Slide } from "@/lib/carousel/templates";
+import type { Niche } from "@/lib/carousel/niches";
 import type { Dictionary } from "@/lib/i18n/dictionaries";
 
 /*
@@ -31,12 +32,22 @@ function emptySlide(kind: Slide["kind"]): Slide {
   return { kind, eyebrow: "", title: "", body: "", code: "", takeaway: "" };
 }
 
-export default function CarouselBuilder({ t }: { t: Dictionary }) {
+export default function CarouselBuilder({
+  t,
+  niches,
+}: {
+  t: Dictionary;
+  niches: Niche[];
+}) {
   const [palette, setPalette] = useState<Palette>(FALLBACK);
   const [photo, setPhoto] = useState<HTMLImageElement | null>(null);
   const [ready, setReady] = useState(false);
   const [previews, setPreviews] = useState<string[]>([]);
   const [busy, setBusy] = useState(false);
+  const [niche, setNiche] = useState(niches[0]?.id ?? "");
+  const [applied, setApplied] = useState("");
+
+  const current = niches.find((item) => item.id === niche) ?? niches[0];
 
   const [deck, setDeck] = useState<Deck>({
     handle: "@username",
@@ -241,6 +252,78 @@ export default function CarouselBuilder({ t }: { t: Dictionary }) {
 
       {/* Настройки */}
       <div className="min-w-0 space-y-5">
+        {/*
+          Ниша и готовые тексты стоят выше остального нарочно.
+
+          Пустые поля — самая частая причина закрыть конструктор, ничего
+          не сделав: фото загрузили, а что писать — не придумали. Готовый
+          набор снимает именно эту остановку, поэтому он должен
+          попадаться раньше, чем поля для ручного ввода.
+
+          Ник и фото при этом не трогаются: они уже введены, и терять их
+          при выборе текста человек не ожидает.
+        */}
+        <div>
+          <span className="text-[13px] font-semibold text-ink">
+            {t.carousel.niche}
+          </span>
+          <div className="mt-2 flex flex-wrap gap-2">
+            {niches.map((item) => (
+              <button
+                key={item.id}
+                type="button"
+                onClick={() => setNiche(item.id)}
+                aria-pressed={item.id === niche}
+                className={`rounded-chip border px-3 py-1.5 text-[12.5px] transition-colors duration-200 ${
+                  item.id === niche
+                    ? "border-violet bg-accent-soft text-accent"
+                    : "border-line text-muted hover:text-ink"
+                }`}
+              >
+                {item.title}
+              </button>
+            ))}
+          </div>
+          <span className="mt-2 block text-[12px] leading-relaxed text-faint">
+            {t.carousel.nicheHint}
+          </span>
+        </div>
+
+        <div>
+          <span className="text-[13px] font-semibold text-ink">
+            {t.carousel.texts}
+          </span>
+          {/* Список длинный: десять на нишу. Прокручиваем его сам, чтобы
+              настройки ниже оставались в пределах досягаемости. */}
+          <ul className="mt-2 max-h-72 space-y-2 overflow-y-auto pr-1">
+            {current?.decks.map((item) => (
+              <li
+                key={item.id}
+                className="flex items-center justify-between gap-3 rounded-card border border-line bg-surface px-3 py-2.5"
+              >
+                <span className="min-w-0 text-[13px] leading-snug text-ink">
+                  {item.title}
+                </span>
+                <button
+                  type="button"
+                  onClick={() => {
+                    // Ник, подпись и фото остаются: меняется только текст.
+                    setDeck((d) => ({ ...d, slides: item.slides }));
+                    setApplied(item.id);
+                  }}
+                  className={`shrink-0 rounded-chip px-3 py-1.5 text-[12.5px] font-semibold transition-colors duration-200 ${
+                    applied === item.id
+                      ? "border border-violet text-accent"
+                      : "grad-fill"
+                  }`}
+                >
+                  {applied === item.id ? "✓" : t.carousel.apply}
+                </button>
+              </li>
+            ))}
+          </ul>
+        </div>
+
         <label className="block">
           <span className="text-[13px] font-semibold text-ink">
             {t.carousel.photo}
