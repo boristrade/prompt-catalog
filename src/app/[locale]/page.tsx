@@ -2,18 +2,13 @@ import Link from "next/link";
 import Image from "next/image";
 import {
   ArrowRight,
-  BookOpen,
   Check,
   FileText,
   Layers,
   Sparkles,
-  Terminal,
   Zap,
 } from "lucide-react";
 import { CATEGORIES } from "@/lib/categories";
-import { GUIDES } from "@/lib/guides";
-import { PDF_GUIDE_PATHS } from "@/lib/pdf-guides";
-import { SKILLS } from "@/lib/skills";
 import { PROMPTS, countByCategory } from "@/lib/prompts";
 import { TOOLS } from "@/lib/tools";
 import { coverFor } from "@/lib/covers";
@@ -24,7 +19,7 @@ import { pageMeta } from "@/lib/seo";
 import Reveal from "@/components/Reveal";
 import Constellation from "@/components/Constellation";
 import CountUp from "@/components/CountUp";
-import DisplayCards from "@/components/DisplayCards";
+import CarouselPromo from "@/components/CarouselPromo";
 import TemplateMarquee from "@/components/TemplateMarquee";
 import HeroVisual from "@/components/HeroVisual";
 
@@ -79,34 +74,6 @@ export default async function HomePage({
     { icon: Sparkles, value: freeCount, label: t.home.statFree },
     { icon: Layers, value: CATEGORIES.length, label: t.home.statCategories },
     { icon: Zap, value: TOOLS.length, label: t.home.statTools },
-  ];
-
-  /*
-    Три полки сайта. Числа считаются, а не пишутся руками: положишь
-    завтра ещё один гайд — карточка обновится сама, как и весь раздел.
-  */
-  const decks = [
-    {
-      href: `/${locale}/guides`,
-      icon: <BookOpen size={15} />,
-      title: t.guides.nav,
-      description: t.guides.title,
-      meta: `${GUIDES.length + PDF_GUIDE_PATHS.length} ${t.home.deckGuides}`,
-    },
-    {
-      href: `/${locale}/skills`,
-      icon: <Terminal size={15} />,
-      title: t.skills.nav,
-      description: t.skills.title,
-      meta: `${SKILLS.length} ${t.home.deckSkills}`,
-    },
-    {
-      href: `/${locale}/prompts`,
-      icon: <FileText size={15} />,
-      title: t.allPrompts.navLink,
-      description: t.allPrompts.title,
-      meta: `${PROMPTS.length} ${t.home.deckPrompts}`,
-    },
   ];
 
   const steps = [
@@ -221,20 +188,8 @@ export default async function HomePage({
         </Reveal>
       </section>
 
-      {/* Три полки: гайды, скилы, промты */}
-      <section className="pb-20">
-        <Reveal>
-          <h2 className="font-display text-[27px] text-ink md:text-[32px]">
-            {t.home.decksTitle}
-          </h2>
-        </Reveal>
-
-        {/* Без общей обёртки Reveal: карточки появляются по очереди,
-            каждая своей — иначе стопка выехала бы разом. */}
-        <div className="mt-8 lg:mt-14">
-          <DisplayCards cards={decks} />
-        </div>
-      </section>
+      {/* Конструктор каруселей */}
+      <CarouselPromo locale={locale} t={t} />
 
       {/* Категории */}
       <section className="pb-20">
