@@ -370,6 +370,11 @@ const ru = {
     paid: "платно",
   },
   carousel: {
+    niche: "Ниша",
+    nicheHint:
+      "Выберите нишу — под ней десять готовых текстов. Нажали «Применить» — слайды заполнились, дальше правьте под себя.",
+    apply: "Применить",
+    texts: "Готовые тексты",
     nav: "Карусели",
     title: "Карусели для Instagram",
     subtitle:
@@ -775,6 +780,11 @@ const en: Dictionary = {
     paid: "paid",
   },
   carousel: {
+    niche: "Niche",
+    nicheHint:
+      "Pick a niche — each has ten ready-made texts. Press Apply and the slides fill in; edit them from there.",
+    apply: "Apply",
+    texts: "Ready-made texts",
     nav: "Carousels",
     title: "Carousels for Instagram",
     subtitle:
@@ -1189,6 +1199,11 @@ const fr: Dictionary = {
     paid: "payant",
   },
   carousel: {
+    niche: "Niche",
+    nicheHint:
+      "Choisissez une niche — chacune contient dix textes prêts. Appuyez sur Appliquer et les diapositives se remplissent.",
+    apply: "Appliquer",
+    texts: "Textes prêts",
     nav: "Carrousels",
     title: "Carrousels pour Instagram",
     subtitle:
@@ -1594,6 +1609,11 @@ const uk: Dictionary = {
     paid: "платно",
   },
   carousel: {
+    niche: "Ніша",
+    nicheHint:
+      "Оберіть нішу — під нею десять готових текстів. Натиснули «Застосувати» — слайди заповнилися, далі правте під себе.",
+    apply: "Застосувати",
+    texts: "Готові тексти",
     nav: "Каруселі",
     title: "Каруселі для Instagram",
     subtitle:
@@ -2009,6 +2029,11 @@ const de: Dictionary = {
     paid: "kostenpflichtig",
   },
   carousel: {
+    niche: "Nische",
+    nicheHint:
+      "Nische wählen — dahinter liegen zehn fertige Texte. Auf Übernehmen tippen und die Folien füllen sich.",
+    apply: "Übernehmen",
+    texts: "Fertige Texte",
     nav: "Karussells",
     title: "Karussells für Instagram",
     subtitle:
@@ -2418,6 +2443,11 @@ const pl: Dictionary = {
     paid: "płatne",
   },
   carousel: {
+    niche: "Nisza",
+    nicheHint:
+      "Wybierz niszę — pod nią dziesięć gotowych tekstów. Naciskasz Zastosuj i slajdy się wypełniają.",
+    apply: "Zastosuj",
+    texts: "Gotowe teksty",
     nav: "Karuzele",
     title: "Karuzele na Instagram",
     subtitle:
