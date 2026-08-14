@@ -7,7 +7,7 @@ import type { Prompt } from "@/lib/prompts";
 import type { Locale } from "@/lib/i18n/config";
 import type { Dictionary } from "@/lib/i18n/dictionaries";
 import FavoriteButton from "@/components/FavoriteButton";
-import { highlightVars } from "@/components/promptText";
+import { VEIL, highlightVars } from "@/components/promptText";
 
 interface Props {
   prompt: Prompt;
@@ -114,24 +114,26 @@ export default function PromptCard({
 
       {locked ? (
         /*
-          prompt.prompt здесь — настоящее начало текста (сервер срезал
-          его через veil в lib/prompts.ts, не оставил пустым): видно, что
-          промт специфичный и длинный, а не заглушка под сплошным
-          размытием, как было раньше.
+          prompt.prompt здесь пустой — veil в lib/prompts.ts вырезал
+          текст на сервере. Под размытием лежит вымышленный шаблон, а
+          замок с кнопкой стоит поверх, на полупрозрачной подложке.
+
+          Так карточка занимает столько же места, сколько открытая:
+          высота задана заглушкой, а не длиной настоящего текста, и в
+          каталоге закрытые и открытые карточки не разъезжаются по
+          высоте.
         */
         <div className="relative mt-4">
-          <pre className="max-h-32 overflow-hidden whitespace-pre-wrap rounded-card border border-line bg-sunken p-3.5 font-mono text-[12px] leading-[1.65] text-muted">
-            {highlightVars(prompt.prompt)}
-            <span aria-hidden>…</span>
-          </pre>
-          <div
+          <pre
             aria-hidden
-            className="pointer-events-none absolute inset-x-0 bottom-0 h-16 rounded-b-card bg-gradient-to-t from-surface via-surface/90 to-transparent"
-          />
+            className="pointer-events-none max-h-72 select-none overflow-hidden whitespace-pre-wrap rounded-card border border-line bg-sunken p-3.5 font-mono text-[12px] leading-[1.65] text-muted blur-[5px]"
+          >
+            {VEIL}
+          </pre>
 
-          <div className="relative mt-2 flex flex-col items-center gap-2.5 rounded-card border border-line bg-surface px-4 py-4 text-center">
-            <span className="flex h-9 w-9 items-center justify-center rounded-full border border-line-strong bg-sunken text-accent">
-              <Lock size={15} />
+          <div className="absolute inset-0 flex flex-col items-center justify-center gap-3 rounded-card bg-surface/55 px-5 text-center">
+            <span className="flex h-10 w-10 items-center justify-center rounded-full border border-line-strong bg-surface text-accent">
+              <Lock size={16} />
             </span>
             <p className="text-[12.5px] leading-relaxed text-muted">
               {t.card.lockedTitle}

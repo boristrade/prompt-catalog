@@ -13,28 +13,38 @@ import {
 } from "./prompts";
 
 describe("veil", () => {
-  it("оставляет начало текста промта коротким превью, пример вырезает целиком", () => {
+  it("вырезает и текст, и пример целиком", () => {
     const prompt = PROMPTS.find((p) => p.tier === "pro")!;
     const veiled = veil(prompt);
 
+    expect(veiled.prompt).toBe("");
     expect(veiled.example).toBe("");
-    expect(veiled.prompt.length).toBeGreaterThan(0);
-    expect(veiled.prompt.length).toBeLessThan(prompt.prompt.length);
-    // Превью — это именно начало текста, а не что-то вырезанное из середины.
-    expect(prompt.prompt.startsWith(veiled.prompt)).toBe(true);
+    // Название, описание и теги остаются: по ним на страницу приходят
+    // из поиска, спрячь мы их — страница исчезла бы из выдачи.
     expect(veiled.title).toBe(prompt.title);
     expect(veiled.summary).toBe(prompt.summary);
     expect(veiled.tags).toEqual(prompt.tags);
     expect(veiled.bestFor).toBe(prompt.bestFor);
   });
 
-  it("превью не длиннее половины текста даже у самых коротких промтов", () => {
+  /*
+    Ни куска настоящего текста — вообще ни одного.
+
+    Закрывать текст размытием и полупрозрачной плашкой можно только
+    поверх того, чего в разметке нет: попавшее в разметку читается через
+    инструменты разработчика, чем его ни закрой. Проверка идёт по всем
+    промтам, а не по одному, и берёт длинные куски: совпадение по
+    случайному короткому слову ничего не значило бы.
+  */
+  it("в закрытом промте не остаётся ни куска настоящего текста", () => {
     for (const prompt of PROMPTS) {
       const veiled = veil(prompt);
-      expect(veiled.prompt.length).toBeLessThanOrEqual(
-        Math.ceil(prompt.prompt.length / 2),
-      );
-      expect(veiled.prompt.length).toBeLessThanOrEqual(160);
+
+      for (const source of [prompt.prompt, prompt.example]) {
+        const chunk = source.slice(0, 40);
+        expect(veiled.prompt.includes(chunk), prompt.id).toBe(false);
+        expect(veiled.example.includes(chunk), prompt.id).toBe(false);
+      }
     }
   });
 
