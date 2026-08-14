@@ -36,6 +36,7 @@ export default function Footer({
     })),
     { label: t.guides.nav, href: `/${locale}/guides` },
     { label: t.skills.nav, href: `/${locale}/skills` },
+    { label: t.carousel.nav, href: `/${locale}/carousel` },
     { label: t.footer.pricing, href: `/${locale}/pricing` },
     { label: t.footer.account, href: `/${locale}/account` },
     { label: t.partner.nav, href: `/${locale}/partner` },

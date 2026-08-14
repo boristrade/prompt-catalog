@@ -44,13 +44,13 @@ const ru = {
     marketers: {
       title: "Промты для маркетологов",
       nav: "Для маркетологов",
-      description:
-        "Рекламные креативы, стратегии, воронки, тексты объявлений.",
+      description: "Рекламные креативы, стратегии, воронки, тексты объявлений.",
     },
     ugc: {
       title: "Промты для UGC",
       nav: "Для UGC",
-      description: "Сценарии роликов, хуки, нативный контент для TikTok и Reels.",
+      description:
+        "Сценарии роликов, хуки, нативный контент для TikTok и Reels.",
     },
     marketplaces: {
       title: "Промты для маркетплейсов",
@@ -93,8 +93,7 @@ const ru = {
     toolsLink: "Полезные инструменты",
     howTitle: "Как это работает?",
     step1Title: "Найдите промт",
-    step1Text:
-      "Выберите направление или пролистайте каталог до нужной задачи",
+    step1Text: "Выберите направление или пролистайте каталог до нужной задачи",
     step2Title: "Скопируйте",
     step2Text: "Одна кнопка — и промт целиком сохранится в буфер обмена",
     step3Title: "Подставьте своё",
@@ -120,8 +119,7 @@ const ru = {
     nav: "Гайды",
     eyebrow: "Гайды",
     title: "Разборы, а не промты",
-    subtitle:
-      "Пошаговые инструкции для применения и получения результата.",
+    subtitle: "Пошаговые инструкции для применения и получения результата.",
     minutes: "мин чтения",
     readMore: "Читать",
     openPdf: "Открыть PDF",
@@ -223,8 +221,10 @@ const ru = {
     statPending: "К выплате",
     statPaid: "Уже выплачено",
     howTitle: "Как это работает",
-    step1: "Копируете свою ссылку и делитесь ею: канал, сторис, описание видео, чат.",
-    step2: "Человек переходит и покупает доступ — не обязательно сразу, ссылка помнит вас 30 дней.",
+    step1:
+      "Копируете свою ссылку и делитесь ею: канал, сторис, описание видео, чат.",
+    step2:
+      "Человек переходит и покупает доступ — не обязательно сразу, ссылка помнит вас 30 дней.",
     step3: "Вам начисляется {percent}% с каждой его оплаты, включая продления.",
     step4: "Раз в месяц пишете нам — выплачиваем криптовалютой на ваш кошелёк.",
     ratesTitle: "Сколько это в деньгах",
@@ -246,7 +246,8 @@ const ru = {
     guestText:
       "Партнёрская ссылка выдаётся каждому зарегистрированному — отдельная заявка не нужна.",
     guestCta: "Войти",
-    empty: "Оплат по вашей ссылке пока нет. Начисления появятся здесь сразу после первой покупки.",
+    empty:
+      "Оплат по вашей ссылке пока нет. Начисления появятся здесь сразу после первой покупки.",
   },
   login: {
     title: "Вход",
@@ -361,11 +362,38 @@ const ru = {
     },
     eyebrow: "Подборка",
     title: "Полезные инструменты",
-    subtitle1: "сервисов и нейросетей, которые мы используем сами — по задачам:",
+    subtitle1:
+      "сервисов и нейросетей, которые мы используем сами — по задачам:",
     subtitle2: "тексты, изображения, дизайн, видео и маркетплейсы.",
     free: "бесплатно",
     freemium: "есть free-план",
     paid: "платно",
+  },
+  carousel: {
+    nav: "Карусели",
+    title: "Карусели для Instagram",
+    subtitle:
+      "Кидаете фото — цвет всей карусели берётся из него. Ник появляется на каждом слайде. Скачивается прямо в телефон.",
+    photo: "Фото для обложки",
+    photoHint:
+      "Из фото берётся только цвет. Само оно остаётся на вашем телефоне и никуда не отправляется.",
+    handle: "Ник в Instagram",
+    tagline: "Подпись под ником",
+    slides: "Слайды",
+    add: "Добавить слайд",
+    remove: "Удалить слайд",
+    kindCover: "Обложка",
+    kindStatement: "Мысль",
+    kindPrompt: "Промт",
+    fieldEyebrow: "Рубрика",
+    fieldTitle: "Заголовок",
+    fieldBody: "Текст",
+    fieldCode: "Промт в рамке",
+    fieldTakeaway: "Вывод",
+    save: "Сохранить слайд",
+    shareAll: "Отправить все слайды",
+    shareHint:
+      "Открывается окно «Поделиться» — оттуда сразу в фотоплёнку или в Instagram.",
   },
   footer: {
     tagline:
@@ -498,8 +526,7 @@ const en: Dictionary = {
     nav: "Guides",
     eyebrow: "Guides",
     title: "Explanations, not prompts",
-    subtitle:
-      "Step-by-step instructions to follow and get a result.",
+    subtitle: "Step-by-step instructions to follow and get a result.",
     minutes: "min read",
     readMore: "Read",
     openPdf: "Open the PDF",
@@ -535,7 +562,8 @@ const en: Dictionary = {
   allPrompts: {
     eyebrow: "All prompts",
     title: "The whole catalogue",
-    subtitle: "Every prompt on the site in one list — search instead of guessing the section.",
+    subtitle:
+      "Every prompt on the site in one list — search instead of guessing the section.",
     navLink: "All prompts",
     categoryAll: "All sections",
     section: "Section",
@@ -601,8 +629,10 @@ const en: Dictionary = {
     statPending: "Due for payout",
     statPaid: "Already paid out",
     howTitle: "How it works",
-    step1: "Copy your link and share it: your channel, stories, video description, a chat.",
-    step2: "Someone follows it and buys access — not necessarily right away, the link remembers you for 30 days.",
+    step1:
+      "Copy your link and share it: your channel, stories, video description, a chat.",
+    step2:
+      "Someone follows it and buys access — not necessarily right away, the link remembers you for 30 days.",
     step3: "You earn {percent}% of every payment they make, renewals included.",
     step4: "Write to us once a month — we pay out in crypto to your wallet.",
     ratesTitle: "What that is in money",
@@ -624,7 +654,8 @@ const en: Dictionary = {
     guestText:
       "Every registered user gets an affiliate link — no separate application needed.",
     guestCta: "Sign in",
-    empty: "No payments through your link yet. Earnings will show up here right after the first purchase.",
+    empty:
+      "No payments through your link yet. Earnings will show up here right after the first purchase.",
   },
   login: {
     title: "Sign in",
@@ -720,8 +751,7 @@ const en: Dictionary = {
       "Payment in crypto via NOWPayments. USDT, BTC, ETH and three hundred more coins are supported — you pick one on the next step.",
     noRenew:
       "The subscription does not renew itself — nothing will be charged again. When the term runs out, extend it the same way.",
-    supportPre:
-      "Paid but access did not open within half an hour — write to",
+    supportPre: "Paid but access did not open within half an hour — write to",
     supportPost: "and quote the code",
     supportEnd: "we will open it manually.",
     backToPlans: "Back to pricing",
@@ -743,6 +773,32 @@ const en: Dictionary = {
     free: "free",
     freemium: "free plan available",
     paid: "paid",
+  },
+  carousel: {
+    nav: "Carousels",
+    title: "Carousels for Instagram",
+    subtitle:
+      "Drop in a photo and the whole carousel takes its colour from it. Your handle appears on every slide. Saves straight to your phone.",
+    photo: "Cover photo",
+    photoHint:
+      "Only the colour is taken from the photo. The image itself stays on your phone and is never uploaded.",
+    handle: "Instagram handle",
+    tagline: "Line under the handle",
+    slides: "Slides",
+    add: "Add a slide",
+    remove: "Remove slide",
+    kindCover: "Cover",
+    kindStatement: "Statement",
+    kindPrompt: "Prompt",
+    fieldEyebrow: "Eyebrow",
+    fieldTitle: "Headline",
+    fieldBody: "Body",
+    fieldCode: "Prompt in a box",
+    fieldTakeaway: "Takeaway",
+    save: "Save this slide",
+    shareAll: "Send all slides",
+    shareHint:
+      "Opens the share sheet — straight to your camera roll or Instagram.",
   },
   footer: {
     tagline:
@@ -857,9 +913,9 @@ const fr: Dictionary = {
     step4Title: "Obtenez le résultat",
     step4Text:
       "Collez dans ChatGPT, Claude ou Midjourney et récupérez le résultat",
-    finalTitle: "Prêt à faire passer votre travail avec l'IA au niveau supérieur ?",
-    finalText:
-      "Rejoignez ceux qui gagnent déjà des heures sur chaque tâche",
+    finalTitle:
+      "Prêt à faire passer votre travail avec l'IA au niveau supérieur ?",
+    finalText: "Rejoignez ceux qui gagnent déjà des heures sur chaque tâche",
     finalCta: "Commencer gratuitement",
     finalNote: "prompts accessibles sans inscription",
   },
@@ -877,8 +933,7 @@ const fr: Dictionary = {
     nav: "Guides",
     eyebrow: "Guides",
     title: "Des explications, pas des prompts",
-    subtitle:
-      "Des instructions pas à pas à suivre pour obtenir un résultat.",
+    subtitle: "Des instructions pas à pas à suivre pour obtenir un résultat.",
     minutes: "min de lecture",
     readMore: "Lire",
     openPdf: "Ouvrir le PDF",
@@ -914,7 +969,8 @@ const fr: Dictionary = {
   allPrompts: {
     eyebrow: "Tous les prompts",
     title: "Le catalogue en entier",
-    subtitle: "Tous les prompts du site dans une seule liste — cherchez au lieu de deviner la section.",
+    subtitle:
+      "Tous les prompts du site dans une seule liste — cherchez au lieu de deviner la section.",
     navLink: "Tous les prompts",
     categoryAll: "Toutes les sections",
     section: "Section",
@@ -980,10 +1036,14 @@ const fr: Dictionary = {
     statPending: "À verser",
     statPaid: "Déjà versé",
     howTitle: "Comment ça marche",
-    step1: "Copiez votre lien et partagez-le : chaîne, stories, description de vidéo, discussion.",
-    step2: "Quelqu'un le suit et achète l'accès — pas forcément tout de suite, le lien vous retient 30 jours.",
-    step3: "Vous touchez {percent}% sur chacun de ses paiements, renouvellements compris.",
-    step4: "Écrivez-nous une fois par mois — nous versons en cryptomonnaie sur votre portefeuille.",
+    step1:
+      "Copiez votre lien et partagez-le : chaîne, stories, description de vidéo, discussion.",
+    step2:
+      "Quelqu'un le suit et achète l'accès — pas forcément tout de suite, le lien vous retient 30 jours.",
+    step3:
+      "Vous touchez {percent}% sur chacun de ses paiements, renouvellements compris.",
+    step4:
+      "Écrivez-nous une fois par mois — nous versons en cryptomonnaie sur votre portefeuille.",
     ratesTitle: "Ce que cela représente",
     perMonthly: "sur l'offre mensuelle",
     perYearly: "sur l'offre annuelle",
@@ -1003,7 +1063,8 @@ const fr: Dictionary = {
     guestText:
       "Chaque utilisateur inscrit reçoit un lien d'affiliation — aucune candidature séparée n'est nécessaire.",
     guestCta: "Se connecter",
-    empty: "Aucun paiement via votre lien pour l'instant. Les gains apparaîtront ici dès le premier achat.",
+    empty:
+      "Aucun paiement via votre lien pour l'instant. Les gains apparaîtront ici dès le premier achat.",
   },
   login: {
     title: "Connexion",
@@ -1027,12 +1088,12 @@ const fr: Dictionary = {
     terms:
       "En continuant, vous acceptez les conditions d'utilisation et la politique de confidentialité.",
     back: "Retour au catalogue",
-    errConfig: "L'authentification n'est pas encore configurée. Revenez plus tard.",
+    errConfig:
+      "L'authentification n'est pas encore configurée. Revenez plus tard.",
     errExchange:
       "Ce lien n'a pas fonctionné : il est à usage unique et valable une heure. Demandez-en un nouveau.",
     errRate: "Un lien a déjà été envoyé. Réessayez dans un instant.",
-    errSend:
-      "Impossible d'envoyer l'e-mail. Vérifiez l'adresse et réessayez.",
+    errSend: "Impossible d'envoyer l'e-mail. Vérifiez l'adresse et réessayez.",
     errGoogle: "Impossible de lancer la connexion. Réessayez.",
     errUnavailable: "Le service d'authentification est indisponible.",
   },
@@ -1127,6 +1188,32 @@ const fr: Dictionary = {
     freemium: "offre gratuite",
     paid: "payant",
   },
+  carousel: {
+    nav: "Carrousels",
+    title: "Carrousels pour Instagram",
+    subtitle:
+      "Déposez une photo et tout le carrousel en reprend la couleur. Votre pseudo apparaît sur chaque diapositive. Enregistrement direct sur le téléphone.",
+    photo: "Photo de couverture",
+    photoHint:
+      "Seule la couleur est extraite. La photo reste sur votre téléphone et n'est jamais envoyée.",
+    handle: "Pseudo Instagram",
+    tagline: "Ligne sous le pseudo",
+    slides: "Diapositives",
+    add: "Ajouter une diapositive",
+    remove: "Supprimer",
+    kindCover: "Couverture",
+    kindStatement: "Affirmation",
+    kindPrompt: "Prompt",
+    fieldEyebrow: "Surtitre",
+    fieldTitle: "Titre",
+    fieldBody: "Texte",
+    fieldCode: "Prompt encadré",
+    fieldTakeaway: "Conclusion",
+    save: "Enregistrer cette diapositive",
+    shareAll: "Envoyer toutes les diapositives",
+    shareHint:
+      "Ouvre le menu de partage — directement vers la pellicule ou Instagram.",
+  },
   footer: {
     tagline:
       "Un catalogue de prompts IA sélectionnés pour le travail et la création. Avec des exemples de résultat et une copie en un clic.",
@@ -1190,8 +1277,7 @@ const uk: Dictionary = {
     marketplaces: {
       title: "Промти для маркетплейсів",
       nav: "Для маркетплейсів",
-      description:
-        "Картки товарів, інфографіка, SEO-описи для Amazon і Etsy.",
+      description: "Картки товарів, інфографіка, SEO-описи для Amazon і Etsy.",
     },
     saas: {
       title: "Промти для SaaS-проєктів",
@@ -1237,7 +1323,8 @@ const uk: Dictionary = {
     step4Title: "Отримайте результат",
     step4Text: "Вставте в ChatGPT, Claude чи Midjourney і заберіть готове",
     finalTitle: "Готові вивести свою роботу з AI на новий рівень?",
-    finalText: "Приєднуйтесь до тих, хто вже заощаджує години на кожному завданні",
+    finalText:
+      "Приєднуйтесь до тих, хто вже заощаджує години на кожному завданні",
     finalCta: "Почати безкоштовно",
     finalNote: "промтів доступні без реєстрації",
   },
@@ -1255,8 +1342,7 @@ const uk: Dictionary = {
     nav: "Гайди",
     eyebrow: "Гайди",
     title: "Розбори, а не промти",
-    subtitle:
-      "Покрокові інструкції для застосування та отримання результату.",
+    subtitle: "Покрокові інструкції для застосування та отримання результату.",
     minutes: "хв читання",
     readMore: "Читати",
     openPdf: "Відкрити PDF",
@@ -1358,10 +1444,14 @@ const uk: Dictionary = {
     statPending: "До виплати",
     statPaid: "Уже виплачено",
     howTitle: "Як це працює",
-    step1: "Копіюєте своє посилання й ділитеся ним: канал, сторіс, опис відео, чат.",
-    step2: "Людина переходить і купує доступ — не обов'язково одразу, посилання пам'ятає вас 30 днів.",
-    step3: "Вам нараховується {percent}% з кожної його оплати, включно з продовженнями.",
-    step4: "Раз на місяць пишете нам — виплачуємо криптовалютою на ваш гаманець.",
+    step1:
+      "Копіюєте своє посилання й ділитеся ним: канал, сторіс, опис відео, чат.",
+    step2:
+      "Людина переходить і купує доступ — не обов'язково одразу, посилання пам'ятає вас 30 днів.",
+    step3:
+      "Вам нараховується {percent}% з кожної його оплати, включно з продовженнями.",
+    step4:
+      "Раз на місяць пишете нам — виплачуємо криптовалютою на ваш гаманець.",
     ratesTitle: "Скільки це в грошах",
     perMonthly: "з місячного тарифу",
     perYearly: "з річного тарифу",
@@ -1381,7 +1471,8 @@ const uk: Dictionary = {
     guestText:
       "Партнерське посилання видається кожному зареєстрованому — окрема заявка не потрібна.",
     guestCta: "Увійти",
-    empty: "Оплат за вашим посиланням поки немає. Нарахування з'являться тут одразу після першої покупки.",
+    empty:
+      "Оплат за вашим посиланням поки немає. Нарахування з'являться тут одразу після першої покупки.",
   },
   login: {
     title: "Вхід",
@@ -1408,8 +1499,7 @@ const uk: Dictionary = {
     errExchange:
       "Посилання не спрацювало: воно одноразове й живе годину. Запросіть нове.",
     errRate: "Посилання вже надсилали. Повторити можна трохи згодом.",
-    errSend:
-      "Не вдалося надіслати лист. Перевірте адресу та спробуйте ще раз.",
+    errSend: "Не вдалося надіслати лист. Перевірте адресу та спробуйте ще раз.",
     errGoogle: "Не вдалося почати вхід. Спробуйте ще раз.",
     errUnavailable: "Сервіс авторизації недоступний.",
   },
@@ -1479,8 +1569,7 @@ const uk: Dictionary = {
       "Оплата криптовалютою через NOWPayments. Підтримуються USDT, BTC, ETH і ще три сотні монет — оберете на наступному кроці.",
     noRenew:
       "Підписка не подовжується сама — гроші повторно не спишуться. Коли термін добіжить кінця, подовжіть тим самим способом.",
-    supportPre:
-      "Оплатили, а доступ не відкрився за пів години — напишіть на",
+    supportPre: "Оплатили, а доступ не відкрився за пів години — напишіть на",
     supportPost: "і вкажіть код",
     supportEnd: "відкриємо вручну.",
     backToPlans: "Повернутися до тарифів",
@@ -1503,6 +1592,32 @@ const uk: Dictionary = {
     free: "безкоштовно",
     freemium: "є free-план",
     paid: "платно",
+  },
+  carousel: {
+    nav: "Каруселі",
+    title: "Каруселі для Instagram",
+    subtitle:
+      "Кидаєте фото — колір усієї каруселі береться з нього. Нік з'являється на кожному слайді. Зберігається просто в телефон.",
+    photo: "Фото для обкладинки",
+    photoHint:
+      "З фото береться лише колір. Саме воно лишається на вашому телефоні й нікуди не надсилається.",
+    handle: "Нік в Instagram",
+    tagline: "Підпис під ніком",
+    slides: "Слайди",
+    add: "Додати слайд",
+    remove: "Видалити слайд",
+    kindCover: "Обкладинка",
+    kindStatement: "Думка",
+    kindPrompt: "Промт",
+    fieldEyebrow: "Рубрика",
+    fieldTitle: "Заголовок",
+    fieldBody: "Текст",
+    fieldCode: "Промт у рамці",
+    fieldTakeaway: "Висновок",
+    save: "Зберегти слайд",
+    shareAll: "Надіслати всі слайди",
+    shareHint:
+      "Відкривається вікно «Поділитися» — звідти одразу у фотоплівку або в Instagram.",
   },
   footer: {
     tagline:
@@ -1561,8 +1676,7 @@ const de: Dictionary = {
     ugc: {
       title: "Prompts für UGC",
       nav: "Für UGC",
-      description:
-        "Videoskripte, Hooks, native Inhalte für TikTok und Reels.",
+      description: "Videoskripte, Hooks, native Inhalte für TikTok und Reels.",
     },
     marketplaces: {
       title: "Prompts für Marktplätze",
@@ -1637,8 +1751,7 @@ const de: Dictionary = {
     nav: "Guides",
     eyebrow: "Guides",
     title: "Erklärungen statt Prompts",
-    subtitle:
-      "Schritt-für-Schritt-Anleitungen zum Anwenden — mit Ergebnis.",
+    subtitle: "Schritt-für-Schritt-Anleitungen zum Anwenden — mit Ergebnis.",
     minutes: "Min. Lesezeit",
     readMore: "Lesen",
     openPdf: "PDF öffnen",
@@ -1674,7 +1787,8 @@ const de: Dictionary = {
   allPrompts: {
     eyebrow: "Alle Prompts",
     title: "Der ganze Katalog",
-    subtitle: "Alle Prompts der Seite in einer Liste — suchen statt raten, in welchem Bereich.",
+    subtitle:
+      "Alle Prompts der Seite in einer Liste — suchen statt raten, in welchem Bereich.",
     navLink: "Alle Prompts",
     categoryAll: "Alle Bereiche",
     section: "Bereich",
@@ -1694,7 +1808,8 @@ const de: Dictionary = {
     exampleTitle: "Beispielergebnis",
     bestForLabel: "Funktioniert am besten mit",
     related: "Ähnliche Prompts",
-    variables: "Alles in geschweiften Klammern ersetzen Sie durch Ihre Angaben.",
+    variables:
+      "Alles in geschweiften Klammern ersetzen Sie durch Ihre Angaben.",
   },
   filters: {
     access: "Zugang",
@@ -1740,10 +1855,14 @@ const de: Dictionary = {
     statPending: "Auszuzahlen",
     statPaid: "Bereits ausgezahlt",
     howTitle: "So funktioniert es",
-    step1: "Sie kopieren Ihren Link und teilen ihn: Kanal, Stories, Videobeschreibung, Chat.",
-    step2: "Jemand folgt ihm und kauft Zugang — nicht unbedingt sofort, der Link merkt sich Sie 30 Tage.",
-    step3: "Sie erhalten {percent}% jeder seiner Zahlungen, Verlängerungen eingeschlossen.",
-    step4: "Einmal im Monat schreiben Sie uns — wir zahlen in Kryptowährung auf Ihre Wallet aus.",
+    step1:
+      "Sie kopieren Ihren Link und teilen ihn: Kanal, Stories, Videobeschreibung, Chat.",
+    step2:
+      "Jemand folgt ihm und kauft Zugang — nicht unbedingt sofort, der Link merkt sich Sie 30 Tage.",
+    step3:
+      "Sie erhalten {percent}% jeder seiner Zahlungen, Verlängerungen eingeschlossen.",
+    step4:
+      "Einmal im Monat schreiben Sie uns — wir zahlen in Kryptowährung auf Ihre Wallet aus.",
     ratesTitle: "Was das in Geld bedeutet",
     perMonthly: "beim Monatstarif",
     perYearly: "beim Jahrestarif",
@@ -1763,7 +1882,8 @@ const de: Dictionary = {
     guestText:
       "Jeder registrierte Nutzer bekommt einen Partnerlink — eine gesonderte Bewerbung ist nicht nötig.",
     guestCta: "Anmelden",
-    empty: "Noch keine Zahlungen über Ihren Link. Vergütungen erscheinen hier direkt nach dem ersten Kauf.",
+    empty:
+      "Noch keine Zahlungen über Ihren Link. Vergütungen erscheinen hier direkt nach dem ersten Kauf.",
   },
   login: {
     title: "Anmelden",
@@ -1782,7 +1902,8 @@ const de: Dictionary = {
     otherEmail: "Andere Adresse verwenden",
     notConfigured:
       "Die Anmeldung wird eingerichtet — es fehlen noch die Supabase-Schlüssel.",
-    disabled: "Die Anmeldung ist derzeit deaktiviert. Schauen Sie später vorbei.",
+    disabled:
+      "Die Anmeldung ist derzeit deaktiviert. Schauen Sie später vorbei.",
     terms:
       "Mit dem Fortfahren stimmen Sie den Nutzungsbedingungen und der Datenschutzerklärung zu.",
     back: "Zurück zum Katalog",
@@ -1792,7 +1913,8 @@ const de: Dictionary = {
     errRate: "Ein Link wurde bereits verschickt. Bitte kurz warten.",
     errSend:
       "E-Mail konnte nicht gesendet werden. Adresse prüfen und erneut versuchen.",
-    errGoogle: "Anmeldung konnte nicht gestartet werden. Bitte erneut versuchen.",
+    errGoogle:
+      "Anmeldung konnte nicht gestartet werden. Bitte erneut versuchen.",
     errUnavailable: "Der Anmeldedienst ist nicht erreichbar.",
   },
   account: {
@@ -1848,8 +1970,7 @@ const de: Dictionary = {
     startFree: "Kostenlos starten",
     lockNote:
       "PRO-Prompts im Katalog sind gesperrt. Titel, Beschreibung und Tags sehen alle — so wissen Sie vor der Zahlung, wofür Sie zahlen. Im kostenlosen Tarif wird der Prompt-Text überhaupt nicht an den Browser gesendet.",
-    currencyNote:
-      "Preise in US-Dollar. Die Zahlung erfolgt in Kryptowährung.",
+    currencyNote: "Preise in US-Dollar. Die Zahlung erfolgt in Kryptowährung.",
   },
   pay: {
     eyebrow: "Zahlung",
@@ -1866,7 +1987,8 @@ const de: Dictionary = {
     supportPost: "und nennen Sie den Code",
     supportEnd: "wir schalten ihn manuell frei.",
     backToPlans: "Zurück zu den Preisen",
-    errInvoice: "Rechnung konnte nicht erstellt werden. Bitte erneut versuchen.",
+    errInvoice:
+      "Rechnung konnte nicht erstellt werden. Bitte erneut versuchen.",
     errUnavailable: "Der Zahlungsdienst ist nicht erreichbar.",
   },
   tools: {
@@ -1885,6 +2007,32 @@ const de: Dictionary = {
     free: "kostenlos",
     freemium: "Gratis-Tarif vorhanden",
     paid: "kostenpflichtig",
+  },
+  carousel: {
+    nav: "Karussells",
+    title: "Karussells für Instagram",
+    subtitle:
+      "Foto einwerfen — das ganze Karussell übernimmt dessen Farbe. Dein Handle steht auf jeder Folie. Speichert direkt aufs Handy.",
+    photo: "Titelfoto",
+    photoHint:
+      "Aus dem Foto wird nur die Farbe genommen. Das Bild selbst bleibt auf deinem Handy und wird nie hochgeladen.",
+    handle: "Instagram-Handle",
+    tagline: "Zeile unter dem Handle",
+    slides: "Folien",
+    add: "Folie hinzufügen",
+    remove: "Folie entfernen",
+    kindCover: "Titel",
+    kindStatement: "Aussage",
+    kindPrompt: "Prompt",
+    fieldEyebrow: "Dachzeile",
+    fieldTitle: "Überschrift",
+    fieldBody: "Text",
+    fieldCode: "Prompt im Rahmen",
+    fieldTakeaway: "Fazit",
+    save: "Diese Folie sichern",
+    shareAll: "Alle Folien senden",
+    shareHint:
+      "Öffnet das Teilen-Menü — direkt in die Fotos oder zu Instagram.",
   },
   footer: {
     tagline:
@@ -1949,8 +2097,7 @@ const pl: Dictionary = {
     marketplaces: {
       title: "Prompty dla marketplace'ów",
       nav: "Dla marketplace'ów",
-      description:
-        "Karty produktów, infografiki, opisy SEO dla Amazon i Etsy.",
+      description: "Karty produktów, infografiki, opisy SEO dla Amazon i Etsy.",
     },
     saas: {
       title: "Prompty do projektów SaaS",
@@ -1997,7 +2144,8 @@ const pl: Dictionary = {
     step4Title: "Odbierz wynik",
     step4Text: "Wklej do ChatGPT, Claude albo Midjourney i zabierz gotowe",
     finalTitle: "Gotowy przenieść pracę z AI na wyższy poziom?",
-    finalText: "Dołącz do tych, którzy już oszczędzają godziny przy każdym zadaniu",
+    finalText:
+      "Dołącz do tych, którzy już oszczędzają godziny przy każdym zadaniu",
     finalCta: "Zacznij za darmo",
     finalNote: "promptów dostępnych bez rejestracji",
   },
@@ -2015,8 +2163,7 @@ const pl: Dictionary = {
     nav: "Poradniki",
     eyebrow: "Poradniki",
     title: "Wyjaśnienia, nie prompty",
-    subtitle:
-      "Instrukcje krok po kroku do zastosowania i uzyskania wyniku.",
+    subtitle: "Instrukcje krok po kroku do zastosowania i uzyskania wyniku.",
     minutes: "min czytania",
     readMore: "Czytaj",
     openPdf: "Otwórz PDF",
@@ -2052,7 +2199,8 @@ const pl: Dictionary = {
   allPrompts: {
     eyebrow: "Wszystkie prompty",
     title: "Cały katalog",
-    subtitle: "Wszystkie prompty serwisu w jednej liście — szukaj, zamiast zgadywać sekcję.",
+    subtitle:
+      "Wszystkie prompty serwisu w jednej liście — szukaj, zamiast zgadywać sekcję.",
     navLink: "Wszystkie prompty",
     categoryAll: "Wszystkie sekcje",
     section: "Sekcja",
@@ -2118,10 +2266,14 @@ const pl: Dictionary = {
     statPending: "Do wypłaty",
     statPaid: "Już wypłacono",
     howTitle: "Jak to działa",
-    step1: "Kopiujesz swój link i udostępniasz go: kanał, relacje, opis filmu, czat.",
-    step2: "Ktoś wchodzi i kupuje dostęp — niekoniecznie od razu, link pamięta cię 30 dni.",
-    step3: "Dostajesz {percent}% z każdej jego płatności, łącznie z przedłużeniami.",
-    step4: "Raz w miesiącu piszesz do nas — wypłacamy kryptowalutą na twój portfel.",
+    step1:
+      "Kopiujesz swój link i udostępniasz go: kanał, relacje, opis filmu, czat.",
+    step2:
+      "Ktoś wchodzi i kupuje dostęp — niekoniecznie od razu, link pamięta cię 30 dni.",
+    step3:
+      "Dostajesz {percent}% z każdej jego płatności, łącznie z przedłużeniami.",
+    step4:
+      "Raz w miesiącu piszesz do nas — wypłacamy kryptowalutą na twój portfel.",
     ratesTitle: "Ile to w pieniądzach",
     perMonthly: "z planu miesięcznego",
     perYearly: "z planu rocznego",
@@ -2141,7 +2293,8 @@ const pl: Dictionary = {
     guestText:
       "Każdy zarejestrowany użytkownik dostaje link partnerski — osobne zgłoszenie nie jest potrzebne.",
     guestCta: "Zaloguj się",
-    empty: "Brak płatności z twojego linku. Prowizje pojawią się tutaj zaraz po pierwszym zakupie.",
+    empty:
+      "Brak płatności z twojego linku. Prowizje pojawią się tutaj zaraz po pierwszym zakupie.",
   },
   login: {
     title: "Logowanie",
@@ -2263,6 +2416,32 @@ const pl: Dictionary = {
     free: "za darmo",
     freemium: "jest plan darmowy",
     paid: "płatne",
+  },
+  carousel: {
+    nav: "Karuzele",
+    title: "Karuzele na Instagram",
+    subtitle:
+      "Wrzucasz zdjęcie — cała karuzela bierze z niego kolor. Twój nick pojawia się na każdym slajdzie. Zapisuje się prosto na telefon.",
+    photo: "Zdjęcie na okładkę",
+    photoHint:
+      "Ze zdjęcia brany jest wyłącznie kolor. Samo zdjęcie zostaje na twoim telefonie i nigdzie nie trafia.",
+    handle: "Nick na Instagramie",
+    tagline: "Podpis pod nickiem",
+    slides: "Slajdy",
+    add: "Dodaj slajd",
+    remove: "Usuń slajd",
+    kindCover: "Okładka",
+    kindStatement: "Teza",
+    kindPrompt: "Prompt",
+    fieldEyebrow: "Nadtytuł",
+    fieldTitle: "Nagłówek",
+    fieldBody: "Tekst",
+    fieldCode: "Prompt w ramce",
+    fieldTakeaway: "Wniosek",
+    save: "Zapisz ten slajd",
+    shareAll: "Wyślij wszystkie slajdy",
+    shareHint:
+      "Otwiera okno udostępniania — prosto do galerii albo na Instagram.",
   },
   footer: {
     tagline:
