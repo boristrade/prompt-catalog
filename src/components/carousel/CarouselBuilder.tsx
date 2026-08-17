@@ -2,6 +2,8 @@
 
 import { useCallback, useEffect, useRef, useState } from "react";
 import {
+  ArrowDown,
+  ArrowUp,
   Download,
   Image as ImageIcon,
   Plus,
@@ -9,8 +11,19 @@ import {
   Trash2,
   Undo2,
 } from "lucide-react";
-import { FALLBACK, paletteFrom, type Palette } from "@/lib/carousel/palette";
-import { H, W, drawSlide, type Deck, type Slide } from "@/lib/carousel/templates";
+import {
+  FALLBACK,
+  paletteFrom,
+  paletteFromAccent,
+  type Palette,
+} from "@/lib/carousel/palette";
+import {
+  FRAMES,
+  drawSlide,
+  type Deck,
+  type FrameId,
+  type Slide,
+} from "@/lib/carousel/templates";
 import {
   DECK_KEY,
   PALETTE_KEY,
@@ -44,8 +57,25 @@ const MONO_CSS =
   "https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&display=swap";
 
 function emptySlide(kind: Slide["kind"]): Slide {
-  return { kind, eyebrow: "", title: "", body: "", code: "", takeaway: "" };
+  // Обложка без фотографии — пустой тёмный прямоугольник, поэтому у неё
+  // подложка включена сразу, а у остальных это выбор человека.
+  return {
+    kind,
+    eyebrow: "",
+    title: "",
+    body: "",
+    code: "",
+    takeaway: "",
+    photo: kind === "cover",
+  };
 }
+
+/*
+  Готовые цвета на случай, когда фотографии ещё нет или её оттенок
+  человеку не нравится. Шесть — это ровно два ряда по три на узком
+  экране; больше превращается в палитру, в которой надо выбирать.
+*/
+const SWATCHES = ["#a78bfa", "#f472b6", "#fb923c", "#34d399", "#38bdf8", "#facc15"];
 
 export default function CarouselBuilder({
   t,
@@ -81,6 +111,7 @@ export default function CarouselBuilder({
   const [deck, setDeck] = useState<Deck>({
     handle: "@username",
     tagline: "",
+    format: "post",
     slides: [
       {
         ...emptySlide("cover"),
@@ -237,9 +268,10 @@ export default function CarouselBuilder({
     if (!ready) return;
 
     const timer = setTimeout(() => {
+      const frame = FRAMES[deck.format] ?? FRAMES.post;
       const canvas = document.createElement("canvas");
-      canvas.width = W;
-      canvas.height = H;
+      canvas.width = frame.w;
+      canvas.height = frame.h;
       const ctx = canvas.getContext("2d");
       if (!ctx) return;
 
@@ -252,7 +284,7 @@ export default function CarouselBuilder({
         const hit = cache.get(key);
         if (hit) return hit;
 
-        ctx.clearRect(0, 0, W, H);
+        ctx.clearRect(0, 0, frame.w, frame.h);
         drawSlide(ctx, deck, palette, i, photo);
         const url = canvas.toDataURL("image/png");
         cache.set(key, url);
@@ -271,11 +303,31 @@ export default function CarouselBuilder({
     return () => clearTimeout(timer);
   }, [deck, palette, photo, photoToken, ready]);
 
-  function patch(index: number, field: keyof Slide, value: string) {
+  function patch(index: number, field: keyof Slide, value: string | boolean) {
     setDeck((d) => ({
       ...d,
       slides: d.slides.map((s, i) => (i === index ? { ...s, [field]: value } : s)),
     }));
+  }
+
+  /*
+    Перестановка слайдов.
+
+    Порядок в карусели — половина смысла: вывод, попавший вторым,
+    работает хуже, чем тот же вывод в конце. Раньше поменять его можно
+    было только перепечатав два слайда целиком.
+
+    Стрелками, а не перетаскиванием: перетаскивание на телефоне спорит с
+    прокруткой страницы, а список слайдов и так длинный.
+  */
+  function move(index: number, to: number) {
+    setDeck((d) => {
+      if (to < 0 || to >= d.slides.length) return d;
+      const slides = [...d.slides];
+      const [moved] = slides.splice(index, 1);
+      slides.splice(to, 0, moved);
+      return { ...d, slides };
+    });
   }
 
   async function toFile(dataUrl: string, name: string) {
@@ -507,6 +559,79 @@ export default function CarouselBuilder({
           </span>
         </label>
 
+        {/*
+          Цвет руками.
+
+          Оттенок из фотографии угадывает не всегда: на снимке с белой
+          стеной брать нечего, а у человека может быть свой фирменный
+          цвет. Свечение и акцент считаются из одного тона — иначе
+          подобранная вручную пара разъезжается и кадр выглядит грязным.
+        */}
+        <div>
+          <span className="text-[13px] font-semibold text-ink">
+            {t.carousel.color}
+          </span>
+          <div className="mt-2 flex flex-wrap items-center gap-2">
+            {SWATCHES.map((hex) => (
+              <button
+                key={hex}
+                type="button"
+                onClick={() => setPalette(paletteFromAccent(hex))}
+                aria-label={hex}
+                aria-pressed={palette.accent.toLowerCase() === hex}
+                className="h-9 w-9 rounded-chip border border-line transition-transform duration-200 active:scale-95"
+                style={{ background: hex }}
+              />
+            ))}
+            {/* Родное окно выбора цвета: на телефоне оно системное и
+                привычнее любой самодельной палитры. */}
+            <label className="inline-flex h-9 cursor-pointer items-center gap-2 rounded-chip border border-line-strong px-3 text-[12.5px] text-ink">
+              <span
+                className="h-4 w-4 rounded-full border border-line"
+                style={{ background: palette.accent }}
+              />
+              {t.carousel.colorOwn}
+              <input
+                type="color"
+                value={palette.accent}
+                onChange={(e) => setPalette(paletteFromAccent(e.target.value))}
+                className="sr-only"
+              />
+            </label>
+          </div>
+          <span className="mt-2 block text-[12px] leading-relaxed text-faint">
+            {t.carousel.colorHint}
+          </span>
+        </div>
+
+        {/*
+          Формат. 4:5 — самый крупный кадр, который Instagram не режет в
+          ленте; 9:16 — под TikTok и сторис, где 4:5 показывают с полями
+          сверху и снизу.
+        */}
+        <div>
+          <span className="text-[13px] font-semibold text-ink">
+            {t.carousel.format}
+          </span>
+          <div className="mt-2 flex flex-wrap gap-2">
+            {(Object.keys(FRAMES) as FrameId[]).map((id) => (
+              <button
+                key={id}
+                type="button"
+                onClick={() => setDeck((d) => ({ ...d, format: id }))}
+                aria-pressed={deck.format === id}
+                className={`rounded-chip border px-3 py-1.5 text-[12.5px] transition-colors duration-200 ${
+                  deck.format === id
+                    ? "border-violet bg-accent-soft text-accent"
+                    : "border-line text-muted hover:text-ink"
+                }`}
+              >
+                {id === "post" ? t.carousel.formatPost : t.carousel.formatStory}
+              </button>
+            ))}
+          </div>
+        </div>
+
         <div className="grid grid-cols-2 gap-3">
           <label className="block min-w-0">
             <span className="text-[13px] font-semibold text-ink">
@@ -540,7 +665,9 @@ export default function CarouselBuilder({
               key={i}
               className="space-y-2 rounded-card border border-line bg-surface p-3.5"
             >
-              <div className="flex items-center justify-between gap-2">
+              {/* Ряд кнопок обязан переноситься: на 360px четыре штуки
+                  рядом с выпадающим списком за край уезжают. */}
+              <div className="flex flex-wrap items-center justify-between gap-2">
                 <select
                   value={slide.kind}
                   onChange={(e) => patch(i, "kind", e.target.value)}
@@ -549,21 +676,61 @@ export default function CarouselBuilder({
                   <option value="cover">{t.carousel.kindCover}</option>
                   <option value="statement">{t.carousel.kindStatement}</option>
                   <option value="prompt">{t.carousel.kindPrompt}</option>
+                  <option value="final">{t.carousel.kindFinal}</option>
                 </select>
-                <button
-                  type="button"
-                  onClick={() =>
-                    setDeck((d) => ({
-                      ...d,
-                      slides: d.slides.filter((_, j) => j !== i),
-                    }))
-                  }
-                  aria-label={t.carousel.remove}
-                  className="rounded-chip border border-line-strong p-1.5 text-muted transition-colors duration-200 hover:text-ink"
-                >
-                  <Trash2 size={13} />
-                </button>
+                <div className="flex items-center gap-1.5">
+                  <button
+                    type="button"
+                    onClick={() => move(i, i - 1)}
+                    disabled={i === 0}
+                    aria-label={t.carousel.moveUp}
+                    className="rounded-chip border border-line-strong p-1.5 text-muted transition-colors duration-200 hover:text-ink disabled:opacity-40"
+                  >
+                    <ArrowUp size={13} />
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => move(i, i + 1)}
+                    disabled={i === deck.slides.length - 1}
+                    aria-label={t.carousel.moveDown}
+                    className="rounded-chip border border-line-strong p-1.5 text-muted transition-colors duration-200 hover:text-ink disabled:opacity-40"
+                  >
+                    <ArrowDown size={13} />
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() =>
+                      setDeck((d) => ({
+                        ...d,
+                        slides: d.slides.filter((_, j) => j !== i),
+                      }))
+                    }
+                    aria-label={t.carousel.remove}
+                    className="rounded-chip border border-line-strong p-1.5 text-muted transition-colors duration-200 hover:text-ink"
+                  >
+                    <Trash2 size={13} />
+                  </button>
+                </div>
               </div>
+
+              {/*
+                Фотография не только на обложке.
+
+                Один снимок на десять слайдов делает карусель плоской:
+                видно, что это шаблон. Тот же снимок под парой слайдов в
+                середине связывает набор — а под всеми подряд мешает
+                читать, поэтому это флажок у каждого слайда, а не общая
+                настройка.
+              */}
+              <label className="flex items-center gap-2 text-[12.5px] text-muted">
+                <input
+                  type="checkbox"
+                  checked={slide.photo}
+                  onChange={(e) => patch(i, "photo", e.target.checked)}
+                  className="h-4 w-4 accent-[var(--c-accent)]"
+                />
+                {t.carousel.usePhoto}
+              </label>
 
               <input
                 value={slide.eyebrow}
@@ -586,7 +753,7 @@ export default function CarouselBuilder({
                   rows={3}
                   className={`${field} font-mono text-[12.5px]`}
                 />
-              ) : slide.kind === "statement" ? (
+              ) : slide.kind === "statement" || slide.kind === "final" ? (
                 <textarea
                   value={slide.body}
                   onChange={(e) => patch(i, "body", e.target.value)}

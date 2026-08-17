@@ -15,9 +15,27 @@
 import { wrap, fitSize, slideNumber, type Measure } from "./layout";
 import type { Palette } from "./palette";
 
-/** Размер кадра. 4:5 — самый крупный, что Instagram не обрезает. */
-export const W = 1080;
-export const H = 1350;
+/*
+  Два формата.
+
+  Квадратно-вытянутый 4:5 — самый крупный, что Instagram не обрезает в
+  ленте. Вертикальный 9:16 — под TikTok и сторис: там 4:5 показывают с
+  полями сверху и снизу, и кадр выглядит вставленным.
+
+  Ширина у обоих одна. Всё, что считается по горизонтали, от формата не
+  зависит вовсе, а по вертикали позиции заданы долями высоты — иначе на
+  9:16 текст сбился бы в верхнюю треть, а низ остался пустым.
+*/
+export const FRAMES = {
+  post: { w: 1080, h: 1350 },
+  story: { w: 1080, h: 1920 },
+} as const;
+
+export type FrameId = keyof typeof FRAMES;
+export interface Frame {
+  w: number;
+  h: number;
+}
 
 /** Поля кадра. Меньше 80 — и текст лезет под интерфейс приложения. */
 const PAD = 84;
@@ -31,7 +49,7 @@ const CANVAS = "#0d0c0b";
 const PANEL = "#191715";
 const LINE = "#2a2724";
 
-export type SlideKind = "cover" | "statement" | "prompt";
+export type SlideKind = "cover" | "statement" | "prompt" | "final";
 
 export interface Slide {
   kind: SlideKind;
@@ -44,11 +62,14 @@ export interface Slide {
   code: string;
   /** Вывод под чертой, акцентным цветом. */
   takeaway: string;
+  /** Подложить фотографию под этот слайд. У обложки она всегда. */
+  photo: boolean;
 }
 
 export interface Deck {
   handle: string;
   tagline: string;
+  format: FrameId;
   slides: Slide[];
 }
 
@@ -101,17 +122,55 @@ function lines(
   оттенком из фотографии. Свечение важнее, чем кажется: без него
   тёмный слайд читается как пустая заливка, а не как кадр.
 */
-function ground(ctx: CanvasRenderingContext2D, palette: Palette) {
+function ground(ctx: CanvasRenderingContext2D, palette: Palette, f: Frame) {
   ctx.fillStyle = CANVAS;
-  ctx.fillRect(0, 0, W, H);
+  ctx.fillRect(0, 0, f.w, f.h);
 
-  const glow = ctx.createRadialGradient(W * 0.86, H * 0.16, 0, W * 0.86, H * 0.16, W * 0.95);
+  const glow = ctx.createRadialGradient(
+    f.w * 0.86,
+    f.h * 0.16,
+    0,
+    f.w * 0.86,
+    f.h * 0.16,
+    f.w * 0.95,
+  );
   glow.addColorStop(0, palette.glow);
   glow.addColorStop(1, "rgba(0,0,0,0)");
   ctx.globalAlpha = 0.85;
   ctx.fillStyle = glow;
-  ctx.fillRect(0, 0, W, H);
+  ctx.fillRect(0, 0, f.w, f.h);
   ctx.globalAlpha = 1;
+}
+
+/** Фотография во весь кадр, лишнее срезаем по центру. */
+function fill(
+  ctx: CanvasRenderingContext2D,
+  photo: CanvasImageSource,
+  f: Frame,
+) {
+  const iw = Number((photo as HTMLImageElement).naturalWidth || f.w);
+  const ih = Number((photo as HTMLImageElement).naturalHeight || f.h);
+  // Поля вокруг фото выглядят как ошибка вёрстки, а не как приём.
+  const scale = Math.max(f.w / iw, f.h / ih);
+  ctx.drawImage(photo, (f.w - iw * scale) / 2, (f.h - ih * scale) / 2, iw * scale, ih * scale);
+}
+
+/*
+  Затемнение под текстом на слайде с фотографией.
+
+  Сплошная плашка убила бы снимок, а один вертикальный градиент не
+  спасает: на светлом кадре текст в середине всё равно пропадает.
+  Поэтому и общее приглушение, и градиент от низа.
+*/
+function scrim(ctx: CanvasRenderingContext2D, f: Frame, flat: number) {
+  ctx.fillStyle = `rgba(13,12,11,${flat})`;
+  ctx.fillRect(0, 0, f.w, f.h);
+
+  const down = ctx.createLinearGradient(0, f.h * 0.2, 0, f.h);
+  down.addColorStop(0, "rgba(13,12,11,0)");
+  down.addColorStop(1, "rgba(13,12,11,0.92)");
+  ctx.fillStyle = down;
+  ctx.fillRect(0, 0, f.w, f.h);
 }
 
 /** Шапка кадра: номер слева, рубрика справа, тонкая черта под ними. */
@@ -120,6 +179,7 @@ function header(
   palette: Palette,
   left: string,
   right: string,
+  f: Frame,
 ) {
   ctx.font = `500 26px ${MONO}`;
   ctx.textBaseline = "alphabetic";
@@ -129,11 +189,11 @@ function header(
 
   ctx.fillStyle = MUTED;
   ctx.textAlign = "right";
-  ctx.fillText(right.toUpperCase(), W - PAD, 104);
+  ctx.fillText(right.toUpperCase(), f.w - PAD, 104);
   ctx.textAlign = "left";
 
   ctx.fillStyle = LINE;
-  ctx.fillRect(PAD, 126, W - PAD * 2, 2);
+  ctx.fillRect(PAD, 126, f.w - PAD * 2, 2);
 }
 
 /** Ник внизу слева — на каждом слайде, это и есть авторство. */
@@ -141,15 +201,16 @@ function signature(
   ctx: CanvasRenderingContext2D,
   handle: string,
   tagline: string,
+  f: Frame,
 ) {
   ctx.font = `500 30px ${MONO}`;
   ctx.fillStyle = MUTED;
-  ctx.fillText(handle, PAD, H - PAD - (tagline ? 44 : 0));
+  ctx.fillText(handle, PAD, f.h - PAD - (tagline ? 44 : 0));
 
   if (tagline) {
     ctx.font = `400 26px ${SANS}`;
     ctx.fillStyle = "#7c7770";
-    ctx.fillText(tagline, PAD, H - PAD);
+    ctx.fillText(tagline, PAD, f.h - PAD);
   }
 }
 
@@ -158,13 +219,13 @@ function signature(
   глубину и подсказывает, где человек в карусели, — но не спорит с
   текстом, потому что почти сливается с фоном.
 */
-function ghostNumber(ctx: CanvasRenderingContext2D, value: number) {
+function ghostNumber(ctx: CanvasRenderingContext2D, value: number, f: Frame) {
   ctx.save();
   ctx.font = `700 420px ${SANS}`;
   ctx.textAlign = "right";
   ctx.textBaseline = "alphabetic";
   ctx.fillStyle = "rgba(255,255,255,0.045)";
-  ctx.fillText(String(value), W - PAD + 24, H - 210);
+  ctx.fillText(String(value), f.w - PAD + 24, f.h - f.h * 0.155);
   ctx.restore();
 }
 
@@ -174,17 +235,22 @@ function takeawayBlock(
   palette: Palette,
   text: string,
   y: number,
+  f: Frame,
 ): number {
   if (!text) return y;
 
   ctx.fillStyle = palette.accent;
   ctx.fillRect(PAD, y, 120, 5);
 
-  ctx.font = `700 38px ${SANS}`;
-  const rows = wrap(text, W - PAD * 2, measureWith(ctx, `700 38px ${SANS}`));
+  const rows = wrap(text, f.w - PAD * 2, measureWith(ctx, `700 38px ${SANS}`));
   ctx.fillStyle = palette.accent;
   ctx.font = `700 38px ${SANS}`;
   return lines(ctx, rows, PAD, y + 76, 50);
+}
+
+/** С чего начинается текст. Доля высоты, а не число: форматов два. */
+function contentTop(f: Frame): number {
+  return f.h * 0.245;
 }
 
 /* ── Шаблоны ─────────────────────────────────────────────────────── */
@@ -192,10 +258,6 @@ function takeawayBlock(
 /*
   Обложка. Фотография во весь кадр, поверх — затемнение снизу и слева,
   чтобы заголовок читался, каким бы ни было фото.
-
-  Затемнение двойное: вертикальное поднимает низ, боковое — левый край,
-  где стоит текст. Одного вертикального мало: на светлом снимке
-  заголовок в середине кадра всё равно пропадает.
 */
 function drawCover(
   ctx: CanvasRenderingContext2D,
@@ -203,31 +265,22 @@ function drawCover(
   deck: Deck,
   palette: Palette,
   photo: CanvasImageSource | null,
+  f: Frame,
 ) {
-  ground(ctx, palette);
+  ground(ctx, palette, f);
+  if (photo) fill(ctx, photo, f);
 
-  if (photo) {
-    const iw = Number((photo as HTMLImageElement).naturalWidth || W);
-    const ih = Number((photo as HTMLImageElement).naturalHeight || H);
-    // Заполняем кадр целиком, лишнее срезаем — поля вокруг фото
-    // выглядят как ошибка вёрстки, а не как приём.
-    const scale = Math.max(W / iw, H / ih);
-    const dw = iw * scale;
-    const dh = ih * scale;
-    ctx.drawImage(photo, (W - dw) / 2, (H - dh) / 2, dw, dh);
-  }
-
-  const down = ctx.createLinearGradient(0, H * 0.25, 0, H);
+  const down = ctx.createLinearGradient(0, f.h * 0.25, 0, f.h);
   down.addColorStop(0, "rgba(13,12,11,0)");
   down.addColorStop(1, "rgba(13,12,11,0.94)");
   ctx.fillStyle = down;
-  ctx.fillRect(0, 0, W, H);
+  ctx.fillRect(0, 0, f.w, f.h);
 
-  const side = ctx.createLinearGradient(0, 0, W * 0.8, 0);
+  const side = ctx.createLinearGradient(0, 0, f.w * 0.8, 0);
   side.addColorStop(0, "rgba(13,12,11,0.9)");
   side.addColorStop(1, "rgba(13,12,11,0)");
   ctx.fillStyle = side;
-  ctx.fillRect(0, 0, W, H);
+  ctx.fillRect(0, 0, f.w, f.h);
 
   if (slide.eyebrow) {
     ctx.font = `700 26px ${MONO}`;
@@ -235,7 +288,7 @@ function drawCover(
     ctx.fillText(slide.eyebrow.toUpperCase(), PAD, 108);
   }
 
-  const box = { width: W - PAD * 2 - 40, height: 380 };
+  const box = { width: f.w - PAD * 2 - 40, height: f.h * 0.28 };
   const { size, lines: rows } = fitSize(
     slide.title,
     box,
@@ -245,7 +298,7 @@ function drawCover(
   );
 
   const height = rows.length * size * 1.12;
-  const top = H * 0.5 - height / 2;
+  const top = f.h * 0.5 - height / 2;
 
   // Акцентная планка слева от заголовка — отсюда взгляд начинает читать.
   ctx.fillStyle = palette.accent;
@@ -256,18 +309,17 @@ function drawCover(
   const after = lines(ctx, rows, PAD + 40, top, size * 1.12);
 
   if (slide.takeaway) {
-    const label = slide.takeaway;
     ctx.font = `400 28px ${MONO}`;
-    const w = ctx.measureText(label).width + 60;
+    const w = ctx.measureText(slide.takeaway).width + 60;
     ctx.strokeStyle = LINE;
     ctx.lineWidth = 2;
     roundRect(ctx, PAD + 40, after - 4, w, 68, 12);
     ctx.stroke();
     ctx.fillStyle = MUTED;
-    ctx.fillText(label, PAD + 70, after + 40);
+    ctx.fillText(slide.takeaway, PAD + 70, after + 40);
   }
 
-  signature(ctx, deck.handle, deck.tagline);
+  signature(ctx, deck.handle, deck.tagline, f);
 }
 
 /** Слайд-утверждение: рубрика, крупный заголовок, абзацы, вывод. */
@@ -278,12 +330,19 @@ function drawStatement(
   palette: Palette,
   index: number,
   total: number,
+  photo: CanvasImageSource | null,
+  f: Frame,
 ) {
-  ground(ctx, palette);
-  header(ctx, palette, slideNumber(index, total), slide.eyebrow || "");
-  ghostNumber(ctx, index + 1);
+  ground(ctx, palette, f);
+  if (slide.photo && photo) {
+    fill(ctx, photo, f);
+    scrim(ctx, f, 0.62);
+  }
 
-  let y = 330;
+  header(ctx, palette, slideNumber(index, total), slide.eyebrow || "", f);
+  if (!slide.photo) ghostNumber(ctx, index + 1, f);
+
+  let y = contentTop(f);
 
   if (slide.eyebrow) {
     ctx.font = `700 26px ${MONO}`;
@@ -294,7 +353,7 @@ function drawStatement(
 
   const { size, lines: rows } = fitSize(
     slide.title,
-    { width: W - PAD * 2, height: 300 },
+    { width: f.w - PAD * 2, height: f.h * 0.22 },
     [82, 72, 62, 52],
     (s) => measureWith(ctx, `700 ${s}px ${SANS}`),
     1.14,
@@ -304,10 +363,9 @@ function drawStatement(
   y = lines(ctx, rows, PAD, y, size * 1.14) + 30;
 
   if (slide.body) {
-    ctx.font = `400 36px ${SANS}`;
     const rowsBody = wrap(
       slide.body,
-      W - PAD * 2,
+      f.w - PAD * 2,
       measureWith(ctx, `400 36px ${SANS}`),
     );
     ctx.font = `400 36px ${SANS}`;
@@ -315,8 +373,8 @@ function drawStatement(
     y = lines(ctx, rowsBody, PAD, y + 24, 54) + 40;
   }
 
-  takeawayBlock(ctx, palette, slide.takeaway, y);
-  signature(ctx, deck.handle, deck.tagline);
+  takeawayBlock(ctx, palette, slide.takeaway, y, f);
+  signature(ctx, deck.handle, deck.tagline, f);
 }
 
 /*
@@ -331,12 +389,19 @@ function drawPrompt(
   palette: Palette,
   index: number,
   total: number,
+  photo: CanvasImageSource | null,
+  f: Frame,
 ) {
-  ground(ctx, palette);
-  header(ctx, palette, slideNumber(index, total), slide.eyebrow || "");
-  ghostNumber(ctx, index + 1);
+  ground(ctx, palette, f);
+  if (slide.photo && photo) {
+    fill(ctx, photo, f);
+    scrim(ctx, f, 0.68);
+  }
 
-  let y = 330;
+  header(ctx, palette, slideNumber(index, total), slide.eyebrow || "", f);
+  if (!slide.photo) ghostNumber(ctx, index + 1, f);
+
+  let y = contentTop(f);
 
   if (slide.eyebrow) {
     ctx.font = `700 26px ${MONO}`;
@@ -347,7 +412,7 @@ function drawPrompt(
 
   const { size, lines: rows } = fitSize(
     slide.title,
-    { width: W - PAD * 2, height: 200 },
+    { width: f.w - PAD * 2, height: f.h * 0.15 },
     [82, 70, 60, 50],
     (s) => measureWith(ctx, `700 ${s}px ${SANS}`),
     1.14,
@@ -357,7 +422,7 @@ function drawPrompt(
   y = lines(ctx, rows, PAD, y, size * 1.14) + 34;
 
   if (slide.code) {
-    const inner = W - PAD * 2 - 96;
+    const inner = f.w - PAD * 2 - 96;
     const rowsCode = wrap(
       slide.code,
       inner,
@@ -366,11 +431,11 @@ function drawPrompt(
     const boxH = rowsCode.length * 46 + 72;
 
     ctx.fillStyle = PANEL;
-    roundRect(ctx, PAD, y, W - PAD * 2, boxH, 18);
+    roundRect(ctx, PAD, y, f.w - PAD * 2, boxH, 18);
     ctx.fill();
     ctx.strokeStyle = LINE;
     ctx.lineWidth = 2;
-    roundRect(ctx, PAD, y, W - PAD * 2, boxH, 18);
+    roundRect(ctx, PAD, y, f.w - PAD * 2, boxH, 18);
     ctx.stroke();
 
     ctx.fillStyle = palette.accent;
@@ -383,11 +448,89 @@ function drawPrompt(
     y += boxH + 46;
   }
 
-  takeawayBlock(ctx, palette, slide.takeaway, y);
-  signature(ctx, deck.handle, deck.tagline);
+  takeawayBlock(ctx, palette, slide.takeaway, y, f);
+  signature(ctx, deck.handle, deck.tagline, f);
 }
 
-/** Рисует слайд целиком. Холст должен быть 1080×1350. */
+/*
+  Последний слайд.
+
+  Он отличается от остальных нарочно: текст по центру, крупный ник и
+  рамка с призывом. Досмотревший до конца — самый ценный читатель, и
+  ему надо сказать вслух, что делать дальше. Без этого слайда карусель
+  заканчивается на полуслове, и человек просто листает ленту дальше.
+*/
+function drawFinal(
+  ctx: CanvasRenderingContext2D,
+  slide: Slide,
+  deck: Deck,
+  palette: Palette,
+  photo: CanvasImageSource | null,
+  f: Frame,
+) {
+  ground(ctx, palette, f);
+  if (slide.photo && photo) {
+    fill(ctx, photo, f);
+    scrim(ctx, f, 0.72);
+  }
+
+  ctx.textAlign = "center";
+  const mid = f.w / 2;
+
+  if (slide.eyebrow) {
+    ctx.font = `700 26px ${MONO}`;
+    ctx.fillStyle = palette.accent;
+    ctx.fillText(slide.eyebrow.toUpperCase(), mid, f.h * 0.3);
+  }
+
+  const { size, lines: rows } = fitSize(
+    slide.title,
+    { width: f.w - PAD * 2, height: f.h * 0.2 },
+    [88, 76, 64, 54],
+    (s) => measureWith(ctx, `700 ${s}px ${SANS}`),
+    1.14,
+  );
+  ctx.font = `700 ${size}px ${SANS}`;
+  ctx.fillStyle = INK;
+  let y = lines(ctx, rows, mid, f.h * 0.4, size * 1.14) + 20;
+
+  if (slide.body) {
+    const rowsBody = wrap(
+      slide.body,
+      f.w - PAD * 2 - 60,
+      measureWith(ctx, `400 34px ${SANS}`),
+    );
+    ctx.font = `400 34px ${SANS}`;
+    ctx.fillStyle = MUTED;
+    y = lines(ctx, rowsBody, mid, y + 30, 50) + 30;
+  }
+
+  if (slide.takeaway) {
+    ctx.font = `700 32px ${SANS}`;
+    const w = ctx.measureText(slide.takeaway).width + 80;
+    ctx.fillStyle = palette.accent;
+    roundRect(ctx, mid - w / 2, y + 16, w, 84, 42);
+    ctx.fill();
+    ctx.fillStyle = "#0d0c0b";
+    ctx.fillText(slide.takeaway, mid, y + 70);
+    y += 130;
+  }
+
+  // Ник здесь крупный и по центру: это последнее, что видит человек.
+  ctx.font = `500 40px ${MONO}`;
+  ctx.fillStyle = INK;
+  ctx.fillText(deck.handle, mid, y + 60);
+
+  if (deck.tagline) {
+    ctx.font = `400 28px ${SANS}`;
+    ctx.fillStyle = MUTED;
+    ctx.fillText(deck.tagline, mid, y + 106);
+  }
+
+  ctx.textAlign = "left";
+}
+
+/** Рисует слайд целиком. Холст должен совпадать с размером формата. */
 export function drawSlide(
   ctx: CanvasRenderingContext2D,
   deck: Deck,
@@ -397,12 +540,14 @@ export function drawSlide(
 ) {
   const slide = deck.slides[index];
   const total = deck.slides.length;
+  const f = FRAMES[deck.format] ?? FRAMES.post;
 
   ctx.textBaseline = "alphabetic";
   ctx.textAlign = "left";
 
-  if (slide.kind === "cover") drawCover(ctx, slide, deck, palette, photo);
+  if (slide.kind === "cover") drawCover(ctx, slide, deck, palette, photo, f);
+  else if (slide.kind === "final") drawFinal(ctx, slide, deck, palette, photo, f);
   else if (slide.kind === "prompt")
-    drawPrompt(ctx, slide, deck, palette, index, total);
-  else drawStatement(ctx, slide, deck, palette, index, total);
+    drawPrompt(ctx, slide, deck, palette, index, total, photo, f);
+  else drawStatement(ctx, slide, deck, palette, index, total, photo, f);
 }

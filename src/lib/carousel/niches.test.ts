@@ -1,6 +1,7 @@
 import { describe, it, expect } from "vitest";
 import { niches } from "./niches";
-import { W, H } from "./templates";
+import { FRAMES } from "./templates";
+import { MAX_SLIDES } from "./storage";
 
 /*
   Готовые тексты — содержимое, а не код: ошибка в них не роняет ни
@@ -69,13 +70,35 @@ describe("наборы слайдов", () => {
     }
   });
 
-  it("в наборе от трёх до десяти слайдов", () => {
-    // Больше десяти Instagram не примет в одну карусель.
+  it("набор влезает в предел площадки", () => {
     for (const list of [RU, EN]) {
       for (const niche of list) {
         for (const deck of niche.decks) {
           expect(deck.slides.length, deck.id).toBeGreaterThanOrEqual(3);
-          expect(deck.slides.length, deck.id).toBeLessThanOrEqual(10);
+          expect(deck.slides.length, deck.id).toBeLessThanOrEqual(MAX_SLIDES);
+        }
+      }
+    }
+  });
+
+  it("заканчиваются призывом", () => {
+    // Призыв приписывается всем наборам разом, а не пишется в каждом:
+    // проверка ловит набор, мимо которого это приписывание прошло.
+    for (const list of [RU, EN]) {
+      for (const niche of list) {
+        for (const deck of niche.decks) {
+          expect(deck.slides.at(-1)!.kind, deck.id).toBe("final");
+        }
+      }
+    }
+  });
+
+  it("призыв в наборе один", () => {
+    for (const list of [RU, EN]) {
+      for (const niche of list) {
+        for (const deck of niche.decks) {
+          const ends = deck.slides.filter((s) => s.kind === "final");
+          expect(ends.length, deck.id).toBe(1);
         }
       }
     }
@@ -149,8 +172,17 @@ describe("наборы слайдов", () => {
   });
 });
 
-describe("кадр", () => {
-  it("формат 4:5 — тот, что Instagram не обрезает", () => {
-    expect(W / H).toBeCloseTo(0.8, 5);
+describe("кадры", () => {
+  it("лента — 4:5, тот формат, что Instagram не обрезает", () => {
+    expect(FRAMES.post.w / FRAMES.post.h).toBeCloseTo(0.8, 5);
+  });
+
+  it("сторис и TikTok — 9:16", () => {
+    expect(FRAMES.story.w / FRAMES.story.h).toBeCloseTo(0.5625, 5);
+  });
+
+  it("ширина у форматов одна", () => {
+    // Всё, что считается по горизонтали, от формата не зависит вовсе.
+    expect(FRAMES.story.w).toBe(FRAMES.post.w);
   });
 });
