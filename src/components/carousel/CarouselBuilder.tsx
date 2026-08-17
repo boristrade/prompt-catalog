@@ -1,9 +1,24 @@
 "use client";
 
 import { useCallback, useEffect, useRef, useState } from "react";
-import { Download, Image as ImageIcon, Plus, Share2, Trash2 } from "lucide-react";
+import {
+  Download,
+  Image as ImageIcon,
+  Plus,
+  Share2,
+  Trash2,
+  Undo2,
+} from "lucide-react";
 import { FALLBACK, paletteFrom, type Palette } from "@/lib/carousel/palette";
 import { H, W, drawSlide, type Deck, type Slide } from "@/lib/carousel/templates";
+import {
+  DECK_KEY,
+  PALETTE_KEY,
+  PHOTO_KEY,
+  parseDeck,
+  parsePalette,
+  slideKey,
+} from "@/lib/carousel/storage";
 import type { Niche } from "@/lib/carousel/niches";
 import type { Dictionary } from "@/lib/i18n/dictionaries";
 
@@ -46,6 +61,20 @@ export default function CarouselBuilder({
   const [busy, setBusy] = useState(false);
   const [niche, setNiche] = useState(niches[0]?.id ?? "");
   const [applied, setApplied] = useState("");
+  const [loaded, setLoaded] = useState(false);
+
+  /* Что было до нажатия «Применить». null — возвращать нечего. */
+  const [undo, setUndo] = useState<Slide[] | null>(null);
+
+  /*
+    Отпечаток фотографии для ключа слайда. Сам объект картинки для этого
+    не годится: он у каждой загрузки новый, и слайды перерисовывались бы
+    даже при том же снимке.
+  */
+  const [photoToken, setPhotoToken] = useState("");
+
+  /* Готовые кадры по ключу слайда. Ref, а не state: это склад, не вид. */
+  const drawn = useRef<Map<string, string>>(new Map());
 
   const current = niches.find((item) => item.id === niche) ?? niches[0];
 
@@ -103,6 +132,47 @@ export default function CarouselBuilder({
     };
   }, []);
 
+  /*
+    Восстановление прошлого захода.
+
+    Читаем один раз при появлении и до первой отрисовки. Текст, палитра
+    и фото лежат под разными ключами нарочно: текст перезаписывается на
+    каждую правку и должен быть мелким, а фото пишется один раз и весит
+    сотни килобайт. В одном ключе каждая нажатая буква тащила бы за
+    собой весь снимок.
+  */
+  useEffect(() => {
+    const saved = parseDeck(localStorage.getItem(DECK_KEY));
+    if (saved) setDeck(saved);
+
+    const savedPalette = parsePalette(localStorage.getItem(PALETTE_KEY));
+    if (savedPalette) setPalette(savedPalette);
+
+    const savedPhoto = localStorage.getItem(PHOTO_KEY);
+    if (savedPhoto) {
+      const img = new Image();
+      img.onload = () => {
+        setPhoto(img);
+        setPhotoToken(savedPhoto.length.toString());
+      };
+      img.src = savedPhoto;
+    }
+
+    setLoaded(true);
+  }, []);
+
+  /* Текст — на каждую правку. Он мелкий, запись почти ничего не стоит. */
+  useEffect(() => {
+    if (!loaded) return;
+    try {
+      localStorage.setItem(DECK_KEY, JSON.stringify(deck));
+      localStorage.setItem(PALETTE_KEY, JSON.stringify(palette));
+    } catch {
+      // Хранилище переполнено или запрещено — работать это не мешает,
+      // просто следующий заход начнётся с чистого листа.
+    }
+  }, [deck, palette, loaded]);
+
   /* Фото: цвет достаём из уменьшенной копии, полный кадр держим для обложки. */
   const onPhoto = useCallback((file: File) => {
     const url = URL.createObjectURL(file);
@@ -123,29 +193,83 @@ export default function CarouselBuilder({
       }
 
       setPhoto(img);
+
+      /*
+        Копия для хранилища — ужатая и в jpeg. Снимок с телефона весит
+        несколько мегабайт и в localStorage не влезет вовсе, а для
+        обложки 1200 пикселей по длинной стороне хватает с запасом:
+        кадр всё равно 1080 в ширину.
+      */
+      try {
+        const keep = document.createElement("canvas");
+        const k = Math.min(1, 1200 / Math.max(img.naturalWidth, img.naturalHeight));
+        keep.width = Math.round(img.naturalWidth * k);
+        keep.height = Math.round(img.naturalHeight * k);
+        keep.getContext("2d")?.drawImage(img, 0, 0, keep.width, keep.height);
+
+        const data = keep.toDataURL("image/jpeg", 0.82);
+        localStorage.setItem(PHOTO_KEY, data);
+        setPhotoToken(data.length.toString());
+      } catch {
+        // Не влезло — фото просто не переживёт перезагрузку. Текст
+        // переживёт, а это главное.
+        setPhotoToken(String(Date.now()));
+      }
     };
 
     img.src = url;
   }, []);
 
-  /* Перерисовка всех слайдов. Превью — data-URL, их же отдаём на сохранение. */
+  /*
+    Перерисовка.
+
+    Две вещи, без которых ввод текста залипал.
+
+    Первая — пауза. Превращение кадра 1080×1350 в картинку стоит около
+    четверти секунды на среднем телефоне, а рисовалось это на каждое
+    нажатие клавиши. Ждём, пока человек перестанет печатать.
+
+    Вторая — рисуем только изменившиеся слайды. Ключ слайда собирается
+    в slideKey и включает всё, что печатается в кадре: правят один
+    заголовок — перерисовывается один кадр, а не шесть.
+  */
   useEffect(() => {
     if (!ready) return;
 
-    const canvas = document.createElement("canvas");
-    canvas.width = W;
-    canvas.height = H;
-    const ctx = canvas.getContext("2d");
-    if (!ctx) return;
+    const timer = setTimeout(() => {
+      const canvas = document.createElement("canvas");
+      canvas.width = W;
+      canvas.height = H;
+      const ctx = canvas.getContext("2d");
+      if (!ctx) return;
 
-    const next = deck.slides.map((_, i) => {
-      ctx.clearRect(0, 0, W, H);
-      drawSlide(ctx, deck, palette, i, photo);
-      return canvas.toDataURL("image/png");
-    });
+      const cache = drawn.current;
+      const keys = deck.slides.map((_, i) =>
+        slideKey(deck, palette, i, photoToken),
+      );
 
-    setPreviews(next);
-  }, [deck, palette, photo, ready]);
+      const next = keys.map((key, i) => {
+        const hit = cache.get(key);
+        if (hit) return hit;
+
+        ctx.clearRect(0, 0, W, H);
+        drawSlide(ctx, deck, palette, i, photo);
+        const url = canvas.toDataURL("image/png");
+        cache.set(key, url);
+        return url;
+      });
+
+      // Чистим всё, что больше не на экране: каждая картинка — это
+      // мегабайт строки, и копить их незачем.
+      for (const key of [...cache.keys()]) {
+        if (!keys.includes(key)) cache.delete(key);
+      }
+
+      setPreviews(next);
+    }, 250);
+
+    return () => clearTimeout(timer);
+  }, [deck, palette, photo, photoToken, ready]);
 
   function patch(index: number, field: keyof Slide, value: string) {
     setDeck((d) => ({
@@ -248,6 +372,11 @@ export default function CarouselBuilder({
         <p className="mt-2 text-center text-[12.5px] text-muted">
           {t.carousel.shareHint}
         </p>
+        {/* Про сохранение говорим вслух: иначе человек не рискнёт закрыть
+            страницу и будет держать вкладку открытой на всякий случай. */}
+        <p className="mt-1 text-center text-[12px] text-faint">
+          {t.carousel.saved}
+        </p>
       </div>
 
       {/* Настройки */}
@@ -290,9 +419,36 @@ export default function CarouselBuilder({
         </div>
 
         <div>
-          <span className="text-[13px] font-semibold text-ink">
-            {t.carousel.texts}
-          </span>
+          <div className="flex items-center justify-between gap-3">
+            <span className="text-[13px] font-semibold text-ink">
+              {t.carousel.texts}
+            </span>
+
+            {/*
+              Возврат вместо вопроса «вы уверены?».
+
+              «Применить» затирает всё набранное молча — человек мог
+              полчаса править текст и нажать другой набор из
+              любопытства. Спрашивать подтверждение на каждое нажатие
+              значит мешать тем, кто просто перебирает варианты; кнопка
+              возврата не мешает никому и чинит ровно тот случай, когда
+              нажали зря.
+            */}
+            {undo && (
+              <button
+                type="button"
+                onClick={() => {
+                  setDeck((d) => ({ ...d, slides: undo }));
+                  setUndo(null);
+                  setApplied("");
+                }}
+                className="inline-flex shrink-0 items-center gap-1.5 rounded-chip border border-line-strong px-3 py-1.5 text-[12px] text-ink transition-colors duration-200 hover:bg-surface"
+              >
+                <Undo2 size={12} />
+                {t.carousel.undo}
+              </button>
+            )}
+          </div>
           {/* Список длинный: десять на нишу. Прокручиваем его сам, чтобы
               настройки ниже оставались в пределах досягаемости. */}
           <ul className="mt-2 max-h-72 space-y-2 overflow-y-auto pr-1">
@@ -308,6 +464,7 @@ export default function CarouselBuilder({
                   type="button"
                   onClick={() => {
                     // Ник, подпись и фото остаются: меняется только текст.
+                    setUndo(deck.slides);
                     setDeck((d) => ({ ...d, slides: item.slides }));
                     setApplied(item.id);
                   }}

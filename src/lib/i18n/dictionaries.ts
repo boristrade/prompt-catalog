@@ -376,6 +376,8 @@ const ru = {
     paid: "платно",
   },
   carousel: {
+    undo: "Вернуть",
+    saved: "Набор сохраняется сам — можно закрыть страницу и вернуться.",
     niche: "Ниша",
     nicheHint:
       "Выберите нишу — под ней десять готовых текстов. Нажали «Применить» — слайды заполнились, дальше правьте под себя.",
@@ -792,6 +794,8 @@ const en: Dictionary = {
     paid: "paid",
   },
   carousel: {
+    undo: "Undo",
+    saved: "Your work saves itself — close the page and come back to it.",
     niche: "Niche",
     nicheHint:
       "Pick a niche — each has ten ready-made texts. Press Apply and the slides fill in; edit them from there.",
@@ -1218,6 +1222,9 @@ const fr: Dictionary = {
     paid: "payant",
   },
   carousel: {
+    undo: "Annuler",
+    saved:
+      "Votre travail est enregistré tout seul — fermez la page et revenez.",
     niche: "Niche",
     nicheHint:
       "Choisissez une niche — chacune contient dix textes prêts. Appuyez sur Appliquer et les diapositives se remplissent.",
@@ -1634,6 +1641,8 @@ const uk: Dictionary = {
     paid: "платно",
   },
   carousel: {
+    undo: "Повернути",
+    saved: "Набір зберігається сам — можна закрити сторінку й повернутися.",
     niche: "Ніша",
     nicheHint:
       "Оберіть нішу — під нею десять готових текстів. Натиснули «Застосувати» — слайди заповнилися, далі правте під себе.",
@@ -2060,6 +2069,9 @@ const de: Dictionary = {
     paid: "kostenpflichtig",
   },
   carousel: {
+    undo: "Zurück",
+    saved:
+      "Alles speichert sich selbst — Seite schließen und später weitermachen.",
     niche: "Nische",
     nicheHint:
       "Nische wählen — dahinter liegen zehn fertige Texte. Auf Übernehmen tippen und die Folien füllen sich.",
@@ -2480,6 +2492,8 @@ const pl: Dictionary = {
     paid: "płatne",
   },
   carousel: {
+    undo: "Cofnij",
+    saved: "Praca zapisuje się sama — możesz zamknąć stronę i wrócić.",
     niche: "Nisza",
     nicheHint:
       "Wybierz niszę — pod nią dziesięć gotowych tekstów. Naciskasz Zastosuj i slajdy się wypełniają.",
