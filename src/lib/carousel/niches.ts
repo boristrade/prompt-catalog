@@ -1,6 +1,6 @@
 import type { Slide } from "./templates";
 import type { Locale } from "@/lib/i18n/config";
-import { NICHES_EN } from "./niches.en";
+import { ENDING_EN, NICHES_EN } from "./niches.en";
 
 /*
   Готовые тексты каруселей, разложенные по нишам.
@@ -36,7 +36,7 @@ export interface Niche {
 /* Сборщики слайдов — чтобы наборы читались, а не тонули в скобках. */
 
 export function cover(eyebrow: string, title: string, pill: string): Slide {
-  return { kind: "cover", eyebrow, title, body: "", code: "", takeaway: pill };
+  return { kind: "cover", eyebrow, title, body: "", code: "", takeaway: pill, photo: true };
 }
 
 export function say(
@@ -45,7 +45,7 @@ export function say(
   body: string,
   takeaway: string,
 ): Slide {
-  return { kind: "statement", eyebrow, title, body, code: "", takeaway };
+  return { kind: "statement", eyebrow, title, body, code: "", takeaway, photo: false };
 }
 
 export function box(
@@ -54,7 +54,7 @@ export function box(
   code: string,
   takeaway: string,
 ): Slide {
-  return { kind: "prompt", eyebrow, title, body: "", code, takeaway };
+  return { kind: "prompt", eyebrow, title, body: "", code, takeaway, photo: false };
 }
 
 const NICHES_RU: Niche[] = [
@@ -991,6 +991,43 @@ const NICHES_RU: Niche[] = [
 ];
 
 /** Ниши на языке страницы. Содержимое — русский и английский. */
+/*
+  Финальный слайд.
+
+  Он один на все наборы, и это нарочно. Досмотревший до конца — самый
+  ценный читатель, и ему надо сказать вслух, что делать дальше: молча
+  закончившаяся карусель просто уходит вверх вместе с лентой. А просьба
+  всюду одна, потому что она и должна быть одна — своя у каждого набора
+  превратилась бы в сто вариантов одной фразы.
+
+  Приписываем его здесь, а не в каждом из ста наборов: иначе забытый в
+  одном месте призыв нашёлся бы только глазами.
+*/
+const ENDING_RU: Slide = {
+  kind: "final",
+  eyebrow: "напоследок",
+  title: "Сохрани, пока не улистал",
+  body: "Поиском это уже не найти: хорошее в ленте второй раз не всплывает.",
+  code: "",
+  takeaway: "Сохранить · Отправить",
+  photo: false,
+};
+
+function withEnding(list: Niche[], ending: Slide): Niche[] {
+  return list.map((niche) => ({
+    ...niche,
+    decks: niche.decks.map((deck) => ({
+      ...deck,
+      slides: [...deck.slides, ending],
+    })),
+  }));
+}
+
+// Считаем один раз при загрузке модуля: наборы не меняются, а новые
+// массивы на каждый заход заставляли бы React перерисовывать список.
+const RU = withEnding(NICHES_RU, ENDING_RU);
+const EN = withEnding(NICHES_EN, ENDING_EN);
+
 export function niches(locale: Locale): Niche[] {
-  return locale === "ru" ? NICHES_RU : NICHES_EN;
+  return locale === "ru" ? RU : EN;
 }

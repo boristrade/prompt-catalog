@@ -1,4 +1,16 @@
 import { box, cover, say, type Niche } from "./niches";
+import type { Slide } from "./templates";
+
+/** Английский финальный слайд. Русский — в niches.ts, рядом с наборами. */
+export const ENDING_EN: Slide = {
+  kind: "final",
+  eyebrow: "one last thing",
+  title: "Save this before you scroll on",
+  body: "You will not find it again by searching — the good ones never come back up in the feed.",
+  code: "",
+  takeaway: "Save · Share",
+  photo: false,
+};
 
 /*
   Английские наборы. Отдельным файлом, как у промтов: русский и

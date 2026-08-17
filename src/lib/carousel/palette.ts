@@ -102,6 +102,39 @@ export function hsl(hue: number, sat: number, light: number): string {
   return `#${hex(r)}${hex(g)}${hex(b)}`;
 }
 
+/** Оттенок цвета в градусах или null, если цвет серый. */
+function hueOf(hex: string): number | null {
+  const value = hex.replace("#", "");
+  if (!/^[0-9a-f]{6}$/i.test(value)) return null;
+
+  const r = parseInt(value.slice(0, 2), 16);
+  const g = parseInt(value.slice(2, 4), 16);
+  const b = parseInt(value.slice(4, 6), 16);
+  const { hue, sat } = toHsl(r, g, b);
+
+  return sat === 0 ? null : hue;
+}
+
+/**
+ * Палитра по выбранному вручную цвету.
+ *
+ * Из выбранного берётся только оттенок — ровно как из фотографии.
+ * Иначе человек, ткнувший в тёмно-синий, получил бы акцент, невидимый
+ * на почти чёрном фоне, и решил бы, что выбор цвета сломан. Свечение
+ * строится из того же оттенка, поэтому кадр остаётся собранным.
+ *
+ * Серый цвет оттенка не имеет — на нём отдаём запасную палитру.
+ */
+export function paletteFromAccent(hex: string): Palette {
+  const hue = hueOf(hex);
+  if (hue === null) return FALLBACK;
+
+  return {
+    accent: hsl(hue, ACCENT_S, ACCENT_L),
+    glow: hsl(hue, GLOW_S, GLOW_L),
+  };
+}
+
 /**
  * Палитра по пикселям фотографии.
  *

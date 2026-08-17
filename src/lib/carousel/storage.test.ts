@@ -4,6 +4,7 @@ import type { Deck } from "./templates";
 
 const slide = {
   kind: "statement",
+  photo: false,
   eyebrow: "рубрика",
   title: "Заголовок",
   body: "Текст",
@@ -14,6 +15,7 @@ const slide = {
 const deck: Deck = {
   handle: "@username",
   tagline: "подпись",
+  format: "post",
   slides: [{ ...slide, kind: "cover" }, slide] as Deck["slides"],
 };
 
@@ -63,6 +65,28 @@ describe("parseDeck", () => {
     expect(parsed!.handle).toBe("");
     expect(parsed!.tagline).toBe("");
     expect(parsed!.slides[0].title).toBe("");
+  });
+
+  it("незнакомый формат кадра заменяет лентой", () => {
+    // Форматов может стать больше или меньше, а набор в хранилище
+    // переживает обе правки: 4:5 — то, с чего конструктор начинался.
+    const odd = { ...deck, format: "квадрат" };
+    expect(parseDeck(JSON.stringify(odd))!.format).toBe("post");
+    expect(parseDeck(JSON.stringify({ ...deck, format: 7 }))!.format).toBe("post");
+  });
+
+  it("помнит вертикальный формат", () => {
+    const story = { ...deck, format: "story" };
+    expect(parseDeck(JSON.stringify(story))!.format).toBe("story");
+  });
+
+  it("набор без флага фотографии остаётся годным", () => {
+    // Так выглядят наборы, сохранённые до появления флага.
+    const old = { ...deck, slides: [{ kind: "cover", title: "Заголовок" }] };
+    const parsed = parseDeck(JSON.stringify(old));
+
+    expect(parsed).not.toBeNull();
+    expect(parsed!.slides[0].photo).toBe(false);
   });
 
   it("отвергает набор длиннее предела площадки", () => {
@@ -136,6 +160,25 @@ describe("slideKey", () => {
     expect(slideKey(deck, palette, 0, "photo-2")).not.toBe(
       slideKey(deck, palette, 0, ""),
     );
+  });
+
+  it("подложенное фото меняет ключ своего слайда", () => {
+    // Флажок «фото фоном» переписывает кадр целиком, а в остальном
+    // слайд остаётся тем же — без него правка прошла бы незамеченной.
+    const lit: Deck = {
+      ...deck,
+      slides: [deck.slides[0], { ...deck.slides[1], photo: true }],
+    };
+    expect(slideKey(lit, palette, 1, "")).not.toBe(slideKey(deck, palette, 1, ""));
+  });
+
+  it("смена формата меняет ключи всех слайдов", () => {
+    const tall: Deck = { ...deck, format: "story" };
+    for (let i = 0; i < deck.slides.length; i++) {
+      expect(slideKey(tall, palette, i, "")).not.toBe(
+        slideKey(deck, palette, i, ""),
+      );
+    }
   });
 
   it("удаление слайда меняет ключи остальных", () => {
