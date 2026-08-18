@@ -20,6 +20,7 @@ import Reveal from "@/components/Reveal";
 import Constellation from "@/components/Constellation";
 import CountUp from "@/components/CountUp";
 import CarouselPromo from "@/components/CarouselPromo";
+import PartnerPromo from "@/components/PartnerPromo";
 import TemplateMarquee from "@/components/TemplateMarquee";
 import HeroVisual from "@/components/HeroVisual";
 
@@ -351,6 +352,14 @@ export default async function HomePage({
           </div>
         </Reveal>
       </section>
+
+      {/*
+        Партнёрская программа. Порядок здесь и есть смысл: сначала «вот
+        что это» и «вот как работает», и только потом «на этом можно
+        зарабатывать». Выше по странице то же предложение читается как
+        схема заработка, а не как продолжение разговора.
+      */}
+      <PartnerPromo locale={locale} t={t} />
 
       {/* Финальный призыв */}
       <section className="pb-20">

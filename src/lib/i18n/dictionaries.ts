@@ -71,6 +71,16 @@ const ru = {
     },
   },
   home: {
+    partnerTitle: "На этом можно зарабатывать",
+    partnerText:
+      "Делитесь своей ссылкой. Кто купит доступ по ней — приносит вам {percent}% с каждой оплаты, включая продления.",
+    partnerMonthly: "с месячного доступа",
+    partnerYearly: "с годового",
+    partnerStep1: "Копируете свою ссылку и делитесь ею",
+    partnerStep2: "Человек переходит и покупает — ссылка помнит вас 30 дней",
+    partnerStep3: "Вознаграждение начисляется с каждой его оплаты",
+    partnerCta: "Получить ссылку",
+    partnerNote: "Выплата криптовалютой от 20 $",
     heroLabel: "Пример промта",
     heroDemo:
       "Создай реалистичное изображение будущего города на закате, [[киберпанк стиль]], неоновые огни, летящие машины, высокая детализация, [[8k, cinematic…]]",
@@ -501,6 +511,16 @@ const en: Dictionary = {
     },
   },
   home: {
+    partnerTitle: "You can earn from this",
+    partnerText:
+      "Share your link. Anyone who buys access through it earns you {percent}% of every payment they make, renewals included.",
+    partnerMonthly: "per monthly access",
+    partnerYearly: "per yearly",
+    partnerStep1: "Copy your link and share it",
+    partnerStep2: "Someone follows it and buys — the link remembers you for 30 days",
+    partnerStep3: "You earn from every payment they make",
+    partnerCta: "Get your link",
+    partnerNote: "Paid out in crypto from $20",
     heroLabel: "Prompt example",
     heroDemo:
       "Create a realistic image of a future city at sunset, [[cyberpunk style]], neon lights, flying cars, high detail, [[8k, cinematic…]]",
@@ -929,6 +949,16 @@ const fr: Dictionary = {
     },
   },
   home: {
+    partnerTitle: "Vous pouvez gagner de l'argent",
+    partnerText:
+      "Partagez votre lien. Toute personne qui achète l'accès via ce lien vous rapporte {percent}% de chacun de ses paiements, renouvellements compris.",
+    partnerMonthly: "par accès mensuel",
+    partnerYearly: "par accès annuel",
+    partnerStep1: "Copiez votre lien et partagez-le",
+    partnerStep2: "Quelqu'un le suit et achète — le lien vous retient 30 jours",
+    partnerStep3: "Vous touchez une part de chacun de ses paiements",
+    partnerCta: "Obtenir mon lien",
+    partnerNote: "Versement en cryptomonnaie à partir de 20 $",
     heroLabel: "Exemple de prompt",
     heroDemo:
       "Crée une image réaliste d'une ville du futur au coucher du soleil, [[style cyberpunk]], néons, voitures volantes, haute définition, [[8k, cinematic…]]",
@@ -1367,6 +1397,16 @@ const uk: Dictionary = {
     },
   },
   home: {
+    partnerTitle: "На цьому можна заробляти",
+    partnerText:
+      "Діліться своїм посиланням. Хто купить доступ за ним — приносить вам {percent}% з кожної оплати, включно з продовженнями.",
+    partnerMonthly: "з місячного доступу",
+    partnerYearly: "з річного",
+    partnerStep1: "Копіюєте своє посилання й ділитеся ним",
+    partnerStep2: "Людина переходить і купує — посилання памʼятає вас 30 днів",
+    partnerStep3: "Винагорода нараховується з кожної її оплати",
+    partnerCta: "Отримати посилання",
+    partnerNote: "Виплата криптовалютою від 20 $",
     heroLabel: "Приклад промту",
     heroDemo:
       "Створи реалістичне зображення міста майбутнього на заході сонця, [[кіберпанк-стиль]], неонові вогні, летючі машини, висока деталізація, [[8k, cinematic…]]",
@@ -1796,6 +1836,16 @@ const de: Dictionary = {
     },
   },
   home: {
+    partnerTitle: "Damit können Sie verdienen",
+    partnerText:
+      "Teilen Sie Ihren Link. Wer darüber Zugang kauft, bringt Ihnen {percent}% jeder Zahlung ein — Verlängerungen eingeschlossen.",
+    partnerMonthly: "pro Monatszugang",
+    partnerYearly: "pro Jahreszugang",
+    partnerStep1: "Link kopieren und teilen",
+    partnerStep2: "Jemand folgt ihm und kauft — der Link merkt sich Sie 30 Tage",
+    partnerStep3: "Sie erhalten einen Anteil an jeder seiner Zahlungen",
+    partnerCta: "Link erhalten",
+    partnerNote: "Auszahlung in Krypto ab 20 $",
     heroLabel: "Prompt-Beispiel",
     heroDemo:
       "Erstelle ein realistisches Bild einer Stadt der Zukunft bei Sonnenuntergang, [[Cyberpunk-Stil]], Neonlichter, fliegende Autos, hohe Detailtiefe, [[8k, cinematic…]]",
@@ -2236,6 +2286,16 @@ const pl: Dictionary = {
     },
   },
   home: {
+    partnerTitle: "Na tym można zarabiać",
+    partnerText:
+      "Udostępniaj swój link. Kto kupi przez niego dostęp, przynosi Ci {percent}% każdej płatności, łącznie z przedłużeniami.",
+    partnerMonthly: "z dostępu miesięcznego",
+    partnerYearly: "z rocznego",
+    partnerStep1: "Kopiujesz swój link i udostępniasz go",
+    partnerStep2: "Ktoś w niego wchodzi i kupuje — link pamięta Cię 30 dni",
+    partnerStep3: "Dostajesz część każdej jego płatności",
+    partnerCta: "Odbierz link",
+    partnerNote: "Wypłata w krypto od 20 $",
     heroLabel: "Przykład promptu",
     heroDemo:
       "Stwórz realistyczny obraz miasta przyszłości o zachodzie słońca, [[styl cyberpunk]], neony, latające samochody, wysoka szczegółowość, [[8k, cinematic…]]",
