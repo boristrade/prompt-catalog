@@ -2,6 +2,7 @@ import "server-only";
 import { existsSync, readFileSync, readdirSync } from "node:fs";
 import { join } from "node:path";
 import type { Locale } from "@/lib/i18n/config";
+import { skillCover, type SkillCover as SkillCoverFile } from "@/lib/skill-covers";
 
 /*
   Скилы для Claude Code.
@@ -81,6 +82,12 @@ export interface Skill extends SkillText {
   /** Имя папки в .claude/skills. Одна на все языки: это путь на диске. */
   folder: string;
   tier: SkillTier;
+  /*
+    Живая обложка — ролик из public/skill-covers. Её нет почти ни у
+    кого: ролик надо снять, а скилов два десятка. Отсутствие — обычное
+    дело, а не недоделка.
+  */
+  cover?: SkillCoverFile;
   /** Содержимое SKILL.md целиком. */
   file: string;
   /*
@@ -316,6 +323,20 @@ function readSkills(): Found[] {
   по-английски объяснено модели, а не читателю.
 */
 const RU: Record<string, SkillText> = {
+  "grafika-director": {
+    title: "Раскадровка моушн-дизайна под закадровый голос",
+    summary:
+      "Из субтитров с тайм-кодами делает раскадровку и два готовых промта: один рисует референс, второй анимирует ваш ролик.",
+    what: [
+      "Срабатывает, когда сообщение начинается со слова «animation» и в нём есть субтитры с тайм-кодами — в любом виде, хоть SRT, хоть списком.",
+      "Разбирает каждую фразу по смыслу и придумывает, что должно быть на экране под этими словами: ключевое слово во весь кадр, иконка по смыслу, крупное число, сравнение «да — нет», шкала этапов.",
+      "Отдаёт два промта. Первый — для Nano Banana 2: лист с панелями-раскадровкой. Второй — для Gemini Omni Flash: анимация вашего ролика по этой раскадровке.",
+      "Семь палитр на выбор — от графита с золотом до чёрно-жёлтой и «красной тревоги» — и два формата, 9:16 и 16:9, у каждого своя безопасная зона.",
+      "Держит правила, на которых такие генерации ломаются: ни одного человека в кадре, один блок текста на панель, не больше шести панелей, цвет словами, а не кодом.",
+    ],
+    why: "Генератор, которому просто пересказали текст, вставляет говорящую голову, дублирует подписи и разбрасывает элементы по углам без всякой логики. Здесь под каждое слово заранее придумана композиция, а запреты выписаны в промте по два раза — с одного модель их забывает. Отдельно посчитана безопасная зона: нижние тридцать процентов вертикального кадра занимает интерфейс приложения, и текст, попавший туда, не прочитает никто.",
+    tags: ["видео", "моушн"],
+  },
   "remotion-video": {
     title: "Remotion: видео кодом на React",
     summary:
@@ -642,6 +663,20 @@ const RU: Record<string, SkillText> = {
 };
 
 const EN: Record<string, SkillText> = {
+  "grafika-director": {
+    title: "Motion-design storyboards for voice-over clips",
+    summary:
+      "Turns timed captions into a storyboard and two ready prompts: one draws the reference sheet, the other animates your clip.",
+    what: [
+      "Fires when a message starts with the word “animation” and carries timed captions — SRT, VTT or a plain list, it does not care.",
+      "Reads every phrase for meaning and decides what belongs on screen under those words: a hero word filling the frame, an icon that matches, a giant number, a yes/no split, a timeline of stages.",
+      "Hands back two prompts. One for Nano Banana 2: a sheet of storyboard panels. One for Gemini Omni Flash: your clip animated to follow that sheet.",
+      "Seven palettes to pick from — graphite and gold, yellow on black, red alert and four more — and two orientations, 9:16 and 16:9, each with its own safe zone.",
+      "Holds the rules these generators break on their own: nobody on screen, one text block per panel, six panels at most, colours named in words rather than hex.",
+    ],
+    why: "A generator handed nothing but the script inserts a talking head, clones captions and scatters elements into corners for no reason. Here every word has a composition decided in advance, and the prohibitions are written into the prompt twice — once is not enough for the model to remember them. The safe zone is worked out too: the bottom third of a vertical frame belongs to the app interface, and text that lands there is read by nobody.",
+    tags: ["video", "motion"],
+  },
   "remotion-video": {
     title: "Remotion: video as React code",
     summary:
@@ -989,6 +1024,7 @@ export function skill(locale: Locale, id: string): Skill | undefined {
     id,
     folder: id,
     tier: PRO_SKILLS.includes(id) ? "pro" : "free",
+    cover: skillCover(id),
     file: found.file,
     files: found.files,
   };

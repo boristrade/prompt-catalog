@@ -167,7 +167,12 @@ export const config = {
       все языки, а языкового префикса у него нет: без этой строчки
       /guides/имя.pdf увело бы на /ru/guides/имя.pdf, то есть на 404, и
       гайд не открылся бы ни у кого.
+
+      .mp4 — живые обложки скилов из public/skill-covers. То же самое:
+      без строчки браузер попросил бы /skill-covers/имя.mp4, получил бы
+      перевод на /ru/skill-covers/имя.mp4 и показал бы пустое место
+      вместо ролика — молча, без единой ошибки на странице.
     */
-    "/((?!api|auth|r/|robots\\.txt|sitemap\\.xml|_next/static|_next/image|favicon.ico|.*\\.(?:svg|png|jpg|jpeg|gif|webp|avif|pdf|html)$).*)",
+    "/((?!api|auth|r/|robots\\.txt|sitemap\\.xml|_next/static|_next/image|favicon.ico|.*\\.(?:svg|png|jpg|jpeg|gif|webp|avif|pdf|mp4|html)$).*)",
   ],
 };

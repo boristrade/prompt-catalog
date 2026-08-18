@@ -9,6 +9,7 @@ import { pageMeta } from "@/lib/seo";
 import { articleSchema, jsonLd } from "@/lib/schema";
 import CopyFile from "@/components/CopyFile";
 import Reveal from "@/components/Reveal";
+import SkillCover from "@/components/SkillCover";
 
 /*
   Страница зависит от вошедшего: у оплатившего файл открыт, у остальных
@@ -116,6 +117,13 @@ export default async function SkillPage({
       <p className="mt-5 max-w-2xl text-[16px] leading-relaxed text-muted">
         {item.summary}
       </p>
+
+      {/* Ролик показывает результат работы скила — то, чего не объяснить
+          ни описанием, ни списком. Ширина по колонке текста: во весь
+          экран он оттеснил бы вниз всё, ради чего сюда пришли. */}
+      {full.cover && (
+        <SkillCover cover={full.cover} className="mt-8 max-w-2xl" />
+      )}
 
       {/*
         Разбор «что делает» и «зачем нужен» есть не у каждого скила: он

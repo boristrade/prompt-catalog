@@ -5,6 +5,7 @@ import { LOCALES } from "@/lib/i18n/config";
 import { pageLocale } from "@/lib/i18n";
 import { pageMeta } from "@/lib/seo";
 import Reveal from "@/components/Reveal";
+import SkillCover from "@/components/SkillCover";
 
 export function generateStaticParams() {
   return LOCALES.map((locale) => ({ locale }));
@@ -77,6 +78,11 @@ export default async function SkillsPage({
                   </div>
                 </div>
               </div>
+
+              {/* Обложка есть не у всех — и это видно, в том и смысл:
+                  карточка с движением в списке из двух десятков
+                  одинаковых притягивает взгляд первой. */}
+              {item.cover && <SkillCover cover={item.cover} className="mt-4" />}
 
               <p className="mt-3.5 flex-1 text-[13.5px] leading-relaxed text-muted">
                 {item.summary}
