@@ -166,7 +166,7 @@ body {
 
   Маска гасит нижний край: без неё фон упирался бы в границу секции
   ровной чертой и читался бы как прямоугольная картинка, а не как
-  продолжение страницы. Гаснуть начинает на 72% высоты, а не раньше:
+  продолжение страницы. Гаснуть начинает на 80% высоты, а не раньше:
   выше порог — и растворялось бы отражение под шаром вместе с самим
   шаром.
 
@@ -183,8 +183,8 @@ body {
   z-index: 0;
   pointer-events: none;
   opacity: 0.95;
-  -webkit-mask-image: linear-gradient(to bottom, #000 72%, transparent 100%);
-  mask-image: linear-gradient(to bottom, #000 72%, transparent 100%);
+  -webkit-mask-image: linear-gradient(to bottom, #000 80%, transparent 100%);
+  mask-image: linear-gradient(to bottom, #000 80%, transparent 100%);
 }
 
 @media (prefers-color-scheme: light) {

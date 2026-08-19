@@ -30,14 +30,17 @@ import { useEffect, useRef } from "react";
 /** Полный оборот шара, мс. Быстрее — и фон начинает отвлекать от текста. */
 const SPIN = 44000;
 
-/** Сколько нить проходит по меридиану за секунду, в долях от четверти дуги. */
-const FALL = 0.24;
+/** Сколько искра проходит по меридиану за секунду, в долях четверти дуги. */
+const RISE = 0.24;
 
-/** Длина хвоста в радианах широты. Длиннее — и нити читаются дугами. */
+/** Длина хвоста в радианах широты. Длиннее — и искры читаются дугами. */
 const TAIL = 0.3;
 
 /** Из скольких отрезков рисуется хвост. Меньше — видны углы на сгибе. */
 const JOINTS = 5;
+
+/** Низ шара. Отсюда искры стартуют и здесь же копится свет. */
+const FLOOR = -Math.PI / 2;
 
 /* ── Созвездие ───────────────────────────────────────────────────── */
 
@@ -48,10 +51,16 @@ const LINK = 110;
 const DRIFT = 14;
 
 interface Thread {
-  /** Долгота: где нить стоит на шаре. Не меняется — шар везёт её сам. */
+  /** Долгота: где искра стоит на шаре. Не меняется — шар везёт её сам. */
   lon: number;
-  /** Широта головы: от +π/2 на полюсе до −π/2 внизу. */
+  /** Широта головы: от −π/2 внизу и вверх. Растёт — искра поднимается. */
   lat: number;
+  /*
+    До какой высоты искра дойдёт. У каждой своя, и это главное: долети
+    все до полюса — шар стал бы равномерным клубком, а на образце
+    светится низ, а верх почти пустой.
+  */
+  reach: number;
   speed: number;
   bright: number;
 }
@@ -84,6 +93,12 @@ export default function HeroBackdrop() {
     let spin = 0;
     let onScreen = false;
     let colour = "#a78bfa";
+    /*
+      Тёмная тема или светлая. Свет складывается только на тёмной: на
+      белом фоне сложение уводит всё к белому, и вместо светящейся чаши
+      получается мутное пятно.
+    */
+    let night = true;
 
     /*
       Цвет берём из той же переменной, что и весь акцент сайта, а не
@@ -97,10 +112,12 @@ export default function HeroBackdrop() {
       null: файл переставал собираться на два десятка ошибок.
     */
     const readColour = () => {
-      const value = getComputedStyle(document.documentElement)
-        .getPropertyValue("--c-accent")
-        .trim();
+      const style = getComputedStyle(document.documentElement);
+      const value = style.getPropertyValue("--c-accent").trim();
       if (value) colour = value;
+      // color-scheme проставлен в каждой теме — по нему и различаем,
+      // не сравнивая цвета между собой.
+      night = style.colorScheme !== "light";
     };
 
     /*
@@ -114,6 +131,22 @@ export default function HeroBackdrop() {
       cy: height * 0.44,
     });
 
+    /*
+      Новая искра у самого низа шара.
+
+      Высота, до которой она долетит, взята с сильным перекосом вниз:
+      Math.random() в четвёртой степени даёт много коротких и редкие
+      длинные. Ровное распределение вытянуло бы половину искр к полюсу, а
+      на образце вверх пробиваются единицы.
+    */
+    const spark = (): Thread => ({
+      lon: Math.random() * Math.PI * 2,
+      lat: FLOOR,
+      reach: FLOOR + 0.15 + Math.pow(Math.random(), 4) * Math.PI * 0.95,
+      speed: 0.7 + Math.random() * 0.8,
+      bright: 0.35 + Math.random() * 0.65,
+    });
+
     const seed = () => {
       /*
         Плотность от площади, с потолком. Каждая нить — это пять
@@ -125,14 +158,13 @@ export default function HeroBackdrop() {
         Math.max(90, Math.round((width * height) / 2400)),
       );
 
-      threads = Array.from({ length: count }, () => ({
-        lon: Math.random() * Math.PI * 2,
-        // Разбрасываем по всей дуге сразу: иначе первые секунды шар
-        // пустой, а потом на него разом обрушивается ливень.
-        lat: Math.PI / 2 - Math.random() * Math.PI,
-        speed: 0.7 + Math.random() * 0.8,
-        bright: 0.35 + Math.random() * 0.65,
-      }));
+      threads = Array.from({ length: count }, () => {
+        const thread = spark();
+        // Разбрасываем по пути сразу: иначе первую секунду шар пустой, а
+        // потом с низа разом взлетает весь рой.
+        thread.lat = FLOOR + Math.random() * (thread.reach - FLOOR);
+        return thread;
+      });
 
       /*
         Точек заметно меньше, чем нитей, и предел у них жёстче: связи
@@ -156,18 +188,13 @@ export default function HeroBackdrop() {
     const move = (dt: number) => {
       spin += (dt / SPIN) * Math.PI * 2;
 
-      const fall = (FALL * dt) / 1000;
-      for (const thread of threads) {
-        thread.lat -= fall * thread.speed * (Math.PI / 2);
+      const rise = (RISE * dt) / 1000;
+      for (const [i, thread] of threads.entries()) {
+        thread.lat += rise * thread.speed * (Math.PI / 2);
 
-        // Дошла до низа — возвращаем на полюс с новой долготой, иначе
-        // нити со временем выстроились бы в один и тот же узор.
-        if (thread.lat < -Math.PI / 2 - TAIL) {
-          thread.lat = Math.PI / 2 + TAIL;
-          thread.lon = Math.random() * Math.PI * 2;
-          thread.speed = 0.7 + Math.random() * 0.8;
-          thread.bright = 0.35 + Math.random() * 0.65;
-        }
+        // Выдохлась — с низа поднимается новая, с новой долготой: иначе
+        // искры со временем выстроились бы в один и тот же узор.
+        if (thread.lat > thread.reach) threads[i] = spark();
       }
 
       const step = (DRIFT * dt) / 1000;
@@ -217,41 +244,57 @@ export default function HeroBackdrop() {
       if (radius <= 0) return;
 
       /*
-        Свет, скопившийся внизу шара, и его отражение под ним. Рисуются
-        первыми — нити должны идти поверх, иначе шар выглядит затянутым
-        плёнкой.
+        Свет, скопившийся у самого низа шара. Это главное пятно кадра:
+        снизу почти белое, кверху сходит на нет — на образце верхняя
+        половина шара тёмная, и светится только чаша под ним.
+
+        Центр свечения стоит ниже центра шара, а обрезано оно по кругу
+        шара: получается светящаяся чаша, а не ровный шарик.
       */
+      const bottom = cy + radius * 0.82;
       const pool = ctx.createRadialGradient(
         cx,
-        cy + radius * 0.62,
+        bottom,
         0,
         cx,
-        cy + radius * 0.62,
-        radius * 0.95,
+        bottom,
+        radius * 0.92,
       );
       pool.addColorStop(0, colour);
+      pool.addColorStop(0.3, colour);
       pool.addColorStop(1, "transparent");
-      ctx.globalAlpha = 0.62;
+      ctx.globalAlpha = night ? 0.7 : 0.42;
       ctx.fillStyle = pool;
       ctx.beginPath();
       ctx.arc(cx, cy, radius, 0, Math.PI * 2);
       ctx.fill();
 
-      // Отражение — сплюснутое пятно под шаром, а не вторая копия нитей:
+      // Отражение — сплюснутое пятно под шаром, а не вторая копия искр:
       // рисовать шар дважды ради размытого следа вдвое дороже.
       ctx.save();
-      ctx.translate(cx, cy + radius * 1.16);
-      ctx.scale(1, 0.34);
-      const echo = ctx.createRadialGradient(0, 0, 0, 0, 0, radius);
+      ctx.translate(cx, cy + radius * 1.22);
+      ctx.scale(1, 0.3);
+      const echo = ctx.createRadialGradient(0, 0, 0, 0, 0, radius * 0.98);
       echo.addColorStop(0, colour);
       echo.addColorStop(1, "transparent");
-      ctx.globalAlpha = 0.36;
+      ctx.globalAlpha = night ? 0.5 : 0.3;
       ctx.fillStyle = echo;
       ctx.beginPath();
-      ctx.arc(0, 0, radius, 0, Math.PI * 2);
+      ctx.arc(0, 0, radius * 0.98, 0, Math.PI * 2);
       ctx.fill();
       ctx.restore();
 
+      /*
+        Свет складывается, а не закрашивает. Искра, прошедшая над
+        свечением, обязана стать ярче обоих — так ведёт себя настоящий
+        свет, и на образце именно это: белёсые кончики над фиолетовой
+        чашей. Обычным режимом искра просто закрыла бы свечение своим
+        цветом и потерялась бы в нём.
+
+        На светлой теме — обычный режим: складывать свет на белом значит
+        уводить его к белому, и чаша превратилась бы в туман.
+      */
+      if (night) ctx.globalCompositeOperation = "lighter";
       ctx.strokeStyle = colour;
       ctx.lineCap = "round";
 
@@ -261,51 +304,56 @@ export default function HeroBackdrop() {
         const cos = Math.cos(angle);
 
         ctx.beginPath();
-        let depth = 0;
 
+        // Хвост тянется вниз, за головой: искра поднимается, и след
+        // остаётся там, откуда она пришла.
         for (let i = 0; i <= JOINTS; i++) {
-          const lat = thread.lat + (TAIL * i) / JOINTS;
-          if (lat > Math.PI / 2) break;
+          const lat = Math.max(FLOOR, thread.lat - (TAIL * i) / JOINTS);
 
           const ring = Math.cos(lat) * radius;
           const x = cx + ring * sin;
           const y = cy - Math.sin(lat) * radius;
-          if (i === 0) {
-            ctx.moveTo(x, y);
-            depth = cos;
-          } else {
-            ctx.lineTo(x, y);
-          }
+          if (i === 0) ctx.moveTo(x, y);
+          else ctx.lineTo(x, y);
         }
 
         /*
-          Дальняя половина шара тусклее ближней, но не спрятана: сквозь
-          неё и видно, что это шар, а не диск.
+          Две причины, по которым искра тускнеет.
+
+          Первая — глубина: дальняя половина шара тусклее ближней, но не
+          спрятана, сквозь неё и видно, что это шар, а не диск.
+
+          Вторая — высота: чем выше поднялась, тем слабее. К концу пути
+          искра гаснет полностью, иначе она обрывалась бы на лету. Отсюда
+          и общий вид — светящийся низ и темнеющий верх.
         */
-        const front = (depth + 1) / 2;
-        ctx.globalAlpha = thread.bright * (0.24 + front * 0.86);
+        const front = (cos + 1) / 2;
+        const climbed = (thread.lat - FLOOR) / (thread.reach - FLOOR);
+        const fade = Math.pow(1 - Math.min(1, climbed), 0.75);
+
+        ctx.globalAlpha = thread.bright * fade * (0.24 + front * 0.86);
         ctx.lineWidth = 0.9 + front * 1.2;
         ctx.stroke();
 
         /*
-          Точка на конце нити. Без неё шар читается как клубок дуг: свет,
-          который падает, узнаётся по яркой голове, а не по следу — след
-          только показывает, откуда она пришла.
+          Точка на конце искры. Без неё шар читается как клубок дуг: свет
+          узнаётся по яркой голове, а не по следу — след только
+          показывает, откуда он пришёл.
         */
-        if (thread.lat >= -Math.PI / 2 && thread.lat <= Math.PI / 2) {
-          ctx.globalAlpha = Math.min(1, thread.bright * (0.3 + front * 0.9));
-          ctx.fillStyle = colour;
-          ctx.beginPath();
-          ctx.arc(
-            cx + Math.cos(thread.lat) * radius * sin,
-            cy - Math.sin(thread.lat) * radius,
-            1 + front,
-            0,
-            Math.PI * 2,
-          );
-          ctx.fill();
-        }
+        ctx.globalAlpha = Math.min(1, thread.bright * fade * (0.3 + front * 0.9));
+        ctx.fillStyle = colour;
+        ctx.beginPath();
+        ctx.arc(
+          cx + Math.cos(thread.lat) * radius * sin,
+          cy - Math.sin(thread.lat) * radius,
+          1 + front,
+          0,
+          Math.PI * 2,
+        );
+        ctx.fill();
       }
+
+      ctx.globalCompositeOperation = "source-over";
     };
 
     const draw = () => {
