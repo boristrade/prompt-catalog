@@ -71,6 +71,11 @@ const ru = {
     },
   },
   home: {
+    typed: [
+      { lead: "Как научиться правильно писать", accent: "промты для AI?" },
+      { lead: "Как правильно", accent: "писать промты?" },
+      { lead: "Как писать, чтобы", accent: "AI меня понимала?" },
+    ],
     partnerTitle: "На этом можно зарабатывать",
     partnerText:
       "Делитесь своей ссылкой. Кто купит доступ по ней — приносит вам {percent}% с каждой оплаты, включая продления.",
@@ -511,6 +516,11 @@ const en: Dictionary = {
     },
   },
   home: {
+    typed: [
+      { lead: "How do you learn to write", accent: "prompts for AI?" },
+      { lead: "How do you write", accent: "a prompt that works?" },
+      { lead: "How do you write so", accent: "AI understands you?" },
+    ],
     partnerTitle: "You can earn from this",
     partnerText:
       "Share your link. Anyone who buys access through it earns you {percent}% of every payment they make, renewals included.",
@@ -949,6 +959,11 @@ const fr: Dictionary = {
     },
   },
   home: {
+    typed: [
+      { lead: "Comment apprendre à écrire", accent: "des prompts pour l'IA ?" },
+      { lead: "Comment écrire", accent: "un prompt qui marche ?" },
+      { lead: "Comment écrire pour que", accent: "l'IA vous comprenne ?" },
+    ],
     partnerTitle: "Vous pouvez gagner de l'argent",
     partnerText:
       "Partagez votre lien. Toute personne qui achète l'accès via ce lien vous rapporte {percent}% de chacun de ses paiements, renouvellements compris.",
@@ -1397,6 +1412,11 @@ const uk: Dictionary = {
     },
   },
   home: {
+    typed: [
+      { lead: "Як навчитися правильно писати", accent: "промти для AI?" },
+      { lead: "Як правильно", accent: "писати промти?" },
+      { lead: "Як писати, щоб", accent: "AI мене розуміла?" },
+    ],
     partnerTitle: "На цьому можна заробляти",
     partnerText:
       "Діліться своїм посиланням. Хто купить доступ за ним — приносить вам {percent}% з кожної оплати, включно з продовженнями.",
@@ -1836,6 +1856,11 @@ const de: Dictionary = {
     },
   },
   home: {
+    typed: [
+      { lead: "Wie lernt man, gute", accent: "Prompts für KI zu schreiben?" },
+      { lead: "Wie schreibt man", accent: "einen Prompt, der wirkt?" },
+      { lead: "Wie schreibt man, damit", accent: "die KI einen versteht?" },
+    ],
     partnerTitle: "Damit können Sie verdienen",
     partnerText:
       "Teilen Sie Ihren Link. Wer darüber Zugang kauft, bringt Ihnen {percent}% jeder Zahlung ein — Verlängerungen eingeschlossen.",
@@ -2286,6 +2311,11 @@ const pl: Dictionary = {
     },
   },
   home: {
+    typed: [
+      { lead: "Jak nauczyć się pisać", accent: "prompty dla AI?" },
+      { lead: "Jak poprawnie", accent: "pisać prompty?" },
+      { lead: "Jak pisać, żeby", accent: "AI Cię rozumiała?" },
+    ],
     partnerTitle: "Na tym można zarabiać",
     partnerText:
       "Udostępniaj swój link. Kto kupi przez niego dostęp, przynosi Ci {percent}% każdej płatności, łącznie z przedłużeniami.",

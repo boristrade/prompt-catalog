@@ -18,6 +18,7 @@ import { templatesFor } from "@/lib/templates";
 import { pageMeta } from "@/lib/seo";
 import Reveal from "@/components/Reveal";
 import HeroBackdrop from "@/components/HeroBackdrop";
+import TypedHeading from "@/components/TypedHeading";
 import CountUp from "@/components/CountUp";
 import CarouselPromo from "@/components/CarouselPromo";
 import PartnerPromo from "@/components/PartnerPromo";
@@ -92,21 +93,20 @@ export default async function HomePage({
         <div className="relative z-10 grid items-center gap-12 lg:grid-cols-[1fr_minmax(0,520px)]">
           <div>
             {/*
-              text-balance выравнивает строки по длине. Без него браузер
-              набивает первую строку под завязку и сбрасывает остаток
-              вниз: заголовок разваливался на «Как писать / промты, /
-              чтобы / получалось», где две средние строки — по одному
-              слову. На узком экране это стоит лишней строки высоты и
-              читается рвано.
+              Заголовок печатается сам: набирает вопрос, стирает, берётся
+              за следующий. Вопросы лежат в словаре — по три на каждый из
+              шести языков.
 
-              Размер на телефоне чуть меньше: у нового заголовка длиннее
-              самое длинное слово, и на 360px при 40px оно упиралось в
-              края.
+              text-balance выравнивает строки по длине: без него браузер
+              набивает первую строку под завязку и сбрасывает остаток
+              вниз, а на узком экране это лишняя строка высоты и рваное
+              чтение. Размер на телефоне чуть меньше — длинные слова при
+              40px упирались в края.
             */}
-            <h1 className="font-display rise text-balance text-[34px] leading-[1.08] text-ink sm:text-[40px] md:text-[50px]">
-              {t.home.titleMain}{" "}
-              <span className="grad-text">{t.home.titleAccent}</span>
-            </h1>
+            <TypedHeading
+              phrases={t.home.typed}
+              className="font-display rise text-balance text-[34px] leading-[1.08] text-ink sm:text-[40px] md:text-[50px]"
+            />
             <p className="rise rise-2 mt-6 max-w-md text-[15.5px] leading-relaxed text-muted">
               {t.home.subtitle}
             </p>
