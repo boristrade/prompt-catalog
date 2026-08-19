@@ -3,25 +3,29 @@
 import { useEffect, useRef } from "react";
 
 /*
-  Фон первого экрана: шар из падающих световых нитей, медленно
-  вращающийся вокруг своей оси.
+  Фон первого экрана: шар из падающих световых нитей, а вокруг него —
+  созвездие из точек, которые дрейфуют и связываются нитью, когда
+  сближаются.
 
-  Канвас, а не CSS. Нить живёт на поверхности шара: её положение на
-  экране считается из широты, долготы и угла поворота каждый кадр, и
-  каждая нить при этом сама сползает по своему меридиану. CSS такое
-  выражает только заранее нарисованной картинкой, то есть без самого
-  вращения. Это второй случай в проекте, где канвас оправдан, — и по той
-  же причине, что первый.
+  Два слоя, но один холст и один цикл кадров. Это не мелочь: два канваса
+  — это два requestAnimationFrame, две очистки экрана и два прохода по
+  всем данным на каждый кадр, ради картинки, которую человек всё равно
+  видит как одну. Здесь оба слоя рисуются подряд в одном проходе, и
+  наблюдатель за экраном, пауза в свёрнутой вкладке и просьба «меньше
+  движения» тоже одни на двоих.
 
-  Не гиф и не видео. Тот же шар роликом весит мегабайты, живёт в одном
-  размере и на светлой теме приносит с собой чёрный квадрат. Здесь он
-  берёт цвет из акцента сайта, растягивается на любой экран и не весит
-  ничего.
+  Канвас, а не CSS, и у каждого слоя своя причина. У шара положение нити
+  на экране считается из широты, долготы и угла поворота каждый кадр. У
+  созвездия связи пересчитываются каждый кадр — какие точки сейчас
+  рядом, знает только код. И то и другое на CSS выражается лишь заранее
+  нарисованной картинкой, то есть без самого движения.
 
   Без JS не появляется ничего, и это правильно: фон декоративный, его
   отсутствие ничего не ломает и ни о чём не сообщает. Поэтому же канвас
   помечен aria-hidden — читалке с экрана рассказывать о нём нечего.
 */
+
+/* ── Шар ─────────────────────────────────────────────────────────── */
 
 /** Полный оборот шара, мс. Быстрее — и фон начинает отвлекать от текста. */
 const SPIN = 44000;
@@ -35,6 +39,14 @@ const TAIL = 0.3;
 /** Из скольких отрезков рисуется хвост. Меньше — видны углы на сгибе. */
 const JOINTS = 5;
 
+/* ── Созвездие ───────────────────────────────────────────────────── */
+
+/** Расстояние, ближе которого точки связываются нитью, px. */
+const LINK = 110;
+
+/** Скорость дрейфа, px в секунду. Крупнее — и фон начинает отвлекать. */
+const DRIFT = 14;
+
 interface Thread {
   /** Долгота: где нить стоит на шаре. Не меняется — шар везёт её сам. */
   lon: number;
@@ -44,7 +56,14 @@ interface Thread {
   bright: number;
 }
 
-export default function Sphere() {
+interface Dot {
+  x: number;
+  y: number;
+  vx: number;
+  vy: number;
+}
+
+export default function HeroBackdrop() {
   const ref = useRef<HTMLCanvasElement>(null);
 
   useEffect(() => {
@@ -57,6 +76,7 @@ export default function Sphere() {
     const dark = window.matchMedia("(prefers-color-scheme: dark)");
 
     let threads: Thread[] = [];
+    let dots: Dot[] = [];
     let width = 0;
     let height = 0;
     let frame = 0;
@@ -67,8 +87,14 @@ export default function Sphere() {
 
     /*
       Цвет берём из той же переменной, что и весь акцент сайта, а не
-      вписываем сюда второй раз: иначе при смене палитры шар остался бы
+      вписываем сюда второй раз: иначе при смене палитры фон остался бы
       прежнего оттенка, и никто бы не догадался искать его здесь.
+    */
+    /*
+      Все внутренние функции — стрелочные и объявлены до использования.
+      Объявление через function поднимается наверх, и TypeScript, не зная,
+      когда его вызовут, забывает, что canvas и ctx выше уже проверены на
+      null: файл переставал собираться на два десятка ошибок.
     */
     const readColour = () => {
       const value = getComputedStyle(document.documentElement)
@@ -107,14 +133,32 @@ export default function Sphere() {
         speed: 0.7 + Math.random() * 0.8,
         bright: 0.35 + Math.random() * 0.65,
       }));
+
+      /*
+        Точек заметно меньше, чем нитей, и предел у них жёстче: связи
+        ищутся перебором пар, то есть их число растёт квадратом. Полсотни
+        точек — это больше тысячи проверок на кадр, и они складываются с
+        работой шара, а не заменяют её.
+      */
+      const stars = Math.min(
+        44,
+        Math.max(12, Math.round((width * height) / 14000)),
+      );
+
+      dots = Array.from({ length: stars }, () => ({
+        x: Math.random() * width,
+        y: Math.random() * height,
+        vx: (Math.random() - 0.5) * 2,
+        vy: (Math.random() - 0.5) * 2,
+      }));
     };
 
     const move = (dt: number) => {
       spin += (dt / SPIN) * Math.PI * 2;
 
-      const step = (FALL * dt) / 1000;
+      const fall = (FALL * dt) / 1000;
       for (const thread of threads) {
-        thread.lat -= step * thread.speed * (Math.PI / 2);
+        thread.lat -= fall * thread.speed * (Math.PI / 2);
 
         // Дошла до низа — возвращаем на полюс с новой долготой, иначе
         // нити со временем выстроились бы в один и тот же узор.
@@ -125,10 +169,50 @@ export default function Sphere() {
           thread.bright = 0.35 + Math.random() * 0.65;
         }
       }
+
+      const step = (DRIFT * dt) / 1000;
+      for (const dot of dots) {
+        dot.x += dot.vx * step;
+        dot.y += dot.vy * step;
+        // Отражение от края, а не переброс на другую сторону: точка,
+        // исчезающая слева и появляющаяся справа, обрывает нити рывком.
+        if (dot.x < 0 || dot.x > width) dot.vx *= -1;
+        if (dot.y < 0 || dot.y > height) dot.vy *= -1;
+      }
     };
 
-    const draw = () => {
-      ctx.clearRect(0, 0, width, height);
+    /** Созвездие. Рисуется первым — оно дальше, шар идёт поверх. */
+    const drawStars = () => {
+      ctx.strokeStyle = colour;
+      ctx.fillStyle = colour;
+      ctx.lineWidth = 1;
+
+      for (let a = 0; a < dots.length; a++) {
+        for (let b = a + 1; b < dots.length; b++) {
+          const dx = dots[a].x - dots[b].x;
+          const dy = dots[a].y - dots[b].y;
+          const distance = Math.hypot(dx, dy);
+          if (distance > LINK) continue;
+
+          // Нить тает по мере расхождения точек: связь, гаснущая разом,
+          // читается как моргание.
+          ctx.globalAlpha = (1 - distance / LINK) * 0.38;
+          ctx.beginPath();
+          ctx.moveTo(dots[a].x, dots[a].y);
+          ctx.lineTo(dots[b].x, dots[b].y);
+          ctx.stroke();
+        }
+      }
+
+      ctx.globalAlpha = 0.62;
+      for (const dot of dots) {
+        ctx.beginPath();
+        ctx.arc(dot.x, dot.y, 1.6, 0, Math.PI * 2);
+        ctx.fill();
+      }
+    };
+
+    const drawSphere = () => {
       const { radius, cx, cy } = geometry();
       if (radius <= 0) return;
 
@@ -147,7 +231,7 @@ export default function Sphere() {
       );
       pool.addColorStop(0, colour);
       pool.addColorStop(1, "transparent");
-      ctx.globalAlpha = 0.5;
+      ctx.globalAlpha = 0.62;
       ctx.fillStyle = pool;
       ctx.beginPath();
       ctx.arc(cx, cy, radius, 0, Math.PI * 2);
@@ -161,7 +245,7 @@ export default function Sphere() {
       const echo = ctx.createRadialGradient(0, 0, 0, 0, 0, radius);
       echo.addColorStop(0, colour);
       echo.addColorStop(1, "transparent");
-      ctx.globalAlpha = 0.3;
+      ctx.globalAlpha = 0.36;
       ctx.fillStyle = echo;
       ctx.beginPath();
       ctx.arc(0, 0, radius, 0, Math.PI * 2);
@@ -196,12 +280,11 @@ export default function Sphere() {
 
         /*
           Дальняя половина шара тусклее ближней, но не спрятана: сквозь
-          неё и видно, что это шар, а не диск. Голова нити ярче хвоста —
-          хвост рисуется тем же отрезком, но толщиной тоньше.
+          неё и видно, что это шар, а не диск.
         */
         const front = (depth + 1) / 2;
-        ctx.globalAlpha = thread.bright * (0.16 + front * 0.74);
-        ctx.lineWidth = 0.8 + front * 1.1;
+        ctx.globalAlpha = thread.bright * (0.24 + front * 0.86);
+        ctx.lineWidth = 0.9 + front * 1.2;
         ctx.stroke();
 
         /*
@@ -210,20 +293,25 @@ export default function Sphere() {
           только показывает, откуда она пришла.
         */
         if (thread.lat >= -Math.PI / 2 && thread.lat <= Math.PI / 2) {
-          ctx.globalAlpha = thread.bright * (0.2 + front * 0.8);
+          ctx.globalAlpha = Math.min(1, thread.bright * (0.3 + front * 0.9));
           ctx.fillStyle = colour;
           ctx.beginPath();
           ctx.arc(
             cx + Math.cos(thread.lat) * radius * sin,
             cy - Math.sin(thread.lat) * radius,
-            0.9 + front * 0.9,
+            1 + front,
             0,
             Math.PI * 2,
           );
           ctx.fill();
         }
       }
+    };
 
+    const draw = () => {
+      ctx.clearRect(0, 0, width, height);
+      drawStars();
+      drawSphere();
       ctx.globalAlpha = 1;
     };
 
@@ -242,7 +330,8 @@ export default function Sphere() {
 
     const loop = (now: number) => {
       // Первый кадр после паузы приходит с большим разрывом: без
-      // ограничения шар провернулся бы рывком.
+      // ограничения шар провернулся бы рывком, а точки прыгнули бы
+      // через пол-экрана.
       const dt = last ? Math.min(now - last, 64) : 16;
       last = now;
       move(dt);
@@ -287,7 +376,7 @@ export default function Sphere() {
     const onTheme = () => {
       readColour();
       // Перерисовываем сразу: при выключенном движении кадров больше не
-      // будет, и шар остался бы в цвете прежней темы.
+      // будет, и фон остался бы в цвете прежней темы.
       draw();
     };
 
@@ -313,5 +402,5 @@ export default function Sphere() {
     };
   }, []);
 
-  return <canvas ref={ref} aria-hidden className="sphere" />;
+  return <canvas ref={ref} aria-hidden className="hero-backdrop" />;
 }
