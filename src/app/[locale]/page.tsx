@@ -17,7 +17,7 @@ import { pageLocale } from "@/lib/i18n";
 import { templatesFor } from "@/lib/templates";
 import { pageMeta } from "@/lib/seo";
 import Reveal from "@/components/Reveal";
-import Constellation from "@/components/Constellation";
+import Sphere from "@/components/Sphere";
 import CountUp from "@/components/CountUp";
 import CarouselPromo from "@/components/CarouselPromo";
 import PartnerPromo from "@/components/PartnerPromo";
@@ -88,7 +88,7 @@ export default async function HomePage({
     <>
       {/* Hero */}
       <section className="glow relative pt-14 pb-14 md:pt-20 md:pb-16">
-        <Constellation />
+        <Sphere />
         <div className="relative z-10 grid items-center gap-12 lg:grid-cols-[1fr_minmax(0,520px)]">
           <div>
             {/*
