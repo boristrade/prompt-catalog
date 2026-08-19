@@ -159,41 +159,42 @@ body {
 }
 
 /*
-  Шар на первом экране.
+  Фон первого экрана: шар и созвездие вокруг него.
 
   Слой лежит под содержимым и не ловит нажатия — сквозь него нажимается
   кнопка, которая на телефоне стоит прямо поверх нитей.
 
-  Маска гасит нижний край: без неё шар упирался бы в границу секции
-  ровной чертой, и фон читался бы как прямоугольная картинка, а не как
-  продолжение страницы. Порог ниже, чем был у созвездия: гасить надо
-  отражение под шаром, а не сам шар.
+  Маска гасит нижний край: без неё фон упирался бы в границу секции
+  ровной чертой и читался бы как прямоугольная картинка, а не как
+  продолжение страницы. Гаснуть начинает на 80% высоты, а не раньше:
+  выше порог — и растворялось бы отражение под шаром вместе с самим
+  шаром.
 
   На светлой теме фиолетовый по белому заметно резче, чем по чёрному, —
   поэтому там слой приглушён сильнее. Общая непрозрачность вместо
   подбора цвета: цвет один и тот же, --c-accent, и разъезжаться этим
   двум значениям незачем.
 */
-.sphere {
+.hero-backdrop {
   position: absolute;
   inset: 0;
   width: 100%;
   height: 100%;
   z-index: 0;
   pointer-events: none;
-  opacity: 0.8;
-  -webkit-mask-image: linear-gradient(to bottom, #000 72%, transparent 100%);
-  mask-image: linear-gradient(to bottom, #000 72%, transparent 100%);
+  opacity: 0.95;
+  -webkit-mask-image: linear-gradient(to bottom, #000 80%, transparent 100%);
+  mask-image: linear-gradient(to bottom, #000 80%, transparent 100%);
 }
 
 @media (prefers-color-scheme: light) {
-  :root:not([data-theme="dark"]) .sphere {
-    opacity: 0.42;
+  :root:not([data-theme="dark"]) .hero-backdrop {
+    opacity: 0.5;
   }
 }
 
-:root[data-theme="light"] .sphere {
-  opacity: 0.42;
+:root[data-theme="light"] .hero-backdrop {
+  opacity: 0.5;
 }
 
 /*
