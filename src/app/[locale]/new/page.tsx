@@ -7,6 +7,7 @@ import { pageMeta } from "@/lib/seo";
 import { counted } from "@/lib/plural";
 import PromptCard from "@/components/PromptCard";
 import Reveal from "@/components/Reveal";
+import SubscribeForm from "@/components/SubscribeForm";
 
 /*
   Что нового.
@@ -122,6 +123,15 @@ export default async function WhatsNewPage({
           </div>
         ))
       )}
+
+      {/*
+        Форма стоит под пополнениями, а не над ними: человек сначала
+        видит, что каталог действительно растёт, и только потом его
+        просят оставить почту. Наоборот — это просьба поверить на слово.
+      */}
+      <div className="mt-14">
+        <SubscribeForm locale={locale} t={t} source="new" />
+      </div>
     </section>
   );
 }

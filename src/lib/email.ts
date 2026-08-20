@@ -145,3 +145,37 @@ export async function sendCommissionNotice(params: {
 
   await send(params.to, subject, layout(body));
 }
+
+/*
+  Приветственное письмо подписчику.
+
+  Оно же — проверка адреса: не дошло, значит адрес с опечаткой или
+  выдуман, и это видно по отказам в Resend, а не через месяц по пустой
+  рассылке.
+
+  Ссылка «отписаться» стоит здесь и обязана стоять в каждом следующем
+  письме. Не потому, что так принято: письмо, от которого нельзя
+  отписаться в один клик, помечают спамом — и следом за рассылкой в спам
+  уходят чеки об оплате с того же домена.
+*/
+export async function sendSubscribeWelcome(params: {
+  to: string;
+  locale: string;
+  token: string;
+}): Promise<void> {
+  const ru = params.locale === "ru";
+  const url = "https://promptom.app";
+  const leave = `${url}/${params.locale}/unsubscribe?token=${params.token}`;
+  const link = `${url}/${params.locale}/new`;
+
+  const subject = ru ? "Вы подписались на пополнения" : "You're on the list";
+  const body = ru
+    ? `<p style="font-size:15px;line-height:1.6;">Готово. Напишу, когда в каталоге появятся новые промты — и не буду писать по другим поводам.</p>
+<p style="font-size:15px;line-height:1.6;"><a href="${link}" style="color:#a78bfa;">Посмотреть последние пополнения</a></p>
+<p style="font-size:13px;line-height:1.6;color:#9d9db4;">Передумали — <a href="${leave}" style="color:#9d9db4;">отписаться</a>. Ссылка работает без пароля и входа.</p>`
+    : `<p style="font-size:15px;line-height:1.6;">Done. I'll write when new prompts land in the catalogue — and won't write about anything else.</p>
+<p style="font-size:15px;line-height:1.6;"><a href="${link}" style="color:#a78bfa;">See what was added recently</a></p>
+<p style="font-size:13px;line-height:1.6;color:#9d9db4;">Changed your mind? <a href="${leave}" style="color:#9d9db4;">Unsubscribe</a>. The link needs no password or sign-in.</p>`;
+
+  await send(params.to, subject, layout(body));
+}
