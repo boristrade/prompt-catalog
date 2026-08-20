@@ -4,6 +4,8 @@ import { useState } from "react";
 import Link from "next/link";
 import { Check, ChevronDown, Copy, Lock } from "lucide-react";
 import type { Prompt } from "@/lib/prompts";
+import { isNew } from "@/lib/prompt-dates";
+import { countCopy } from "@/lib/count-copy";
 import type { Locale } from "@/lib/i18n/config";
 import type { Dictionary } from "@/lib/i18n/dictionaries";
 import FavoriteButton from "@/components/FavoriteButton";
@@ -24,6 +26,11 @@ interface Props {
     заголовок, пока не наведёшь курсор.
   */
   categoryLabel?: string;
+  /*
+    Значок «новое». Выключается там, где новое всё, — на странице
+    пополнений: значок на каждой карточке подряд ничего не сообщает.
+  */
+  showFresh?: boolean;
 }
 
 export default function PromptCard({
@@ -34,12 +41,17 @@ export default function PromptCard({
   locale,
   t,
   categoryLabel,
+  showFresh = true,
 }: Props) {
   const [copied, setCopied] = useState(false);
+
+  /* Из последнего пополнения каталога — значок над заголовком. */
+  const fresh = showFresh && isNew(prompt.id);
 
   async function copy() {
     try {
       await navigator.clipboard.writeText(prompt.prompt);
+      countCopy(prompt.id);
       setCopied(true);
       setTimeout(() => setCopied(false), 1800);
     } catch {
@@ -59,9 +71,15 @@ export default function PromptCard({
           избранного, и обёрнутая целиком карточка перехватывала бы их.
         */}
         <div className="min-w-0">
-          {categoryLabel && (
-            <div className="mb-1 font-mono text-[10px] uppercase tracking-[0.08em] text-faint">
-              {categoryLabel}
+          {/*
+            Раздел и значок пополнения стоят в одной строке над
+            заголовком, а не справа: справа уже избранное и тариф, и
+            третий значок туда не помещается на 360px.
+          */}
+          {(categoryLabel || fresh) && (
+            <div className="mb-1 flex flex-wrap items-center gap-2 font-mono text-[10px] uppercase tracking-[0.08em] text-faint">
+              {categoryLabel && <span>{categoryLabel}</span>}
+              {fresh && <span className="text-accent">{t.card.fresh}</span>}
             </div>
           )}
           <h3 className="text-[15.5px] font-semibold leading-snug tracking-[-0.015em] text-ink">

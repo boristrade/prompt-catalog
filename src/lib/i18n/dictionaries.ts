@@ -126,7 +126,22 @@ const ru = {
     carouselSlide2: "Промт — это не заклинание",
     carouselSlide3: "Мой голос, не средний",
   },
+  whatsNew: {
+    nav: "Что нового",
+    eyebrow: "Пополнения каталога",
+    title: "Что появилось недавно",
+    subtitle:
+      "Каталог пополняется пачками. Здесь последние — чтобы не перечитывать всё заново в поисках нового.",
+    added: "Добавлено",
+    empty: "Пока ничего нового.",
+  },
   catalog: {
+    promptWord: {
+      one: "промт",
+      few: "промта",
+      many: "промтов",
+      other: "промта",
+    },
     eyebrow: "Каталог",
     prompts: "промтов",
     free: "бесплатно",
@@ -174,6 +189,9 @@ const ru = {
       "Чтобы скил работал во всех проектах, а не в одном, положите его в ~/.claude/skills вместо папки проекта.",
   },
   allPrompts: {
+    sort: "Порядок",
+    sortDefault: "По разделам",
+    sortNew: "Сначала новые",
     eyebrow: "Все промты",
     title: "Весь каталог целиком",
     subtitle: "Все промты сайта в одном списке — ищите, не угадывая раздел.",
@@ -182,6 +200,7 @@ const ru = {
     section: "Раздел",
   },
   card: {
+    fresh: "Новое",
     copy: "Скопировать промт",
     copied: "Скопировано",
     showExample: "Показать пример результата",
@@ -192,6 +211,7 @@ const ru = {
     lockedCta: "Открыть доступ",
   },
   detail: {
+    copiedTimes: "раз скопировали",
     promptTitle: "Текст промта",
     exampleTitle: "Пример результата",
     bestForLabel: "Лучше всего работает в",
@@ -572,7 +592,22 @@ const en: Dictionary = {
     carouselSlide2: "A prompt is not a spell",
     carouselSlide3: "My voice, not the average",
   },
+  whatsNew: {
+    nav: "What's new",
+    eyebrow: "Catalogue updates",
+    title: "Added recently",
+    subtitle:
+      "The catalogue grows in batches. Here are the latest ones, so you don't have to re-read everything looking for what changed.",
+    added: "Added",
+    empty: "Nothing new yet.",
+  },
   catalog: {
+    promptWord: {
+      one: "prompt",
+      few: "prompts",
+      many: "prompts",
+      other: "prompts",
+    },
     eyebrow: "Catalogue",
     prompts: "prompts",
     free: "free",
@@ -620,6 +655,9 @@ const en: Dictionary = {
       "To make the skill available in every project rather than one, put it in ~/.claude/skills instead of the project folder.",
   },
   allPrompts: {
+    sort: "Order",
+    sortDefault: "By section",
+    sortNew: "Newest first",
     eyebrow: "All prompts",
     title: "The whole catalogue",
     subtitle:
@@ -629,6 +667,7 @@ const en: Dictionary = {
     section: "Section",
   },
   card: {
+    fresh: "New",
     copy: "Copy prompt",
     copied: "Copied",
     showExample: "Show sample result",
@@ -639,6 +678,7 @@ const en: Dictionary = {
     lockedCta: "Unlock access",
   },
   detail: {
+    copiedTimes: "copies",
     promptTitle: "The prompt",
     exampleTitle: "Example output",
     bestForLabel: "Works best in",
@@ -1019,7 +1059,22 @@ const fr: Dictionary = {
     carouselSlide2: "Un prompt n'est pas une formule magique",
     carouselSlide3: "Ma voix, pas la moyenne",
   },
+  whatsNew: {
+    nav: "Nouveautés",
+    eyebrow: "Mises à jour du catalogue",
+    title: "Ajouté récemment",
+    subtitle:
+      "Le catalogue s'enrichit par lots. Voici les derniers, pour ne pas tout relire à la recherche du neuf.",
+    added: "Ajouté",
+    empty: "Rien de neuf pour l'instant.",
+  },
   catalog: {
+    promptWord: {
+      one: "prompt",
+      few: "prompts",
+      many: "prompts",
+      other: "prompts",
+    },
     eyebrow: "Catalogue",
     prompts: "prompts",
     free: "gratuits",
@@ -1067,6 +1122,9 @@ const fr: Dictionary = {
       "Pour que le skill soit disponible dans tous vos projets et pas un seul, placez-le dans ~/.claude/skills au lieu du dossier du projet.",
   },
   allPrompts: {
+    sort: "Ordre",
+    sortDefault: "Par section",
+    sortNew: "Les plus récents",
     eyebrow: "Tous les prompts",
     title: "Le catalogue en entier",
     subtitle:
@@ -1076,6 +1134,7 @@ const fr: Dictionary = {
     section: "Section",
   },
   card: {
+    fresh: "Nouveau",
     copy: "Copier le prompt",
     copied: "Copié",
     showExample: "Voir un exemple de résultat",
@@ -1086,6 +1145,7 @@ const fr: Dictionary = {
     lockedCta: "Débloquer l'accès",
   },
   detail: {
+    copiedTimes: "copies",
     promptTitle: "Le prompt",
     exampleTitle: "Exemple de résultat",
     bestForLabel: "Fonctionne mieux avec",
@@ -1468,7 +1528,22 @@ const uk: Dictionary = {
     carouselSlide2: "Промт — це не заклинання",
     carouselSlide3: "Мій голос, не середній",
   },
+  whatsNew: {
+    nav: "Що нового",
+    eyebrow: "Поповнення каталогу",
+    title: "Що зʼявилося нещодавно",
+    subtitle:
+      "Каталог поповнюється пачками. Тут останні — щоб не перечитувати все заново в пошуках нового.",
+    added: "Додано",
+    empty: "Поки нічого нового.",
+  },
   catalog: {
+    promptWord: {
+      one: "промт",
+      few: "промти",
+      many: "промтів",
+      other: "промта",
+    },
     eyebrow: "Каталог",
     prompts: "промтів",
     free: "безкоштовно",
@@ -1516,6 +1591,9 @@ const uk: Dictionary = {
       "Щоб скіл працював в усіх проєктах, а не в одному, покладіть його в ~/.claude/skills замість теки проєкту.",
   },
   allPrompts: {
+    sort: "Порядок",
+    sortDefault: "За розділами",
+    sortNew: "Спочатку нові",
     eyebrow: "Усі промти",
     title: "Увесь каталог цілком",
     subtitle: "Усі промти сайту в одному списку — шукайте, не вгадуючи розділ.",
@@ -1524,6 +1602,7 @@ const uk: Dictionary = {
     section: "Розділ",
   },
   card: {
+    fresh: "Нове",
     copy: "Скопіювати промт",
     copied: "Скопійовано",
     showExample: "Показати приклад результату",
@@ -1534,6 +1613,7 @@ const uk: Dictionary = {
     lockedCta: "Відкрити доступ",
   },
   detail: {
+    copiedTimes: "разів скопіювали",
     promptTitle: "Текст промта",
     exampleTitle: "Приклад результату",
     bestForLabel: "Найкраще працює в",
@@ -1916,7 +1996,22 @@ const de: Dictionary = {
     carouselSlide2: "Ein Prompt ist kein Zauberspruch",
     carouselSlide3: "Meine Stimme, nicht der Durchschnitt",
   },
+  whatsNew: {
+    nav: "Neu",
+    eyebrow: "Katalog-Updates",
+    title: "Zuletzt hinzugekommen",
+    subtitle:
+      "Der Katalog wächst in Schüben. Hier die letzten — damit Sie nicht alles noch einmal durchlesen müssen.",
+    added: "Hinzugefügt",
+    empty: "Noch nichts Neues.",
+  },
   catalog: {
+    promptWord: {
+      one: "Prompt",
+      few: "Prompts",
+      many: "Prompts",
+      other: "Prompts",
+    },
     eyebrow: "Katalog",
     prompts: "Prompts",
     free: "kostenlos",
@@ -1964,6 +2059,9 @@ const de: Dictionary = {
       "Damit der Skill in allen Projekten statt nur in einem funktioniert, legen Sie ihn in ~/.claude/skills statt in den Projektordner.",
   },
   allPrompts: {
+    sort: "Reihenfolge",
+    sortDefault: "Nach Bereich",
+    sortNew: "Neueste zuerst",
     eyebrow: "Alle Prompts",
     title: "Der ganze Katalog",
     subtitle:
@@ -1973,6 +2071,7 @@ const de: Dictionary = {
     section: "Bereich",
   },
   card: {
+    fresh: "Neu",
     copy: "Prompt kopieren",
     copied: "Kopiert",
     showExample: "Beispielergebnis zeigen",
@@ -1983,6 +2082,7 @@ const de: Dictionary = {
     lockedCta: "Zugang freischalten",
   },
   detail: {
+    copiedTimes: "mal kopiert",
     promptTitle: "Der Prompt",
     exampleTitle: "Beispielergebnis",
     bestForLabel: "Funktioniert am besten mit",
@@ -2368,7 +2468,22 @@ const pl: Dictionary = {
     carouselSlide2: "Prompt to nie zaklęcie",
     carouselSlide3: "Mój głos, nie średni",
   },
+  whatsNew: {
+    nav: "Nowości",
+    eyebrow: "Aktualizacje katalogu",
+    title: "Ostatnio dodane",
+    subtitle:
+      "Katalog rośnie partiami. Tu są najnowsze — żeby nie czytać wszystkiego od nowa w poszukiwaniu zmian.",
+    added: "Dodano",
+    empty: "Na razie nic nowego.",
+  },
   catalog: {
+    promptWord: {
+      one: "prompt",
+      few: "prompty",
+      many: "promptów",
+      other: "promptu",
+    },
     eyebrow: "Katalog",
     prompts: "promptów",
     free: "za darmo",
@@ -2416,6 +2531,9 @@ const pl: Dictionary = {
       "Aby skill działał we wszystkich projektach, a nie w jednym, umieść go w ~/.claude/skills zamiast w folderze projektu.",
   },
   allPrompts: {
+    sort: "Kolejność",
+    sortDefault: "Według działów",
+    sortNew: "Najnowsze najpierw",
     eyebrow: "Wszystkie prompty",
     title: "Cały katalog",
     subtitle:
@@ -2425,6 +2543,7 @@ const pl: Dictionary = {
     section: "Sekcja",
   },
   card: {
+    fresh: "Nowe",
     copy: "Skopiuj prompt",
     copied: "Skopiowano",
     showExample: "Pokaż przykładowy wynik",
@@ -2435,6 +2554,7 @@ const pl: Dictionary = {
     lockedCta: "Odblokuj dostęp",
   },
   detail: {
+    copiedTimes: "skopiowań",
     promptTitle: "Treść promptu",
     exampleTitle: "Przykładowy wynik",
     bestForLabel: "Najlepiej działa w",
