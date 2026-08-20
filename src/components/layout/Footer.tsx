@@ -2,6 +2,7 @@ import Link from "next/link";
 import { Instagram, Mail, Send, Youtube } from "lucide-react";
 import { CATEGORIES } from "@/lib/categories";
 import { LogoMark, LogoWord } from "@/components/layout/Logo";
+import SubscribeForm from "@/components/SubscribeForm";
 import { SUPPORT_EMAIL, activeSocials, type SocialKey } from "@/lib/contact";
 import type { Locale } from "@/lib/i18n/config";
 import type { Dictionary } from "@/lib/i18n/dictionaries";
@@ -180,7 +181,17 @@ export default function Footer({
           </div>
         </div>
 
-        <div className="mt-12 border-t border-line pt-6 text-center text-[12.5px] text-faint">
+        {/*
+          Подписка отдельной полосой над копирайтом, а не пятой колонкой:
+          в колонке шириной со список ссылок поле для почты пришлось бы
+          сжать до нечитаемого, а на телефоне колонки идут друг под
+          другом и форма утонула бы между «Каталогом» и «Поддержкой».
+        */}
+        <div className="mt-12 border-t border-line pt-8">
+          <SubscribeForm locale={locale} t={t} source="footer" compact />
+        </div>
+
+        <div className="mt-10 border-t border-line pt-6 text-center text-[12.5px] text-faint">
           © {new Date().getFullYear()} PrompTom. {t.footer.rights}
         </div>
       </div>
