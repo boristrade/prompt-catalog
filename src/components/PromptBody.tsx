@@ -4,6 +4,7 @@ import { useState } from "react";
 import Link from "next/link";
 import { Check, Copy, Lock } from "lucide-react";
 import type { Prompt } from "@/lib/prompts";
+import { countCopy } from "@/lib/count-copy";
 import type { Locale } from "@/lib/i18n/config";
 import type { Dictionary } from "@/lib/i18n/dictionaries";
 import { VEIL, highlightVars } from "@/components/promptText";
@@ -32,6 +33,7 @@ export default function PromptBody({
   async function copy() {
     try {
       await navigator.clipboard.writeText(prompt.prompt);
+      countCopy(prompt.id);
       setCopied(true);
       setTimeout(() => setCopied(false), 1800);
     } catch {

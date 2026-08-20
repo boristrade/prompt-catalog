@@ -45,6 +45,9 @@ export default function Header({
     { href: `/${locale}/guides`, label: t.guides.nav, wide: true },
     { href: `/${locale}/skills`, label: t.skills.nav, wide: true },
     { href: `/${locale}/carousel`, label: t.carousel.nav, wide: true },
+    // Пополнения каталога. Наверху места нет — ряд и так на пределе; в
+    // меню телефона и в подвале ссылка есть, как у остальных разделов.
+    { href: `/${locale}/new`, label: t.whatsNew.nav, wide: false },
     { href: `/${locale}/pricing`, label: t.footer.pricing, wide: true },
     // Кабинет и избранное открыты только вошедшему — у него они есть в
     // меню под аватаром, а гостю показывать их наверху незачем.

@@ -13,6 +13,7 @@ import { getAccount } from "@/lib/account";
 import { pageLocale } from "@/lib/i18n";
 import { LOCALES } from "@/lib/i18n/config";
 import { pageMeta } from "@/lib/seo";
+import { addedOf } from "@/lib/prompt-dates";
 import CatalogFilters, { chipClass, type Tier } from "@/components/CatalogFilters";
 import PromptCard from "@/components/PromptCard";
 import Reveal from "@/components/Reveal";
@@ -58,6 +59,7 @@ export default async function AllPromptsPage({
     tool?: string;
     category?: string;
     q?: string;
+    sort?: string;
   }>;
 }) {
   const { locale, t } = await pageLocale(params);
@@ -69,6 +71,7 @@ export default async function AllPromptsPage({
   const query = (sp.q ?? "").trim();
 
   const category = sp.category && getCategory(sp.category) ? sp.category : null;
+  const sort: Sort = sp.sort === "new" ? "new" : "default";
 
   /*
     Список нейросетей строим из уже отфильтрованного по разделу набора:
@@ -79,9 +82,21 @@ export default async function AllPromptsPage({
   const tools = toolsAmong(scoped);
   const tool = sp.tool && tools.some((name) => name === sp.tool) ? sp.tool : null;
 
-  const prompts = searchPrompts(scoped, query)
+  const found = searchPrompts(scoped, query)
     .filter((p) => (tier === "all" ? true : p.tier === tier))
     .filter((p) => (tool ? usesTool(p, tool) : true));
+
+  /*
+    Порядок по умолчанию — тот, в котором промты лежат в каталоге:
+    внутри раздела они собраны по смыслу, а не по алфавиту, и трогать это
+    незачем. «Сначала новые» переставляет по дате пополнения; промты
+    одного пополнения сохраняют исходный порядок между собой, поэтому
+    сортировка устойчивая, а не перетасовка.
+  */
+  const prompts =
+    sort === "new"
+      ? [...found].sort((a, b) => addedOf(b.id).localeCompare(addedOf(a.id)))
+      : found;
 
   const freeCount = all.filter((p) => p.tier === "free").length;
 
@@ -122,6 +137,7 @@ export default async function AllPromptsPage({
             ...(tier !== "all" ? { tier } : {}),
             ...(tool ? { tool } : {}),
             ...(category ? { category } : {}),
+            ...(sort !== "default" ? { sort } : {}),
           }}
         />
       </div>
@@ -132,7 +148,13 @@ export default async function AllPromptsPage({
           {t.allPrompts.section}
         </span>
         <a
-          href={buildAllPromptsHref(locale, { tier, tool, query, category: null })}
+          href={buildAllPromptsHref(locale, {
+            tier,
+            tool,
+            query,
+            category: null,
+            sort,
+          })}
           className={chipClass(category === null)}
         >
           {t.allPrompts.categoryAll}
@@ -145,12 +167,49 @@ export default async function AllPromptsPage({
               tool: null,
               query,
               category: c.slug,
+              sort,
             })}
             className={chipClass(category === c.slug)}
           >
             {t.categories[c.slug].nav}
           </a>
         ))}
+      </div>
+
+      {/*
+        Порядок — рядом с разделом, а не среди фильтров: фильтры убирают
+        промты из списка, а порядок только переставляет. Смешивать эти
+        две вещи в один ряд значит путать «показать меньше» с «показать
+        иначе».
+      */}
+      <div className="mt-3 flex flex-wrap items-center gap-2">
+        <span className="mr-1 font-mono text-[11px] uppercase tracking-[0.1em] text-faint">
+          {t.allPrompts.sort}
+        </span>
+        <a
+          href={buildAllPromptsHref(locale, {
+            tier,
+            tool,
+            query,
+            category,
+            sort: "default",
+          })}
+          className={chipClass(sort === "default")}
+        >
+          {t.allPrompts.sortDefault}
+        </a>
+        <a
+          href={buildAllPromptsHref(locale, {
+            tier,
+            tool,
+            query,
+            category,
+            sort: "new",
+          })}
+          className={chipClass(sort === "new")}
+        >
+          {t.allPrompts.sortNew}
+        </a>
       </div>
 
       <CatalogFilters
@@ -162,6 +221,7 @@ export default async function AllPromptsPage({
         persist={{
           ...(query ? { q: query } : {}),
           ...(category ? { category } : {}),
+          ...(sort !== "default" ? { sort } : {}),
         }}
       />
 
@@ -193,6 +253,8 @@ export default async function AllPromptsPage({
   );
 }
 
+type Sort = "default" | "new";
+
 /*
   Раздел живёт отдельным параметром, которого CatalogFilters не знает, —
   чипы раздела поэтому строят свой адрес сами, а не через её href().
@@ -201,13 +263,20 @@ export default async function AllPromptsPage({
 */
 function buildAllPromptsHref(
   locale: string,
-  params: { tier: Tier; tool: string | null; query: string; category: string | null },
+  params: {
+    tier: Tier;
+    tool: string | null;
+    query: string;
+    category: string | null;
+    sort: Sort;
+  },
 ): string {
   const search = new URLSearchParams();
   if (params.tier !== "all") search.set("tier", params.tier);
   if (params.tool) search.set("tool", params.tool);
   if (params.query) search.set("q", params.query);
   if (params.category) search.set("category", params.category);
+  if (params.sort !== "default") search.set("sort", params.sort);
 
   const qs = search.toString();
   return `/${locale}/prompts${qs ? `?${qs}` : ""}`;

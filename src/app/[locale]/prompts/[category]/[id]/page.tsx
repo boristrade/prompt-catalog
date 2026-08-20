@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { ArrowLeft, Sparkles } from "lucide-react";
+import { ArrowLeft, Copy, Sparkles } from "lucide-react";
 import { getCategory } from "@/lib/categories";
 import {
   getPromptById,
@@ -9,6 +9,7 @@ import {
   veil,
 } from "@/lib/prompts";
 import { getAccount } from "@/lib/account";
+import { MIN_SHOWN, copyCount } from "@/lib/prompt-copies";
 import { pageLocale } from "@/lib/i18n";
 import { categoryOgImage, pageMeta } from "@/lib/seo";
 import { jsonLd, promptSchema } from "@/lib/schema";
@@ -72,6 +73,7 @@ export default async function PromptPage({
   if (!prompt || prompt.category !== cat.slug) notFound();
 
   const account = await getAccount();
+  const copies = await copyCount(prompt.id);
   const plan = account?.plan ?? "free";
   const locked = isLocked(prompt, plan);
   const visible = locked ? veil(prompt) : prompt;
@@ -142,6 +144,17 @@ export default async function PromptPage({
           <Sparkles size={11} className="text-accent" />
           {t.detail.bestForLabel} {prompt.bestFor}
         </span>
+        {/*
+          Сколько раз промт забрали. Показываем не с первого раза:
+          «скопировали 2 раза» — это не довод в пользу промта, а
+          признание, что им никто не пользуется.
+        */}
+        {copies >= MIN_SHOWN && (
+          <span className="inline-flex items-center gap-1.5 rounded-chip border border-line-strong bg-sunken px-2.5 py-1.5 font-mono text-[11px] text-muted">
+            <Copy size={11} className="text-accent" />
+            {copies.toLocaleString(locale)} {t.detail.copiedTimes}
+          </span>
+        )}
         {prompt.tags.map((tag) => (
           <span
             key={tag}

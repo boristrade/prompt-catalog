@@ -26,6 +26,17 @@ import { siteUrl } from "@/lib/site";
 const PATHS: { path: string; priority: number; changeFrequency: Change }[] = [
   { path: "", priority: 1, changeFrequency: "weekly" },
   { path: "/prompts", priority: 0.9, changeFrequency: "weekly" },
+  /*
+    Пополнения каталога. changeFrequency: daily — не преувеличение, а
+    смысл страницы: она меняется ровно тогда, когда появляются промты, и
+    робот должен приходить за ними, а не раз в месяц.
+  */
+  { path: "/new", priority: 0.8, changeFrequency: "daily" },
+  /*
+    Конструктор каруселей. Его тут не было вовсе: раздел, ради которого
+    на сайт приходят из соцсетей, поисковику не показывался ни строчкой.
+  */
+  { path: "/carousel", priority: 0.9, changeFrequency: "monthly" },
   ...CATEGORIES.map((c) => ({
     path: `/prompts/${c.slug}`,
     priority: 0.9,
@@ -70,7 +81,7 @@ const PATHS: { path: string; priority: number; changeFrequency: Change }[] = [
   })),
 ];
 
-type Change = "weekly" | "monthly" | "yearly";
+type Change = "daily" | "weekly" | "monthly" | "yearly";
 
 export default function sitemap(): MetadataRoute.Sitemap {
   const base = siteUrl();
