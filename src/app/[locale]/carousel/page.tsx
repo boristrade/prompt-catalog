@@ -4,6 +4,14 @@ import { pageMeta } from "@/lib/seo";
 import Reveal from "@/components/Reveal";
 import CarouselBuilder from "@/components/carousel/CarouselBuilder";
 import { niches } from "@/lib/carousel/niches";
+import { getAccount } from "@/lib/account";
+
+/*
+  Страница зависит от вошедшего: у оплатившего с последнего кадра
+  снимается метка сайта. Отдай мы её из предсборки — метку видел бы и тот,
+  кто за её отсутствие заплатил.
+*/
+export const dynamic = "force-dynamic";
 
 export function generateStaticParams() {
   return LOCALES.map((locale) => ({ locale }));
@@ -29,6 +37,8 @@ export default async function CarouselPage({
   params: Promise<{ locale: string }>;
 }) {
   const { locale, t } = await pageLocale(params);
+  const account = await getAccount();
+  const pro = account?.plan === "pro";
 
   return (
     <section className="py-14 md:py-16">
@@ -47,7 +57,7 @@ export default async function CarouselPage({
         телефона. На сервере рисовать нечем, да и незачем: фотография
         туда не попадает вовсе.
       */}
-      <CarouselBuilder t={t} niches={niches(locale)} />
+      <CarouselBuilder t={t} niches={niches(locale)} locale={locale} pro={pro} />
     </section>
   );
 }

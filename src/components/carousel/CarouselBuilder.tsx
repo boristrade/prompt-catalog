@@ -1,6 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useRef, useState } from "react";
+import Link from "next/link";
 import {
   ArrowDown,
   ArrowUp,
@@ -34,6 +35,7 @@ import {
 } from "@/lib/carousel/storage";
 import type { Niche } from "@/lib/carousel/niches";
 import type { Dictionary } from "@/lib/i18n/dictionaries";
+import type { Locale } from "@/lib/i18n/config";
 
 /*
   Конструктор каруселей.
@@ -80,9 +82,14 @@ const SWATCHES = ["#a78bfa", "#f472b6", "#fb923c", "#34d399", "#38bdf8", "#facc1
 export default function CarouselBuilder({
   t,
   niches,
+  locale,
+  pro,
 }: {
   t: Dictionary;
   niches: Niche[];
+  locale: Locale;
+  /** Оплачен ли доступ: у оплатившего с последнего кадра снимается метка. */
+  pro: boolean;
 }) {
   const [palette, setPalette] = useState<Palette>(FALLBACK);
   const [photo, setPhoto] = useState<HTMLImageElement | null>(null);
@@ -277,7 +284,7 @@ export default function CarouselBuilder({
 
       const cache = drawn.current;
       const keys = deck.slides.map((_, i) =>
-        slideKey(deck, palette, i, photoToken),
+        slideKey(deck, palette, i, photoToken, pro),
       );
 
       const next = keys.map((key, i) => {
@@ -285,7 +292,7 @@ export default function CarouselBuilder({
         if (hit) return hit;
 
         ctx.clearRect(0, 0, frame.w, frame.h);
-        drawSlide(ctx, deck, palette, i, photo);
+        drawSlide(ctx, deck, palette, i, photo, pro);
         const url = canvas.toDataURL("image/png");
         cache.set(key, url);
         return url;
@@ -301,7 +308,7 @@ export default function CarouselBuilder({
     }, 250);
 
     return () => clearTimeout(timer);
-  }, [deck, palette, photo, photoToken, ready]);
+  }, [deck, palette, photo, photoToken, pro, ready]);
 
   function patch(index: number, field: keyof Slide, value: string | boolean) {
     setDeck((d) => ({
@@ -429,6 +436,25 @@ export default function CarouselBuilder({
         <p className="mt-1 text-center text-[12px] text-faint">
           {t.carousel.saved}
         </p>
+
+        {/*
+          Про метку говорим здесь, рядом с кнопкой выгрузки, а не мелким
+          шрифтом где-то ниже: человек должен узнать о ней до того, как
+          отправит карусель в ленту, а не после.
+
+          Оплатившему не показываем вовсе — ему нечего убирать.
+        */}
+        {!pro && (
+          <p className="mt-3 text-center text-[12px] leading-relaxed text-faint">
+            {t.carousel.markNote}{" "}
+            <Link
+              href={`/${locale}/pricing`}
+              className="text-accent underline underline-offset-2"
+            >
+              {t.carousel.markCta}
+            </Link>
+          </p>
+        )}
       </div>
 
       {/* Настройки */}
