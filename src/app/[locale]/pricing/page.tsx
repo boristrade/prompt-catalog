@@ -47,6 +47,10 @@ export default async function PricingPage({
     { label: t.pricing.featFavorites, included: true },
     { label: `${proCount} ${t.pricing.featPro}`, included: true },
     { label: t.pricing.featMonthly, included: true },
+    // Карусели собираются и без оплаты — платное здесь ровно одно: с
+    // последнего кадра снимается метка сайта. Так и написано, чтобы
+    // человек не решил, что покупает сам конструктор.
+    { label: t.pricing.featMark, included: true },
     { label: t.pricing.featSupport, included: true },
   ];
 
@@ -67,6 +71,7 @@ export default async function PricingPage({
         { label: t.pricing.featFavorites, included: true },
         { label: `${proCount} ${t.pricing.featPro}`, included: false },
         { label: t.pricing.featMonthly, included: false },
+        { label: t.pricing.featMark, included: false },
         { label: t.pricing.featSupport, included: false },
       ],
     },

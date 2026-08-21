@@ -531,12 +531,51 @@ function drawFinal(
 }
 
 /** Рисует слайд целиком. Холст должен совпадать с размером формата. */
+/*
+  Метка сайта на последнем кадре.
+
+  Конструктор бесплатный, и работы в нём на порядок больше, чем в любой
+  другой части сайта. Метка — плата за него не деньгами: карусель уходит
+  в чужую ленту и приводит оттуда людей. В PRO она снимается.
+
+  Только последний кадр, и это не полумера. Метка на каждом слайде
+  портит саму карусель — то есть портит то, ради чего человек сюда
+  пришёл, и он просто уходит собирать её в другом месте. На последнем
+  она попадается тому, кто досмотрел до конца, а это и есть тот, кому
+  сайт может быть интересен.
+
+  Обойти её, не выложив последний кадр, ничего не стоит. Так и задумано:
+  это напоминание, а не замок. Замок здесь и невозможен — рисует браузер.
+*/
+export const MARK = "promptom.app";
+
+/** Нужна ли метка на этом кадре. Отдельно от рисования — ради проверок. */
+export function marks(index: number, total: number, pro: boolean): boolean {
+  if (pro) return false;
+  // Единственный слайд — он же последний: метка нужна и тут.
+  return total > 0 && index === total - 1;
+}
+
+function watermark(ctx: CanvasRenderingContext2D, f: Frame) {
+  ctx.save();
+  ctx.font = `400 24px ${MONO}`;
+  ctx.textAlign = "right";
+  ctx.textBaseline = "alphabetic";
+  // Справа внизу: слева на этом месте стоит ник автора, и спорить с ним
+  // метке незачем — это подпись сайта, а не вторая подпись человека.
+  ctx.fillStyle = MUTED;
+  ctx.globalAlpha = 0.75;
+  ctx.fillText(MARK, f.w - PAD, f.h - PAD);
+  ctx.restore();
+}
+
 export function drawSlide(
   ctx: CanvasRenderingContext2D,
   deck: Deck,
   palette: Palette,
   index: number,
   photo: CanvasImageSource | null,
+  pro = false,
 ) {
   const slide = deck.slides[index];
   const total = deck.slides.length;
@@ -550,4 +589,7 @@ export function drawSlide(
   else if (slide.kind === "prompt")
     drawPrompt(ctx, slide, deck, palette, index, total, photo, f);
   else drawStatement(ctx, slide, deck, palette, index, total, photo, f);
+
+  // Последней: поверх всего, включая фотографию и затемнение.
+  if (marks(index, total, pro)) watermark(ctx, f);
 }

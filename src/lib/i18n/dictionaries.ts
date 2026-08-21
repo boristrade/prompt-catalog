@@ -356,6 +356,7 @@ const ru = {
     historyDays: "дней",
   },
   pricing: {
+    featMark: "Карусели без метки сайта",
     eyebrow: "Тарифы",
     titleMain: "Платите, только если",
     titleAccent: "пригодилось",
@@ -426,6 +427,8 @@ const ru = {
     paid: "платно",
   },
   carousel: {
+    markNote: "На последнем слайде стоит метка promptom.app.",
+    markCta: "Убрать в PRO",
     kindFinal: "Финал",
     format: "Формат кадра",
     formatPost: "Лента 4:5",
@@ -837,6 +840,7 @@ const en: Dictionary = {
     historyDays: "days",
   },
   pricing: {
+    featMark: "Carousels without the site mark",
     eyebrow: "Pricing",
     titleMain: "Pay only if it",
     titleAccent: "was useful",
@@ -905,6 +909,8 @@ const en: Dictionary = {
     paid: "paid",
   },
   carousel: {
+    markNote: "The last slide carries a small promptom.app mark.",
+    markCta: "Remove with PRO",
     kindFinal: "Closing",
     format: "Frame format",
     formatPost: "Feed 4:5",
@@ -1323,6 +1329,7 @@ const fr: Dictionary = {
     historyDays: "jours",
   },
   pricing: {
+    featMark: "Carrousels sans la mention du site",
     eyebrow: "Tarifs",
     titleMain: "Payez seulement si cela",
     titleAccent: "vous a servi",
@@ -1394,6 +1401,8 @@ const fr: Dictionary = {
     paid: "payant",
   },
   carousel: {
+    markNote: "La dernière diapositive porte une petite mention promptom.app.",
+    markCta: "L'enlever avec PRO",
     kindFinal: "Final",
     format: "Format du cadre",
     formatPost: "Fil 4:5",
@@ -1804,6 +1813,7 @@ const uk: Dictionary = {
     historyDays: "днів",
   },
   pricing: {
+    featMark: "Каруселі без позначки сайту",
     eyebrow: "Тарифи",
     titleMain: "Платіть, лише якщо",
     titleAccent: "стало в пригоді",
@@ -1874,6 +1884,8 @@ const uk: Dictionary = {
     paid: "платно",
   },
   carousel: {
+    markNote: "На останньому слайді стоїть позначка promptom.app.",
+    markCta: "Прибрати в PRO",
     kindFinal: "Фінал",
     format: "Формат кадру",
     formatPost: "Стрічка 4:5",
@@ -2292,6 +2304,7 @@ const de: Dictionary = {
     historyDays: "Tage",
   },
   pricing: {
+    featMark: "Karussells ohne Website-Hinweis",
     eyebrow: "Preise",
     titleMain: "Zahlen Sie nur, wenn es",
     titleAccent: "etwas gebracht hat",
@@ -2363,6 +2376,8 @@ const de: Dictionary = {
     paid: "kostenpflichtig",
   },
   carousel: {
+    markNote: "Die letzte Folie trägt einen kleinen promptom.app-Hinweis.",
+    markCta: "Mit PRO entfernen",
     kindFinal: "Abschluss",
     format: "Bildformat",
     formatPost: "Feed 4:5",
@@ -2776,6 +2791,7 @@ const pl: Dictionary = {
     historyDays: "dni",
   },
   pricing: {
+    featMark: "Karuzele bez znaku strony",
     eyebrow: "Cennik",
     titleMain: "Płać tylko wtedy, gdy",
     titleAccent: "się przydało",
@@ -2847,6 +2863,8 @@ const pl: Dictionary = {
     paid: "płatne",
   },
   carousel: {
+    markNote: "Ostatni slajd nosi mały znak promptom.app.",
+    markCta: "Usuń w PRO",
     kindFinal: "Finał",
     format: "Format kadru",
     formatPost: "Feed 4:5",
